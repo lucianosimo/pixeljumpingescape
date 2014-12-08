@@ -17,6 +17,7 @@ public abstract class Player extends AnimatedSprite{
 
 	private Body body;
 	private FixtureDef fixture;
+	private boolean onAir = true;
 	private boolean onRightWall = false;
 	private boolean onLeftWall = true;
 	
@@ -51,16 +52,35 @@ public abstract class Player extends AnimatedSprite{
 		});
 	}
 	
-	public void changeWall() {
-		if (onLeftWall) {
-			onLeftWall = false;
-			onRightWall = true;
-			body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 10));
-		} else if (onRightWall) {
-			onRightWall = false;
-			onLeftWall = true;
-			body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 10));
-		}
+	public boolean isOnLeftWall() {
+		return onLeftWall;
+	}
+	
+	public boolean isOnRightWall() {
+		return onRightWall;
+	}
+	
+	public boolean isOnAir() {
+		return onAir;
+	}
+	
+	
+	public void setOnAirFalse() {
+		onAir = false;
+	}
+	
+	public void goToLeftWall() {
+		onRightWall = false;
+		onAir = true;
+		onLeftWall = true;
+		body.setLinearVelocity(new Vector2(-30, 10));
+	}
+	
+	public void goToRightWall() {
+		onLeftWall = false;
+		onAir = true;
+		onRightWall = true;
+		body.setLinearVelocity(new Vector2(30, 10));
 	}
 	
 	public void stopPlayer() {
