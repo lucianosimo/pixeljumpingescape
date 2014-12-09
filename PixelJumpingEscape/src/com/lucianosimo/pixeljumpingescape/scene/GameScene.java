@@ -65,6 +65,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//Explosions
 
 	//Constants
+	private final static int PLAYER_INITIAL_X = 300;
+	private final static int PLAYER_INITIAL_Y = 50;
+	private final static int BUTTON_WIDTH = 100;
+	private final static int BUTTON_HEIGHT = 1280;
+	private final static int WALL_WIDTH = 100;
+	private final static int WALL_HEIGHT = 1000;
+	private final static float Y_JUMP_SPEED_MULTIPLIER = 0.069444444444f;
 	
 	//If negative, never collides between groups, if positive yes
 	//private static final int GROUP_ENEMY = -1;
@@ -86,26 +93,31 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	private void setCameraProperties() {
 		camera.setMaxVelocityY(-20);
+		//camera.setMaxVelocityY(0);
 		camera.setChaseEntity(this);
 		camera.setBoundsEnabled(false);
 	}
 	
 	private void createHud() {
 		gameHud = new HUD();
-		leftButton = new Rectangle(50, screenHeight / 2, 100, 1280, vbom) {
+		leftButton = new Rectangle(BUTTON_WIDTH / 2, screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if (pSceneTouchEvent.isActionDown() && player.isOnRightWall() && !player.isOnAir()) {
-					player.goToLeftWall();
+					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
+					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
+					player.goToLeftWall(ySpeed);
 				}
 				return false;
 			}
 		};
-		rightButton = new Rectangle(screenWidth - 50, screenHeight / 2, 100, 1280, vbom) {
+		rightButton = new Rectangle(screenWidth - (BUTTON_WIDTH / 2), screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if (pSceneTouchEvent.isActionDown() && player.isOnLeftWall() && !player.isOnAir()) {
-					player.goToRightWall();
+					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
+					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
+					player.goToRightWall(ySpeed);
 				}
 				return false;
 			}
@@ -132,7 +144,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createPlayer() {
-		player = new Player(300, 150, vbom, camera, physicsWorld) {
+		player = new Player(PLAYER_INITIAL_X, PLAYER_INITIAL_Y, vbom, camera, physicsWorld) {
 			
 			@Override
 			public void onDie() {
@@ -145,8 +157,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	private void createWalls() {
 		for (int i = 0; i < 10; i++) {
-			leftWall = new LeftWall(50, 500 * i, vbom, camera, physicsWorld);
-			rightWall = new RightWall(screenWidth - 50, 500 * i, vbom, camera, physicsWorld);
+			leftWall = new LeftWall(WALL_WIDTH / 2, (WALL_HEIGHT / 2) * i, vbom, camera, physicsWorld);
+			rightWall = new RightWall(screenWidth - (WALL_WIDTH / 2), (WALL_HEIGHT / 2) * i, vbom, camera, physicsWorld);
 			GameScene.this.attachChild(leftWall);
 			GameScene.this.attachChild(rightWall);
 		}

@@ -69,18 +69,18 @@ public abstract class Player extends AnimatedSprite{
 		onAir = false;
 	}
 	
-	public void goToLeftWall() {
+	public void goToLeftWall(float ySpeed) {
 		onRightWall = false;
 		onAir = true;
 		onLeftWall = true;
-		body.setLinearVelocity(new Vector2(-30, 10));
+		body.setLinearVelocity(new Vector2(-30, ySpeed));
 	}
 	
-	public void goToRightWall() {
+	public void goToRightWall(float ySpeed) {
 		onLeftWall = false;
 		onAir = true;
 		onRightWall = true;
-		body.setLinearVelocity(new Vector2(30, 10));
+		body.setLinearVelocity(new Vector2(30, ySpeed));
 	}
 	
 	public void stopPlayer() {
