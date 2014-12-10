@@ -41,7 +41,9 @@ public abstract class Player extends AnimatedSprite{
 			@Override
 			public void onUpdate(float pSecondsElapsed) {
 				super.onUpdate(pSecondsElapsed);
-				camera.onUpdate(0.1f);
+				if (getY() < (camera.getCenterY() - 640)) {
+					onDie();
+				}
 				if (onLeftWall) {
 					body.setLinearVelocity(new Vector2(-30, body.getLinearVelocity().y));
 				} else if (onRightWall) {
@@ -89,5 +91,9 @@ public abstract class Player extends AnimatedSprite{
 	
 	public Body getPlayerBody() {
 		return body;
-	}	
+	}
+	
+	public void killPlayer() {
+		onDie();
+	}
 }

@@ -50,10 +50,13 @@ public class ResourcesManager {
 	//Game fonts
 	
 	//Game HUD
+	public ITextureRegion game_fire_region;
 	
 	//Objects
 	public ITiledTextureRegion game_player_region;
 	public ITextureRegion game_wall_region;
+	public ITextureRegion game_left_spikes_region;
+	public ITextureRegion game_right_spikes_region;
 	
 	//Platforms
 	
@@ -65,6 +68,9 @@ public class ResourcesManager {
 	//Countdown
 	
 	//Windows
+	public ITextureRegion game_over_window_region;
+	public ITextureRegion game_retry_button_region;
+	public ITextureRegion game_quit_button_region;
 
 	//Buttons
 	
@@ -72,6 +78,8 @@ public class ResourcesManager {
 	
 	//Game Textures
 	private BuildableBitmapTextureAtlas gameTextureAtlas;
+	private BuildableBitmapTextureAtlas gameHudTextureAtlas;
+	private BuildableBitmapTextureAtlas gameWindowsTextureAtlas;
 	private BuildableBitmapTextureAtlas gameAnimatedTextureAtlas;
 	private BuildableBitmapTextureAtlas gameBackgroundTextureAtlas;
 	
@@ -161,19 +169,39 @@ public class ResourcesManager {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		gameHudTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		gameWindowsTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameAnimatedTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR);
 		
+		//Game background atlas
 		game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background.png");
 		
+		//Game HUD
+		game_fire_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_fire.png");
+		
+		//Game animated atlas
 		game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player.png", 2, 1);
 		
+		//Game texture atlas
 		game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall.png");
+		game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes.png");
+		game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes.png");
+		
+		//Game windows atlas
+		game_over_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_over_window.png"); 
+		game_retry_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_retry_button.png");
+		game_quit_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_quit_button.png");
+		
 		try {
 			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.gameHudTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.gameWindowsTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameAnimatedTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameTextureAtlas.load();
+			this.gameHudTextureAtlas.load();
+			this.gameWindowsTextureAtlas.load();
 			this.gameBackgroundTextureAtlas.load();
 			this.gameAnimatedTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
@@ -196,6 +224,8 @@ public class ResourcesManager {
 	
 	private void unloadGameTextures() {
 		this.gameTextureAtlas.unload();
+		this.gameHudTextureAtlas.unload();
+		this.gameWindowsTextureAtlas.unload();
 		this.gameBackgroundTextureAtlas.unload();
 		this.gameAnimatedTextureAtlas.unload();
 	}
