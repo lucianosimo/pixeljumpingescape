@@ -24,11 +24,13 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
+import com.lucianosimo.pixeljumpingescape.object.CenterSpikes;
 import com.lucianosimo.pixeljumpingescape.object.LeftSpikes;
 import com.lucianosimo.pixeljumpingescape.object.LeftWall;
 import com.lucianosimo.pixeljumpingescape.object.Player;
 import com.lucianosimo.pixeljumpingescape.object.RightSpikes;
 import com.lucianosimo.pixeljumpingescape.object.RightWall;
+import com.lucianosimo.pixeljumpingescape.object.Spider;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
@@ -51,6 +53,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private RightWall rightWall;
 	private LeftSpikes leftSpikes;
 	private RightSpikes rightSpikes;
+	private CenterSpikes centerSpikes;
+	private Spider spider;
 	
 	//Booleans
 
@@ -80,6 +84,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int WALL_HEIGHT = 1000;
 	private final static int SPIKES_WIDTH = 80;
 	private final static int SPIKES_HEIGHT = 1000;
+	private final static int CENTER_SPIKES_WIDTH = 100;
+	private final static int CENTER_SPIKES_HEIGHT = 200;
 	private final static float Y_JUMP_SPEED_MULTIPLIER = 0.069444444444f;
 	
 	//If negative, never collides between groups, if positive yes
@@ -96,6 +102,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createPhysics();
 		createPlayer();
 		createWalls();
+		createEnemies();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
         //GameScene.this.attachChild(debug);
@@ -232,6 +239,22 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				GameScene.this.attachChild(rightSpikes);
 			}
 		}
+		
+		for (int i = 0; i < 3; i++) {
+			centerSpikes = new CenterSpikes(screenWidth / 2, 2000 * i, vbom, camera, physicsWorld);
+			GameScene.this.attachChild(centerSpikes);
+		}
+	}
+	
+	private void createEnemies() {
+		for (int i = 0; i < 5; i++) {
+			if ((i%2) == 0) {
+				spider = new Spider(150, 2500 * i, vbom, camera, physicsWorld);
+			} else {
+				spider = new Spider(570, 2500 * i, vbom, camera, physicsWorld);
+			}
+			GameScene.this.attachChild(spider);
+		}
 	}
 	
 	
@@ -272,6 +295,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("rightSpikes")) {
+					player.killPlayer();
+				}
+				
+				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("centerSpikes")) {
+					player.killPlayer();
+				}
+				
+				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("spider")) {
 					player.killPlayer();
 				}
 				

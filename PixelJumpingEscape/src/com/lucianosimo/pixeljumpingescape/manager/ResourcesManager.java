@@ -53,10 +53,10 @@ public class ResourcesManager {
 	public ITextureRegion game_fire_region;
 	
 	//Objects
-	public ITiledTextureRegion game_player_region;
 	public ITextureRegion game_wall_region;
 	public ITextureRegion game_left_spikes_region;
 	public ITextureRegion game_right_spikes_region;
+	public ITextureRegion game_center_spikes_region;
 	
 	//Platforms
 	
@@ -64,6 +64,8 @@ public class ResourcesManager {
 	public ITextureRegion game_background_region;
 	
 	//Animated
+	public ITiledTextureRegion game_player_region;
+	public ITiledTextureRegion game_spider_region;
 	
 	//Countdown
 	
@@ -182,11 +184,13 @@ public class ResourcesManager {
 		
 		//Game animated atlas
 		game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player.png", 2, 1);
+		game_spider_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider.png", 2, 1);
 		
 		//Game texture atlas
 		game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall.png");
 		game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes.png");
 		game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes.png");
+		game_center_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_center_spikes.png");
 		
 		//Game windows atlas
 		game_over_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_over_window.png"); 
