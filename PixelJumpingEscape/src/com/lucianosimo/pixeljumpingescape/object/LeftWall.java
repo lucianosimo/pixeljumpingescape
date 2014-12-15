@@ -29,4 +29,7 @@ public class LeftWall extends Sprite{
 		body.setFixedRotation(true);
 	}
 	
+	public Body getBody() {
+		return body;
+	}
 }

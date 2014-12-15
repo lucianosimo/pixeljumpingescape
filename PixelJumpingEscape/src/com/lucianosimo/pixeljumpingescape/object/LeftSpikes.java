@@ -29,4 +29,7 @@ public class LeftSpikes extends Sprite{
 		body.setFixedRotation(true);
 	}
 	
+	public Body getBody() {
+		return body;
+	}
 }

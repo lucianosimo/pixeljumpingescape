@@ -3,7 +3,9 @@ package com.lucianosimo.pixeljumpingescape.manager;
 import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.SmoothCamera;
+import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -14,6 +16,7 @@ import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
 import com.lucianosimo.pixeljumpingescape.GameActivity;
@@ -48,6 +51,7 @@ public class ResourcesManager {
 	//Game audio
 	
 	//Game fonts
+	public Font game_score_font;
 	
 	//Game HUD
 	public ITextureRegion game_fire_region;
@@ -224,6 +228,10 @@ public class ResourcesManager {
 	
 	private void loadGameFonts() {
 		FontFactory.setAssetBasePath("fonts/game/");
+		
+		final ITexture game_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "november.ttf", 50, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
+		game_score_font.load();
 	}
 	
 	private void unloadGameTextures() {
@@ -235,6 +243,7 @@ public class ResourcesManager {
 	}
 	
 	private void unloadGameFonts() {
+		game_score_font.unload();
 	}
 	
 	
