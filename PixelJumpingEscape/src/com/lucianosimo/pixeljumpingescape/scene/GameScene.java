@@ -119,7 +119,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createPlayer();
 		createWindows();
 		createWalls();
-		createEnemies();
+		//createEnemies();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
         //GameScene.this.attachChild(debug);
@@ -190,7 +190,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createPhysics() {
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false);
+		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -3), false);
 		physicsWorld.setContactListener(contactListener());
 		registerUpdateHandler(physicsWorld);
 	}
@@ -200,60 +200,72 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
-				super.onManagedUpdate(pSecondsElapsed);
 				incrementScore();
-				if (this.collidesWith(moveBlocksSensor[0]) && movedBlocks > 0) {
-					Log.d("pixel", "move sensor 0");
-					moveBlocksSensor[0].setPosition(moveBlocksSensor[0].getX(), moveBlocksSensor[0].getY() + (1280 * (MAX_BLOCKS + movedBlocks)));
+				if (player.collidesWith(moveBlocksSensor[0]) && movedBlocks > 0) {
+					camera.setMaxVelocityY(camera.getMaxVelocityY() - 20);
+					moveBlocksSensor[2].setPosition(screenWidth / 2, moveBlocksSensor[2].getY() + (1280 * (MAX_BLOCKS)));
+					moveBlocksSensor[0].setPosition(5000, moveBlocksSensor[0].getY());
 					for (int i = 0; i < leftWall[2].length; i++) {
-						leftWall[2][i].getBody().setTransform(leftWall[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[2][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[2][i].getBody().getAngle());
+						leftWall[2][i].getBody().setTransform(leftWall[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[2][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[2][i].getBody().getAngle());
+						leftWall[2][i].setPosition(leftWall[2][i].getX(), leftWall[2][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < rightWall[2].length; i++) {
-						rightWall[2][i].getBody().setTransform(rightWall[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[2][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[2][i].getBody().getAngle());
+						rightWall[2][i].getBody().setTransform(rightWall[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[2][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[2][i].getBody().getAngle());
+						rightWall[2][i].setPosition(rightWall[2][i].getX(), rightWall[2][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < leftSpikes[2].length; i++) {
-						leftSpikes[2][i].getBody().setTransform(leftSpikes[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[2][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[2][i].getBody().getAngle());
+						leftSpikes[2][i].getBody().setTransform(leftSpikes[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[2][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[2][i].getBody().getAngle());
+						leftSpikes[2][i].setPosition(leftSpikes[2][i].getX(), leftSpikes[2][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < rightSpikes[2].length; i++) {
-						rightSpikes[2][i].getBody().setTransform(rightSpikes[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[2][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[2][i].getBody().getAngle());
+						rightSpikes[2][i].getBody().setTransform(rightSpikes[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[2][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[2][i].getBody().getAngle());
+						rightSpikes[2][i].setPosition(rightSpikes[2][i].getX(), rightSpikes[2][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					movedBlocks++;
-				} else if (this.collidesWith(moveBlocksSensor[1])) {
-					Log.d("pixel", "move sensor 1");
-					moveBlocksSensor[1].setPosition(moveBlocksSensor[1].getX(), moveBlocksSensor[1].getY() + (1280 * (MAX_BLOCKS + movedBlocks)));
+				} else if (player.collidesWith(moveBlocksSensor[1])) {
+					camera.setMaxVelocityY(camera.getMaxVelocityY() - 20);
+					moveBlocksSensor[0].setPosition(screenWidth / 2, moveBlocksSensor[0].getY() + (1280 * (MAX_BLOCKS)));
+					moveBlocksSensor[1].setPosition(5000, moveBlocksSensor[1].getY());
 					for (int i = 0; i < leftWall[0].length; i++) {
-						Log.d("pixel", "y before: " + leftWall[0][i].getY());
-						Log.d("pixel", "expected: " + (leftWall[0][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))));
-						leftWall[0][i].getBody().setTransform(leftWall[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[0][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[0][i].getBody().getAngle());
-						Log.d("pixel", "y after: " + leftWall[0][i].getY());
+						leftWall[0][i].getBody().setTransform(leftWall[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[0][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[0][i].getBody().getAngle());
+						leftWall[0][i].setPosition(leftWall[0][i].getX(), leftWall[0][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < rightWall[0].length; i++) {
-						rightWall[0][i].getBody().setTransform(rightWall[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[0][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[0][i].getBody().getAngle());
+						rightWall[0][i].getBody().setTransform(rightWall[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[0][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[0][i].getBody().getAngle());
+						rightWall[0][i].setPosition(rightWall[0][i].getX(), rightWall[0][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < leftSpikes[0].length; i++) {
-						leftSpikes[0][i].getBody().setTransform(leftSpikes[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[0][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[0][i].getBody().getAngle());
+						leftSpikes[0][i].getBody().setTransform(leftSpikes[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[0][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[0][i].getBody().getAngle());
+						leftSpikes[0][i].setPosition(leftSpikes[0][i].getX(), leftSpikes[0][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < rightSpikes[0].length; i++) {
 						rightSpikes[0][i].getBody().setTransform(rightSpikes[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[0][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[0][i].getBody().getAngle());
+						rightSpikes[0][i].setPosition(rightSpikes[0][i].getX(), rightSpikes[0][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					movedBlocks++;					
-				} else if (this.collidesWith(moveBlocksSensor[2])) {
-					Log.d("pixel", "move sensor 2");
-					moveBlocksSensor[2].setPosition(moveBlocksSensor[2].getX(), moveBlocksSensor[2].getY() + (1280 * (MAX_BLOCKS + movedBlocks)));
+				} else if (player.collidesWith(moveBlocksSensor[2])) {
+					camera.setMaxVelocityY(camera.getMaxVelocityY() - 20);
+					moveBlocksSensor[1].setPosition(screenWidth / 2, moveBlocksSensor[1].getY() + (1280 * (MAX_BLOCKS)));
+					moveBlocksSensor[2].setPosition(5000, moveBlocksSensor[2].getY());
 					for (int i = 0; i < leftWall[1].length; i++) {
-						leftWall[1][i].getBody().setTransform(leftWall[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[1][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[1][i].getBody().getAngle());
+						leftWall[1][i].getBody().setTransform(leftWall[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[1][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[1][i].getBody().getAngle());
+						leftWall[1][i].setPosition(leftWall[1][i].getX(), leftWall[1][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < rightWall[1].length; i++) {
-						rightWall[1][i].getBody().setTransform(rightWall[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[1][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[1][i].getBody().getAngle());
+						rightWall[1][i].getBody().setTransform(rightWall[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[1][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[1][i].getBody().getAngle());
+						rightWall[1][i].setPosition(rightWall[1][i].getX(), rightWall[1][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < leftSpikes[1].length; i++) {
-						leftSpikes[1][i].getBody().setTransform(leftSpikes[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[1][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[1][i].getBody().getAngle());
+						leftSpikes[1][i].getBody().setTransform(leftSpikes[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[1][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[1][i].getBody().getAngle());
+						leftSpikes[1][i].setPosition(leftSpikes[1][i].getX(), leftSpikes[1][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					for (int i = 0; i < rightSpikes[1].length; i++) {
-						rightSpikes[1][i].getBody().setTransform(rightSpikes[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[1][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[1][i].getBody().getAngle());
+						rightSpikes[1][i].getBody().setTransform(rightSpikes[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[1][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[1][i].getBody().getAngle());
+						rightSpikes[1][i].setPosition(rightSpikes[1][i].getX(), rightSpikes[1][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
 					movedBlocks++;
 				}
+				super.onManagedUpdate(pSecondsElapsed);
 			}
 			
 			@Override
@@ -266,7 +278,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				        camera.setChaseEntity(null);
 				        camera.setMaxVelocityY(0);
 				        gameOverWindow.setPosition(camera.getCenterX(), camera.getCenterY());
-						//GameScene.this.attachChild(gameOverWindow);
 					    final Sprite retryButton = new Sprite(125, 110, resourcesManager.game_retry_button_region, vbom){
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					    		if (pSceneTouchEvent.isActionDown()) {
@@ -343,14 +354,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				rightSpikesPositions = new int[] {0};
 			}
 			
-			moveBlocksSensor[i] = new Rectangle(screenWidth / 2, 1280 * i + screenHeight / 2, screenWidth, 10, vbom);
+			moveBlocksSensor[i] = new Rectangle(screenWidth / 2, 1280 * i + screenHeight, screenWidth, 10, vbom);
 			moveBlocksSensor[i].setColor(Color.RED);
 			GameScene.this.attachChild(moveBlocksSensor[i]);
 			
 			for (int j = 0; j < leftWallPositions.length; j++) {
 				leftWall[i][j] = new LeftWall(WALL_WIDTH / 2, leftWallPositions[j] + (1280 * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(leftWall[i][j]);
-				
 			}
 			for (int j = 0; j < rightWallPositions.length; j++) {
 				rightWall[i][j] = new RightWall(screenWidth - (WALL_WIDTH / 2), rightWallPositions[j] + (1280 * i), vbom, camera, physicsWorld);
