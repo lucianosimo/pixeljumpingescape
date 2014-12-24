@@ -63,6 +63,7 @@ public class ResourcesManager {
 	public ITextureRegion game_center_spikes_region;
 	
 	//Platforms
+	public ITextureRegion game_floor_region;
 	
 	//Backgrounds
 	public ITextureRegion game_background_region;
@@ -195,6 +196,7 @@ public class ResourcesManager {
 		game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes.png");
 		game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes.png");
 		game_center_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_center_spikes.png");
+		game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor.png");
 		
 		//Game windows atlas
 		game_over_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_over_window.png"); 

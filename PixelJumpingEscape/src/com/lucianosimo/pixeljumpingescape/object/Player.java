@@ -19,7 +19,8 @@ public abstract class Player extends AnimatedSprite{
 	private FixtureDef fixture;
 	private boolean onAir = true;
 	private boolean onRightWall = false;
-	private boolean onLeftWall = true;
+	private boolean onLeftWall = false;
+	private boolean initial = true;
 	
 	public abstract void onDie();
 	
@@ -48,6 +49,8 @@ public abstract class Player extends AnimatedSprite{
 					body.setLinearVelocity(new Vector2(-30, body.getLinearVelocity().y));
 				} else if (onRightWall) {
 					body.setLinearVelocity(new Vector2(30, body.getLinearVelocity().y));
+				} else if (initial) {
+					body.setLinearVelocity(new Vector2(0, body.getLinearVelocity().y));
 				}
 				
 			}
@@ -66,6 +69,9 @@ public abstract class Player extends AnimatedSprite{
 		return onAir;
 	}
 	
+	public boolean isInitial() {
+		return initial;
+	}
 	
 	public void setOnAirFalse() {
 		onAir = false;
@@ -75,6 +81,7 @@ public abstract class Player extends AnimatedSprite{
 		onRightWall = false;
 		onAir = true;
 		onLeftWall = true;
+		initial = false;
 		body.setLinearVelocity(new Vector2(-30, ySpeed));
 	}
 	
@@ -82,6 +89,7 @@ public abstract class Player extends AnimatedSprite{
 		onLeftWall = false;
 		onAir = true;
 		onRightWall = true;
+		initial = false;
 		body.setLinearVelocity(new Vector2(30, ySpeed));
 	}
 	
