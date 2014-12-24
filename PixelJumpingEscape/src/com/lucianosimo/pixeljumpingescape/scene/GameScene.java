@@ -103,6 +103,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int SPIKES_HEIGHT = 128;
 	private final static int CENTER_SPIKES_WIDTH = 75;
 	private final static int CENTER_SPIKES_HEIGHT = 75;
+	private final static int CAMERA_SPEED_INCREMENT = 20;
 	private final static float Y_JUMP_SPEED_MULTIPLIER = 0.069444444444f;
 	
 	//If negative, never collides between groups, if positive yes
@@ -202,8 +203,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				incrementScore();
 				if (player.collidesWith(moveBlocksSensor[0]) && movedBlocks > 0) {
-					camera.setMaxVelocityY(camera.getMaxVelocityY() - 20);
-					moveBlocksSensor[2].setPosition(screenWidth / 2, moveBlocksSensor[2].getY() + (1280 * (MAX_BLOCKS)));
+					incrementCameraSpeed();
+					moveBlocks(0);
+					/*moveBlocksSensor[2].setPosition(screenWidth / 2, moveBlocksSensor[2].getY() + (1280 * (MAX_BLOCKS)));
 					moveBlocksSensor[0].setPosition(5000, moveBlocksSensor[0].getY());
 					for (int i = 0; i < leftWall[2].length; i++) {
 						leftWall[2][i].getBody().setTransform(leftWall[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[2][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[2][i].getBody().getAngle());
@@ -221,10 +223,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						rightSpikes[2][i].getBody().setTransform(rightSpikes[2][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[2][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[2][i].getBody().getAngle());
 						rightSpikes[2][i].setPosition(rightSpikes[2][i].getX(), rightSpikes[2][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
-					movedBlocks++;
+					movedBlocks++;*/
 				} else if (player.collidesWith(moveBlocksSensor[1])) {
-					camera.setMaxVelocityY(camera.getMaxVelocityY() - 20);
-					moveBlocksSensor[0].setPosition(screenWidth / 2, moveBlocksSensor[0].getY() + (1280 * (MAX_BLOCKS)));
+					incrementCameraSpeed();
+					moveBlocks(1);
+					/*moveBlocksSensor[0].setPosition(screenWidth / 2, moveBlocksSensor[0].getY() + (1280 * (MAX_BLOCKS)));
 					moveBlocksSensor[1].setPosition(5000, moveBlocksSensor[1].getY());
 					for (int i = 0; i < leftWall[0].length; i++) {
 						leftWall[0][i].getBody().setTransform(leftWall[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[0][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[0][i].getBody().getAngle());
@@ -242,10 +245,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						rightSpikes[0][i].getBody().setTransform(rightSpikes[0][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[0][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[0][i].getBody().getAngle());
 						rightSpikes[0][i].setPosition(rightSpikes[0][i].getX(), rightSpikes[0][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
-					movedBlocks++;					
+					movedBlocks++;*/			
 				} else if (player.collidesWith(moveBlocksSensor[2])) {
-					camera.setMaxVelocityY(camera.getMaxVelocityY() - 20);
-					moveBlocksSensor[1].setPosition(screenWidth / 2, moveBlocksSensor[1].getY() + (1280 * (MAX_BLOCKS)));
+					incrementCameraSpeed();
+					moveBlocks(2);
+					/*moveBlocksSensor[1].setPosition(screenWidth / 2, moveBlocksSensor[1].getY() + (1280 * (MAX_BLOCKS)));
 					moveBlocksSensor[2].setPosition(5000, moveBlocksSensor[2].getY());
 					for (int i = 0; i < leftWall[1].length; i++) {
 						leftWall[1][i].getBody().setTransform(leftWall[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[1][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[1][i].getBody().getAngle());
@@ -263,7 +267,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						rightSpikes[1][i].getBody().setTransform(rightSpikes[1][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[1][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[1][i].getBody().getAngle());
 						rightSpikes[1][i].setPosition(rightSpikes[1][i].getX(), rightSpikes[1][i].getY() + (1280 * (MAX_BLOCKS)));
 					}
-					movedBlocks++;
+					movedBlocks++;*/
 				}
 				super.onManagedUpdate(pSecondsElapsed);
 			}
@@ -393,6 +397,37 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		scoreText.setText("" + score);
 	}
 	
+	private void incrementCameraSpeed() {
+		camera.setMaxVelocityY(camera.getMaxVelocityY() - CAMERA_SPEED_INCREMENT);
+	}
+	
+	private void moveBlocks(int index) {
+		int indexBlockToMove = 0;
+		if (index == 0) {
+			indexBlockToMove = MAX_BLOCKS - 1;
+		} else {
+			indexBlockToMove = index - 1;
+		}
+		moveBlocksSensor[indexBlockToMove].setPosition(screenWidth / 2, moveBlocksSensor[indexBlockToMove].getY() + (1280 * (MAX_BLOCKS)));
+		moveBlocksSensor[index].setPosition(5000, moveBlocksSensor[index].getY());
+		for (int i = 0; i < leftWall[indexBlockToMove].length; i++) {
+			leftWall[indexBlockToMove][i].getBody().setTransform(leftWall[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[indexBlockToMove][i].getBody().getAngle());
+			leftWall[indexBlockToMove][i].setPosition(leftWall[indexBlockToMove][i].getX(), leftWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+		}
+		for (int i = 0; i < rightWall[indexBlockToMove].length; i++) {
+			rightWall[indexBlockToMove][i].getBody().setTransform(rightWall[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[indexBlockToMove][i].getBody().getAngle());
+			rightWall[indexBlockToMove][i].setPosition(rightWall[indexBlockToMove][i].getX(), rightWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+		}
+		for (int i = 0; i < leftSpikes[indexBlockToMove].length; i++) {
+			leftSpikes[indexBlockToMove][i].getBody().setTransform(leftSpikes[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[indexBlockToMove][i].getBody().getAngle());
+			leftSpikes[indexBlockToMove][i].setPosition(leftSpikes[indexBlockToMove][i].getX(), leftSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+		}
+		for (int i = 0; i < rightSpikes[indexBlockToMove].length; i++) {
+			rightSpikes[indexBlockToMove][i].getBody().setTransform(rightSpikes[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS + movedBlocks))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[indexBlockToMove][i].getBody().getAngle());
+			rightSpikes[indexBlockToMove][i].setPosition(rightSpikes[indexBlockToMove][i].getX(), rightSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+		}
+		movedBlocks++;	
+	}
 	
 	private ContactListener contactListener() {
 		ContactListener contactListener = new ContactListener() {
