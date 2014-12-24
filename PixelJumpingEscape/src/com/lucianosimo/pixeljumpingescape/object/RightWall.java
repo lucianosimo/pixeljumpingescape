@@ -22,7 +22,7 @@ public class RightWall extends Sprite{
 	}
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {
-		fixture = PhysicsFactory.createFixtureDef(0, 0, 0);
+		fixture = PhysicsFactory.createFixtureDef(0, 0, 0.75f);
 		//fixture.filter.groupIndex = -1;
 		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.StaticBody, fixture);
 		body.setUserData("rightWall");

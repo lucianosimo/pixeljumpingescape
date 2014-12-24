@@ -30,7 +30,7 @@ public abstract class Player extends AnimatedSprite{
 	}
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {
-		fixture = PhysicsFactory.createFixtureDef(0, 0, 0);
+		fixture = PhysicsFactory.createFixtureDef(0, 0, 0.9f);
 		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, fixture);
 		
 		this.setUserData("player");
