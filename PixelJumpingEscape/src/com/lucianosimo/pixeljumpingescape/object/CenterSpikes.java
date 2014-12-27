@@ -29,4 +29,8 @@ public class CenterSpikes extends Sprite{
 		body.setFixedRotation(true);
 	}
 	
+	public Body getBody() {
+		return body;
+	}
+	
 }

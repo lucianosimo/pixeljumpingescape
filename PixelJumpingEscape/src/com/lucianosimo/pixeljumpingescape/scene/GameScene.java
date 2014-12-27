@@ -23,6 +23,8 @@ import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.util.Log;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -64,7 +66,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private RightWall[][] rightWall;
 	private LeftSpikes[][] leftSpikes;
 	private RightSpikes[][] rightSpikes;
-	private CenterSpikes centerSpikes;
+	private ArrayList<CenterSpikes> centerSpikes;
 	private Spider spider;
 	
 	//Booleans
@@ -93,12 +95,19 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//Sensors
 	private Rectangle[] moveBlocksSensor;
+	private Rectangle centerBlocksSensor;
 	private Rectangle incrementSpeedSensor;
+	private Rectangle spiderMoveSensor;
 
 	//Constants
 	private final static int MAX_BLOCKS = 10;
+	private final static int MAX_CENTER_BLOCKS = 8;
+	private final static int MAX_SPIDERS = 1;
 	private final static int PLAYER_INITIAL_X = 360;
 	private final static int PLAYER_INITIAL_Y = 300;
+	private final static int SPIDER_INITIAL_X_LEFT = 150;
+	private final static int SPIDER_INITIAL_X_RIGHT = 570;
+	private final static int SPIDER_INITIAL_Y = 6400;
 	private final static int BUTTON_WIDTH = 200;
 	private final static int BUTTON_HEIGHT = 1280;
 	private final static int FLOOR_HEIGHT = 256;
@@ -126,7 +135,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createPlayer();
 		createWindows();
 		createWalls();
-		//createEnemies();
+		createEnemies();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
         //GameScene.this.attachChild(debug);
@@ -218,6 +227,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight / 2);
 					incrementCameraSpeed();
 				}
+				if (player.collidesWith(centerBlocksSensor)) {
+					centerBlocksSensor.setPosition(centerBlocksSensor.getX(), centerBlocksSensor.getY() + screenHeight * 10);
+					moveCenterBlocks();
+				}
 				if (player.collidesWith(moveBlocksSensor[0]) && movedBlocks > 0) {
 					moveBlocks(0);
 				} else if (player.collidesWith(moveBlocksSensor[1])) {
@@ -291,40 +304,63 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createWalls() {
+		//n = rand.nextInt(max - min + 1) + min;
+		Random rand = new Random();
+		int blockOrNo;
 		long seed;
 		moveBlocksSensor = new Rectangle[MAX_BLOCKS];
 		leftWall = new LeftWall[MAX_BLOCKS][5];
 		rightWall = new RightWall[MAX_BLOCKS][5];
 		leftSpikes = new LeftSpikes[MAX_BLOCKS][5];
 		rightSpikes = new RightSpikes[MAX_BLOCKS][5];
+		centerSpikes = new ArrayList<>();
 		
 		ArrayList<Integer> leftPositions = new ArrayList<>();
 		ArrayList<Integer> rightPositions = new ArrayList<>();
+		ArrayList<Float> centerPositions = new ArrayList<>();
 		
 		ArrayList<Integer> leftWallPositions = new ArrayList<>();
 		ArrayList<Integer> rightWallPositions = new ArrayList<>();
 		ArrayList<Integer> leftSpikesPositions = new ArrayList<>();
 		ArrayList<Integer> rightSpikesPositions = new ArrayList<>();
 		
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < MAX_BLOCKS; i++) {
 			leftPositions.add(WALL_HEIGHT/2 + (WALL_HEIGHT * i));
 			rightPositions.add(WALL_HEIGHT/2 + (WALL_HEIGHT * i));
 		}
+		
+		for (int i = 0; i < MAX_CENTER_BLOCKS; i++) {
+			blockOrNo = rand.nextInt(2) + 1;
+			if (blockOrNo == 1) {
+				float position = (screenHeight * 3 / 2) + ((10 + i) * screenHeight);
+				centerPositions.add(position);
+			}
+		}
 
-		Sprite floor = new Sprite(camera.getCenterX(), 128, resourcesManager.game_floor_region, vbom);
+		Sprite floor = new Sprite(camera.getCenterX(), FLOOR_HEIGHT / 2, resourcesManager.game_floor_region, vbom);
 		FixtureDef floor_fixture = PhysicsFactory.createFixtureDef(0, 0, 0);
 		final Body floor_body = PhysicsFactory.createBoxBody(physicsWorld, floor, BodyType.StaticBody, floor_fixture);
 		floor_body.setUserData("floor_body");
 		GameScene.this.attachChild(floor);
 		
-		incrementSpeedSensor = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, 10, vbom);
-		incrementSpeedSensor.setColor(Color.GREEN);
-		GameScene.this.attachChild(incrementSpeedSensor);
+		incrementSpeedSensor = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, 0.01f, vbom);
+		incrementSpeedSensor.setAlpha(1f);
+		//GameScene.this.attachChild(incrementSpeedSensor);
+		
+		centerBlocksSensor = new Rectangle(screenWidth / 2, screenHeight * 20, screenWidth, 0.01f, vbom);
+		centerBlocksSensor.setAlpha(1f);
+		//GameScene.this.attachChild(centerBlocksSensor);
+		
+		for (int i = 0; i < centerPositions.size(); i++) {
+			CenterSpikes centerSpike = new CenterSpikes(screenWidth/2, centerPositions.get(i), vbom, camera, physicsWorld);
+			centerSpikes.add(centerSpike);
+			GameScene.this.attachChild(centerSpike);
+		}
 
 		for (int i = 0; i < MAX_BLOCKS; i++) {
-			moveBlocksSensor[i] = new Rectangle(screenWidth / 2, 1280 * i + screenHeight, screenWidth, 10, vbom);
-			moveBlocksSensor[i].setColor(Color.RED);
-			GameScene.this.attachChild(moveBlocksSensor[i]);
+			moveBlocksSensor[i] = new Rectangle(screenWidth / 2, 1280 * i + screenHeight, screenWidth, 0.01f, vbom);
+			moveBlocksSensor[i].setAlpha(1f);
+			//GameScene.this.attachChild(moveBlocksSensor[i]);
 			
 			seed = System.nanoTime();
 			Collections.shuffle(leftPositions, new Random(seed));
@@ -342,19 +378,19 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 			
 			for (int j = 0; j < leftWallPositions.size(); j++) {
-				leftWall[i][j] = new LeftWall(WALL_WIDTH / 2, leftWallPositions.get(j) + (1280 * i), vbom, camera, physicsWorld);
+				leftWall[i][j] = new LeftWall(WALL_WIDTH / 2, leftWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(leftWall[i][j]);
 			}
 			for (int j = 0; j < rightWallPositions.size(); j++) {
-				rightWall[i][j] = new RightWall(screenWidth - (WALL_WIDTH / 2), rightWallPositions.get(j) + (1280 * i), vbom, camera, physicsWorld);
+				rightWall[i][j] = new RightWall(screenWidth - (WALL_WIDTH / 2), rightWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(rightWall[i][j]);
 			}
 			for (int j = 0; j < leftSpikesPositions.size(); j++) {
-				leftSpikes[i][j] = new LeftSpikes(SPIKES_WIDTH / 2, leftSpikesPositions.get(j) + (1280 * i), vbom, camera, physicsWorld);
+				leftSpikes[i][j] = new LeftSpikes(SPIKES_WIDTH / 2, leftSpikesPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(leftSpikes[i][j]);
 			}
 			for (int j = 0; j < rightSpikesPositions.size(); j++) {
-				rightSpikes[i][j] = new RightSpikes(screenWidth - (SPIKES_WIDTH / 2), rightSpikesPositions.get(j) + (1280 * i), vbom, camera, physicsWorld);
+				rightSpikes[i][j] = new RightSpikes(screenWidth - (SPIKES_WIDTH / 2), rightSpikesPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(rightSpikes[i][j]);
 			}
 
@@ -371,18 +407,47 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createEnemies() {
-		for (int i = 0; i < 5; i++) {
-			if ((i%2) == 0) {
-				spider = new Spider(150, 2500 * i, vbom, camera, physicsWorld);
-			} else {
-				spider = new Spider(570, 2500 * i, vbom, camera, physicsWorld);
-			}
-			GameScene.this.attachChild(spider);
+		//n = rand.nextInt(max - min + 1) + min;
+		Random rand = new Random();
+		int spiderLeftOrRight;
+		int initialX = SPIDER_INITIAL_X_LEFT;
+		spiderLeftOrRight = rand.nextInt(2) + 1;
+		spiderMoveSensor = new Rectangle(screenWidth / 2, SPIDER_INITIAL_Y - screenHeight, screenWidth, 10f, vbom);
+		spiderMoveSensor.setColor(Color.RED);
+		if (spiderLeftOrRight == 1) {
+			initialX = SPIDER_INITIAL_X_LEFT;
+		} else {
+			initialX = SPIDER_INITIAL_X_RIGHT;
 		}
+		spider = new Spider(initialX, SPIDER_INITIAL_Y, vbom, camera, physicsWorld) {
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				super.onManagedUpdate(pSecondsElapsed);
+				if (player.collidesWith(spiderMoveSensor)) {
+					this.startMoving();
+					spiderMoveSensor.setPosition(spiderMoveSensor.getX(), spiderMoveSensor.getY() + 5 * screenWidth);
+				}
+				if (this.getY() < (camera.getCenterY() - screenHeight / 2)) {
+					Random r = new Random();
+					int x = 0;
+					int leftOrRight = r.nextInt(2) + 1;
+					if (leftOrRight == 1) {
+						x = SPIDER_INITIAL_X_LEFT;
+					} else {
+						x = SPIDER_INITIAL_X_RIGHT;
+					}
+					this.getBody().setTransform(x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (this.getY() + (screenHeight * 5)) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, this.getBody().getAngle());
+					this.setPosition(x, this.getY() + (screenHeight * 5));
+					this.stopMoving();
+				}
+			}
+		};
+		GameScene.this.attachChild(spiderMoveSensor);
+		GameScene.this.attachChild(spider);
 	}
 	
 	private void incrementScore() {
-		score = ((int) camera.getCenterY() - 640) / 100;
+		score = ((int) camera.getCenterY() - 640) / 320;
 		scoreText.setText("" + score);
 	}
 	
@@ -397,25 +462,32 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		} else {
 			indexBlockToMove = index - 1;
 		}
-		moveBlocksSensor[indexBlockToMove].setPosition(screenWidth / 2, moveBlocksSensor[indexBlockToMove].getY() + (1280 * (MAX_BLOCKS)));
+		moveBlocksSensor[indexBlockToMove].setPosition(screenWidth / 2, moveBlocksSensor[indexBlockToMove].getY() + (screenHeight * (MAX_BLOCKS)));
 		moveBlocksSensor[index].setPosition(5000, moveBlocksSensor[index].getY());
 		for (int i = 0; i < leftWall[indexBlockToMove].length; i++) {
-			leftWall[indexBlockToMove][i].getBody().setTransform(leftWall[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[indexBlockToMove][i].getBody().getAngle());
-			leftWall[indexBlockToMove][i].setPosition(leftWall[indexBlockToMove][i].getX(), leftWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+			leftWall[indexBlockToMove][i].getBody().setTransform(leftWall[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftWall[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftWall[indexBlockToMove][i].getBody().getAngle());
+			leftWall[indexBlockToMove][i].setPosition(leftWall[indexBlockToMove][i].getX(), leftWall[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS)));
 		}
 		for (int i = 0; i < rightWall[indexBlockToMove].length; i++) {
-			rightWall[indexBlockToMove][i].getBody().setTransform(rightWall[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[indexBlockToMove][i].getBody().getAngle());
-			rightWall[indexBlockToMove][i].setPosition(rightWall[indexBlockToMove][i].getX(), rightWall[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+			rightWall[indexBlockToMove][i].getBody().setTransform(rightWall[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightWall[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightWall[indexBlockToMove][i].getBody().getAngle());
+			rightWall[indexBlockToMove][i].setPosition(rightWall[indexBlockToMove][i].getX(), rightWall[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS)));
 		}
 		for (int i = 0; i < leftSpikes[indexBlockToMove].length; i++) {
-			leftSpikes[indexBlockToMove][i].getBody().setTransform(leftSpikes[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[indexBlockToMove][i].getBody().getAngle());
-			leftSpikes[indexBlockToMove][i].setPosition(leftSpikes[indexBlockToMove][i].getX(), leftSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+			leftSpikes[indexBlockToMove][i].getBody().setTransform(leftSpikes[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftSpikes[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftSpikes[indexBlockToMove][i].getBody().getAngle());
+			leftSpikes[indexBlockToMove][i].setPosition(leftSpikes[indexBlockToMove][i].getX(), leftSpikes[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS)));
 		}
 		for (int i = 0; i < rightSpikes[indexBlockToMove].length; i++) {
-			rightSpikes[indexBlockToMove][i].getBody().setTransform(rightSpikes[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[indexBlockToMove][i].getBody().getAngle());
-			rightSpikes[indexBlockToMove][i].setPosition(rightSpikes[indexBlockToMove][i].getX(), rightSpikes[indexBlockToMove][i].getY() + (1280 * (MAX_BLOCKS)));
+			rightSpikes[indexBlockToMove][i].getBody().setTransform(rightSpikes[indexBlockToMove][i].getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightSpikes[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightSpikes[indexBlockToMove][i].getBody().getAngle());
+			rightSpikes[indexBlockToMove][i].setPosition(rightSpikes[indexBlockToMove][i].getX(), rightSpikes[indexBlockToMove][i].getY() + (screenHeight * (MAX_BLOCKS)));
 		}
 		movedBlocks++;	
+	}
+	
+	private void moveCenterBlocks() {
+		for (int i = 0; i < centerSpikes.size(); i++) {
+			centerSpikes.get(i).getBody().setTransform(centerSpikes.get(i).getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (centerSpikes.get(i).getY() + (screenHeight * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, centerSpikes.get(i).getBody().getAngle());
+			centerSpikes.get(i).setPosition(centerSpikes.get(i).getX(), centerSpikes.get(i).getY() + (screenHeight * (MAX_BLOCKS)));
+		}	
 	}
 	
 	private ContactListener contactListener() {
