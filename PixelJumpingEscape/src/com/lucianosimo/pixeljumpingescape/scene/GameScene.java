@@ -23,8 +23,6 @@ import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
-import android.util.Log;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -38,6 +36,7 @@ import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
 import com.lucianosimo.pixeljumpingescape.object.CenterSpikes;
+import com.lucianosimo.pixeljumpingescape.object.CenterSpikesWithHorizontalMove;
 import com.lucianosimo.pixeljumpingescape.object.LeftSpikes;
 import com.lucianosimo.pixeljumpingescape.object.LeftWall;
 import com.lucianosimo.pixeljumpingescape.object.Player;
@@ -67,6 +66,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private LeftSpikes[][] leftSpikes;
 	private RightSpikes[][] rightSpikes;
 	private ArrayList<CenterSpikes> centerSpikes;
+	private CenterSpikesWithHorizontalMove centerSpikesHorizontal;
 	private Spider spider;
 	
 	//Booleans
@@ -102,7 +102,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//Constants
 	private final static int MAX_BLOCKS = 10;
 	private final static int MAX_CENTER_BLOCKS = 8;
-	private final static int MAX_SPIDERS = 1;
+	private final static int SPIDERS_BLOCKS_TO_REAPPEAR = 5;
+	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
+	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 20;
 	private final static int PLAYER_INITIAL_X = 360;
 	private final static int PLAYER_INITIAL_Y = 300;
 	private final static int SPIDER_INITIAL_X_LEFT = 150;
@@ -117,6 +119,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int SPIKES_HEIGHT = 128;
 	private final static int CENTER_SPIKES_WIDTH = 75;
 	private final static int CENTER_SPIKES_HEIGHT = 75;
+	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = -200;
+	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 200;
 	private final static int CAMERA_INITIAL_SPEED = -150;
 	private final static int CAMERA_SPEED_INCREMENT = 10;
 	private final static float Y_JUMP_SPEED_MULTIPLIER = 0.069444444444f;
@@ -133,9 +137,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createBackground();
 		createPhysics();
 		createPlayer();
-		createWindows();
 		createWalls();
 		createEnemies();
+		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
         //GameScene.this.attachChild(debug);
@@ -307,6 +311,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		//n = rand.nextInt(max - min + 1) + min;
 		Random rand = new Random();
 		int blockOrNo;
+		int centerBlocksOffset;
 		long seed;
 		moveBlocksSensor = new Rectangle[MAX_BLOCKS];
 		leftWall = new LeftWall[MAX_BLOCKS][5];
@@ -314,6 +319,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		leftSpikes = new LeftSpikes[MAX_BLOCKS][5];
 		rightSpikes = new RightSpikes[MAX_BLOCKS][5];
 		centerSpikes = new ArrayList<>();
+		
+		centerSpikesHorizontal = new CenterSpikesWithHorizontalMove(screenWidth / 2, screenHeight, vbom, camera, physicsWorld);
+		GameScene.this.attachChild(centerSpikesHorizontal);
 		
 		ArrayList<Integer> leftPositions = new ArrayList<>();
 		ArrayList<Integer> rightPositions = new ArrayList<>();
@@ -332,7 +340,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		for (int i = 0; i < MAX_CENTER_BLOCKS; i++) {
 			blockOrNo = rand.nextInt(2) + 1;
 			if (blockOrNo == 1) {
-				float position = (screenHeight * 3 / 2) + ((10 + i) * screenHeight);
+				float position = (screenHeight * 3 / 2) + ((CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR + i) * screenHeight);
 				centerPositions.add(position);
 			}
 		}
@@ -345,14 +353,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 		incrementSpeedSensor = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, 0.01f, vbom);
 		incrementSpeedSensor.setAlpha(1f);
-		//GameScene.this.attachChild(incrementSpeedSensor);
 		
 		centerBlocksSensor = new Rectangle(screenWidth / 2, screenHeight * 20, screenWidth, 0.01f, vbom);
 		centerBlocksSensor.setAlpha(1f);
-		//GameScene.this.attachChild(centerBlocksSensor);
 		
 		for (int i = 0; i < centerPositions.size(); i++) {
-			CenterSpikes centerSpike = new CenterSpikes(screenWidth/2, centerPositions.get(i), vbom, camera, physicsWorld);
+			//n = rand.nextInt(max - min + 1) + min;
+			centerBlocksOffset = rand.nextInt(CENTER_SPIKES_MAX_OFFSET_RIGHT - CENTER_SPIKES_MAX_OFFSET_LEFT + 1) + CENTER_SPIKES_MAX_OFFSET_LEFT;
+			CenterSpikes centerSpike = new CenterSpikes(screenWidth/2 + centerBlocksOffset, centerPositions.get(i), vbom, camera, physicsWorld);
 			centerSpikes.add(centerSpike);
 			GameScene.this.attachChild(centerSpike);
 		}
@@ -360,7 +368,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		for (int i = 0; i < MAX_BLOCKS; i++) {
 			moveBlocksSensor[i] = new Rectangle(screenWidth / 2, 1280 * i + screenHeight, screenWidth, 0.01f, vbom);
 			moveBlocksSensor[i].setAlpha(1f);
-			//GameScene.this.attachChild(moveBlocksSensor[i]);
 			
 			seed = System.nanoTime();
 			Collections.shuffle(leftPositions, new Random(seed));
@@ -425,24 +432,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				super.onManagedUpdate(pSecondsElapsed);
 				if (player.collidesWith(spiderMoveSensor)) {
 					this.startMoving();
-					spiderMoveSensor.setPosition(spiderMoveSensor.getX(), spiderMoveSensor.getY() + 5 * screenWidth);
+					spiderMoveSensor.setPosition(spiderMoveSensor.getX(), spiderMoveSensor.getY() + SPIDERS_BLOCKS_TO_REAPPEAR * screenWidth);
 				}
 				if (this.getY() < (camera.getCenterY() - screenHeight / 2)) {
-					Random r = new Random();
-					int x = 0;
-					int leftOrRight = r.nextInt(2) + 1;
-					if (leftOrRight == 1) {
-						x = SPIDER_INITIAL_X_LEFT;
-					} else {
-						x = SPIDER_INITIAL_X_RIGHT;
-					}
-					this.getBody().setTransform(x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (this.getY() + (screenHeight * 5)) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, this.getBody().getAngle());
-					this.setPosition(x, this.getY() + (screenHeight * 5));
-					this.stopMoving();
+					moveSpider();
 				}
 			}
 		};
-		GameScene.this.attachChild(spiderMoveSensor);
 		GameScene.this.attachChild(spider);
 	}
 	
@@ -485,9 +481,23 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	private void moveCenterBlocks() {
 		for (int i = 0; i < centerSpikes.size(); i++) {
-			centerSpikes.get(i).getBody().setTransform(centerSpikes.get(i).getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (centerSpikes.get(i).getY() + (screenHeight * (MAX_BLOCKS))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, centerSpikes.get(i).getBody().getAngle());
-			centerSpikes.get(i).setPosition(centerSpikes.get(i).getX(), centerSpikes.get(i).getY() + (screenHeight * (MAX_BLOCKS)));
+			centerSpikes.get(i).getBody().setTransform(centerSpikes.get(i).getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (centerSpikes.get(i).getY() + (screenHeight * (CENTER_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, centerSpikes.get(i).getBody().getAngle());
+			centerSpikes.get(i).setPosition(centerSpikes.get(i).getX(), centerSpikes.get(i).getY() + (screenHeight * (CENTER_SPIKES_BLOCKS_TO_REAPPEAR)));
 		}	
+	}
+	
+	private void moveSpider() {
+		Random r = new Random();
+		int x = 0;
+		int leftOrRight = r.nextInt(2) + 1;
+		if (leftOrRight == 1) {
+			x = SPIDER_INITIAL_X_LEFT;
+		} else {
+			x = SPIDER_INITIAL_X_RIGHT;
+		}
+		spider.getBody().setTransform(x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (spider.getY() + (screenHeight * SPIDERS_BLOCKS_TO_REAPPEAR)) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, spider.getBody().getAngle());
+		spider.setPosition(x, spider.getY() + (screenHeight * SPIDERS_BLOCKS_TO_REAPPEAR));
+		spider.stopMoving();
 	}
 	
 	private ContactListener contactListener() {
