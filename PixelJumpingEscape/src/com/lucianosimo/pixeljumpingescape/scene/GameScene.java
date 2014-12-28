@@ -9,7 +9,7 @@ import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.ParallaxBackground;
+import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
@@ -226,8 +226,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createBackground() {
-		ParallaxBackground background = new ParallaxBackground(0, 0, 0);
-		background.attachParallaxEntity(new ParallaxEntity(0, new Sprite(screenWidth/2, screenHeight/2, resourcesManager.game_background_region, vbom)));
+		AutoParallaxBackground background = new AutoParallaxBackground(0, 0, 0, 10);
+		background.attachParallaxEntity(new ParallaxEntity(-10f, new Sprite(screenWidth/2, screenHeight/2, resourcesManager.game_background_region, vbom)));
 		this.setBackground(background);
 	}
 	
