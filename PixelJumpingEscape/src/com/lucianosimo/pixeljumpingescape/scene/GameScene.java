@@ -36,7 +36,7 @@ import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
 import com.lucianosimo.pixeljumpingescape.object.CenterSpikes;
-import com.lucianosimo.pixeljumpingescape.object.CenterSpikesWithHorizontalMove;
+import com.lucianosimo.pixeljumpingescape.object.CenterSpikesWithMove;
 import com.lucianosimo.pixeljumpingescape.object.LeftSpikes;
 import com.lucianosimo.pixeljumpingescape.object.LeftWall;
 import com.lucianosimo.pixeljumpingescape.object.Player;
@@ -66,7 +66,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private LeftSpikes[][] leftSpikes;
 	private RightSpikes[][] rightSpikes;
 	private ArrayList<CenterSpikes> centerSpikes;
-	private CenterSpikesWithHorizontalMove centerSpikesHorizontal;
+	private ArrayList<CenterSpikesWithMove> centerSpikesWithMove;
 	private Spider spider;
 	
 	//Booleans
@@ -96,35 +96,56 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//Sensors
 	private Rectangle[] moveBlocksSensor;
 	private Rectangle centerBlocksSensor;
+	private Rectangle centerMovingBlocksSensor;
 	private Rectangle incrementSpeedSensor;
 	private Rectangle spiderMoveSensor;
 
 	//Constants
-	private final static int MAX_BLOCKS = 10;
-	private final static int MAX_CENTER_BLOCKS = 8;
-	private final static int SPIDERS_BLOCKS_TO_REAPPEAR = 5;
-	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
-	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 20;
+	
+	//CAMERA VARIABLES
+	private final static int CAMERA_INITIAL_SPEED = -200;
+	private final static int CAMERA_SPEED_INCREMENT = 10;
+	
+	//PLAYER VARIABLES
 	private final static int PLAYER_INITIAL_X = 360;
 	private final static int PLAYER_INITIAL_Y = 300;
+	private final static float Y_JUMP_SPEED_MULTIPLIER = 0.069444444444f;
+	
+	//NUMBER OF BLOCKS
+	private final static int MAX_BLOCKS = 10;
+	private final static int MAX_CENTER_BLOCKS = 8;
+	private final static int MAX_MOVING_CENTER_BLOCKS = 8;
+	private final static int WALLS_PER_BLOCKS = 6;
+	
+	//SPIDER VARIABLES
+	private final static int SPIDERS_BLOCKS_TO_REAPPEAR = 10;
 	private final static int SPIDER_INITIAL_X_LEFT = 150;
 	private final static int SPIDER_INITIAL_X_RIGHT = 570;
 	private final static int SPIDER_INITIAL_Y = 6400;
-	private final static int BUTTON_WIDTH = 200;
-	private final static int BUTTON_HEIGHT = 1280;
-	private final static int FLOOR_HEIGHT = 256;
-	private final static int WALL_WIDTH = 100;
-	private final static int WALL_HEIGHT = 128;
+	
+	//STATIC SPIKES VARIABLES
+	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
+	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 20;
 	private final static int SPIKES_WIDTH = 80;
-	private final static int SPIKES_HEIGHT = 128;
-	private final static int CENTER_SPIKES_WIDTH = 75;
-	private final static int CENTER_SPIKES_HEIGHT = 75;
 	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = -200;
 	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 200;
-	private final static int CAMERA_INITIAL_SPEED = -150;
-	private final static int CAMERA_SPEED_INCREMENT = 10;
-	private final static float Y_JUMP_SPEED_MULTIPLIER = 0.069444444444f;
+	//private final static int SPIKES_HEIGHT = 128;
+	//private final static int CENTER_SPIKES_WIDTH = 75;
+	//private final static int CENTER_SPIKES_HEIGHT = 75;
 	
+	//MOVING SPIKES VARIABLES
+	private final static int CENTER_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 20;
+	private final static int CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR = 20;
+	
+	//WALL AND FLOOR VARIABLES
+	private final static int WALL_WIDTH = 100;
+	private final static int WALL_HEIGHT = 128;
+	private final static int FLOOR_HEIGHT = 256;
+	
+	//BUTTONS VARIABLES
+	private final static int BUTTON_WIDTH = 200;
+	private final static int BUTTON_HEIGHT = 1280;
+		
 	//If negative, never collides between groups, if positive yes
 	//private static final int GROUP_ENEMY = -1;
 
@@ -232,8 +253,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					incrementCameraSpeed();
 				}
 				if (player.collidesWith(centerBlocksSensor)) {
-					centerBlocksSensor.setPosition(centerBlocksSensor.getX(), centerBlocksSensor.getY() + screenHeight * 10);
+					centerBlocksSensor.setPosition(centerBlocksSensor.getX(), centerBlocksSensor.getY() + screenHeight * CENTER_SPIKES_BLOCKS_TO_REAPPEAR);
 					moveCenterBlocks();
+				}
+				if (player.collidesWith(centerMovingBlocksSensor)) {
+					centerMovingBlocksSensor.setPosition(centerMovingBlocksSensor.getX(), centerMovingBlocksSensor.getY() + screenHeight * CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR);
+					moveMovingCenterBlocks();
 				}
 				if (player.collidesWith(moveBlocksSensor[0]) && movedBlocks > 0) {
 					moveBlocks(0);
@@ -312,20 +337,21 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		Random rand = new Random();
 		int blockOrNo;
 		int centerBlocksOffset;
+		int centerBlockHorizontalMove;
+		boolean horizontalMove;
 		long seed;
 		moveBlocksSensor = new Rectangle[MAX_BLOCKS];
-		leftWall = new LeftWall[MAX_BLOCKS][5];
-		rightWall = new RightWall[MAX_BLOCKS][5];
-		leftSpikes = new LeftSpikes[MAX_BLOCKS][5];
-		rightSpikes = new RightSpikes[MAX_BLOCKS][5];
+		leftWall = new LeftWall[MAX_BLOCKS][WALLS_PER_BLOCKS];
+		rightWall = new RightWall[MAX_BLOCKS][WALLS_PER_BLOCKS];
+		leftSpikes = new LeftSpikes[MAX_BLOCKS][MAX_BLOCKS - WALLS_PER_BLOCKS];
+		rightSpikes = new RightSpikes[MAX_BLOCKS][MAX_BLOCKS - WALLS_PER_BLOCKS];
 		centerSpikes = new ArrayList<>();
-		
-		centerSpikesHorizontal = new CenterSpikesWithHorizontalMove(screenWidth / 2, screenHeight, vbom, camera, physicsWorld);
-		GameScene.this.attachChild(centerSpikesHorizontal);
+		centerSpikesWithMove = new ArrayList<>();
 		
 		ArrayList<Integer> leftPositions = new ArrayList<>();
 		ArrayList<Integer> rightPositions = new ArrayList<>();
 		ArrayList<Float> centerPositions = new ArrayList<>();
+		ArrayList<Float> centerMovingPositions = new ArrayList<>();
 		
 		ArrayList<Integer> leftWallPositions = new ArrayList<>();
 		ArrayList<Integer> rightWallPositions = new ArrayList<>();
@@ -338,10 +364,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		}
 		
 		for (int i = 0; i < MAX_CENTER_BLOCKS; i++) {
-			blockOrNo = rand.nextInt(2) + 1;
+			blockOrNo = rand.nextInt(3) + 1;
 			if (blockOrNo == 1) {
 				float position = (screenHeight * 3 / 2) + ((CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR + i) * screenHeight);
 				centerPositions.add(position);
+			}
+		}
+		
+		for (int i = 0; i < MAX_MOVING_CENTER_BLOCKS; i++) {
+			blockOrNo = rand.nextInt(3) + 1;
+			if (blockOrNo == 1) {
+				float position = (screenHeight * 3 / 2) + ((CENTER_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR + i) * screenHeight);
+				centerMovingPositions.add(position);
 			}
 		}
 
@@ -354,14 +388,32 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		incrementSpeedSensor = new Rectangle(screenWidth / 2, screenHeight / 2, screenWidth, 0.01f, vbom);
 		incrementSpeedSensor.setAlpha(1f);
 		
-		centerBlocksSensor = new Rectangle(screenWidth / 2, screenHeight * 20, screenWidth, 0.01f, vbom);
+		centerBlocksSensor = new Rectangle(screenWidth / 2, screenHeight * (CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR + MAX_BLOCKS), screenWidth, 0.01f, vbom);
 		centerBlocksSensor.setAlpha(1f);
+		
+		centerMovingBlocksSensor = new Rectangle(screenWidth / 2, screenHeight * (CENTER_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR + MAX_BLOCKS), screenWidth, 0.01f, vbom);
+		centerMovingBlocksSensor.setAlpha(1f);
 		
 		for (int i = 0; i < centerPositions.size(); i++) {
 			//n = rand.nextInt(max - min + 1) + min;
 			centerBlocksOffset = rand.nextInt(CENTER_SPIKES_MAX_OFFSET_RIGHT - CENTER_SPIKES_MAX_OFFSET_LEFT + 1) + CENTER_SPIKES_MAX_OFFSET_LEFT;
 			CenterSpikes centerSpike = new CenterSpikes(screenWidth/2 + centerBlocksOffset, centerPositions.get(i), vbom, camera, physicsWorld);
 			centerSpikes.add(centerSpike);
+			GameScene.this.attachChild(centerSpike);
+		}
+		
+		for (int i = 0; i < centerMovingPositions.size(); i++) {
+			//n = rand.nextInt(max - min + 1) + min;
+			centerBlockHorizontalMove = rand.nextInt(2) + 1;
+			centerBlocksOffset = rand.nextInt(CENTER_SPIKES_MAX_OFFSET_RIGHT - CENTER_SPIKES_MAX_OFFSET_LEFT + 1) + CENTER_SPIKES_MAX_OFFSET_LEFT;
+			if (centerBlockHorizontalMove == 1) {
+				horizontalMove = true;
+				centerBlocksOffset = 0;
+			} else {
+				horizontalMove = false;
+			}
+			CenterSpikesWithMove centerSpike = new CenterSpikesWithMove(screenWidth / 2 + centerBlocksOffset, centerMovingPositions.get(i), vbom, camera, physicsWorld, horizontalMove);
+			centerSpikesWithMove.add(centerSpike);
 			GameScene.this.attachChild(centerSpike);
 		}
 
@@ -375,7 +427,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			Collections.shuffle(rightPositions, new Random(seed));
 			
 			for (int j = 0; j < leftPositions.size(); j++) {
-				if (j < 5) {
+				if (j < WALLS_PER_BLOCKS) {
 					leftWallPositions.add(leftPositions.get(j));
 					rightWallPositions.add(rightPositions.get(j));
 				} else {
@@ -402,7 +454,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 
 			for (int j = 0; j < leftPositions.size(); j++) {
-				if (j < 5) {
+				if (j < WALLS_PER_BLOCKS) {
 					leftWallPositions.remove(0);
 					rightWallPositions.remove(0);
 				} else {
@@ -483,6 +535,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		for (int i = 0; i < centerSpikes.size(); i++) {
 			centerSpikes.get(i).getBody().setTransform(centerSpikes.get(i).getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (centerSpikes.get(i).getY() + (screenHeight * (CENTER_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, centerSpikes.get(i).getBody().getAngle());
 			centerSpikes.get(i).setPosition(centerSpikes.get(i).getX(), centerSpikes.get(i).getY() + (screenHeight * (CENTER_SPIKES_BLOCKS_TO_REAPPEAR)));
+		}	
+	}
+	
+	private void moveMovingCenterBlocks() {
+		for (int i = 0; i < centerSpikesWithMove.size(); i++) {
+			centerSpikesWithMove.get(i).getBody().setTransform(centerSpikesWithMove.get(i).getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (centerSpikesWithMove.get(i).getY() + (screenHeight * (CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, centerSpikesWithMove.get(i).getBody().getAngle());
+			centerSpikesWithMove.get(i).setPosition(centerSpikesWithMove.get(i).getX(), centerSpikesWithMove.get(i).getY() + (screenHeight * (CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR)));
 		}	
 	}
 	

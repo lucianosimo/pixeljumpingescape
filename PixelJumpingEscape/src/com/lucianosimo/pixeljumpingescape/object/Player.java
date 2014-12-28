@@ -21,6 +21,8 @@ public abstract class Player extends AnimatedSprite{
 	private boolean onRightWall = false;
 	private boolean onLeftWall = false;
 	private boolean initial = true;
+	private final static int LEFT_SPEED = -30;
+	private final static int RIGHT_SPEED = 30;
 	
 	public abstract void onDie();
 	
@@ -46,9 +48,9 @@ public abstract class Player extends AnimatedSprite{
 					onDie();
 				}
 				if (onLeftWall) {
-					body.setLinearVelocity(new Vector2(-30, body.getLinearVelocity().y));
+					body.setLinearVelocity(new Vector2(LEFT_SPEED, body.getLinearVelocity().y));
 				} else if (onRightWall) {
-					body.setLinearVelocity(new Vector2(30, body.getLinearVelocity().y));
+					body.setLinearVelocity(new Vector2(RIGHT_SPEED, body.getLinearVelocity().y));
 				} else if (initial) {
 					body.setLinearVelocity(new Vector2(0, body.getLinearVelocity().y));
 				}
@@ -82,7 +84,7 @@ public abstract class Player extends AnimatedSprite{
 		onAir = true;
 		onLeftWall = true;
 		initial = false;
-		body.setLinearVelocity(new Vector2(-30, ySpeed));
+		body.setLinearVelocity(new Vector2(LEFT_SPEED, ySpeed));
 	}
 	
 	public void goToRightWall(float ySpeed) {
@@ -90,7 +92,7 @@ public abstract class Player extends AnimatedSprite{
 		onAir = true;
 		onRightWall = true;
 		initial = false;
-		body.setLinearVelocity(new Vector2(30, ySpeed));
+		body.setLinearVelocity(new Vector2(RIGHT_SPEED, ySpeed));
 	}
 	
 	public void stopPlayer() {

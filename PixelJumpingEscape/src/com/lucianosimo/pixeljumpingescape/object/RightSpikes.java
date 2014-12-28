@@ -17,7 +17,7 @@ public class RightSpikes extends Sprite{
 	private FixtureDef fixture;
 	
 	public RightSpikes(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld) {
-		super(pX, pY, ResourcesManager.getInstance().game_left_spikes_region.deepCopy(), vbom);
+		super(pX, pY, ResourcesManager.getInstance().game_right_spikes_region.deepCopy(), vbom);
 		createPhysics(camera, physicsWorld);
 	}
 	

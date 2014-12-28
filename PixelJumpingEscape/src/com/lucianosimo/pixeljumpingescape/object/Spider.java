@@ -17,6 +17,7 @@ public class Spider extends AnimatedSprite{
 
 	private Body body;
 	private FixtureDef fixture;
+	private final static int SPIDER_SPEED = -7;
 	
 	public Spider(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld) {
 		super(pX, pY, ResourcesManager.getInstance().game_spider_region, vbom);
@@ -32,7 +33,7 @@ public class Spider extends AnimatedSprite{
 	}
 	
 	public void startMoving() {
-		body.setLinearVelocity(new Vector2(0, -10f));
+		body.setLinearVelocity(new Vector2(0, SPIDER_SPEED));
 	}
 	
 	public void stopMoving() {
