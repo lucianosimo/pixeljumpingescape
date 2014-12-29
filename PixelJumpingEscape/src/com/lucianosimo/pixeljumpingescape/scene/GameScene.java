@@ -19,9 +19,12 @@ import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
+
+import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -33,6 +36,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
+import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
 import com.lucianosimo.pixeljumpingescape.object.CenterSpikes;
@@ -68,6 +72,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private ArrayList<CenterSpikes> centerSpikes;
 	private ArrayList<CenterSpikesWithMove> centerSpikesWithMove;
 	private Spider spider;
+	
+	//Decoration
+	private Sprite spider_web;
+	private Rectangle spider_web_line;
 	
 	//Booleans
 
@@ -469,8 +477,24 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		//n = rand.nextInt(max - min + 1) + min;
 		Random rand = new Random();
 		int spiderLeftOrRight;
+		int whichSpider;
 		int initialX = SPIDER_INITIAL_X_LEFT;
+		ITiledTextureRegion spider_region;
+		whichSpider = rand.nextInt(2) + 1;
 		spiderLeftOrRight = rand.nextInt(2) + 1;
+		
+		switch (whichSpider) {
+		case 1:
+			spider_region = resourcesManager.game_spider_region;
+			break;
+		case 2:
+			spider_region = resourcesManager.game_spider_2_region;
+			break;
+		default:
+			spider_region = resourcesManager.game_spider_region;
+			break;
+		}
+		
 		spiderMoveSensor = new Rectangle(screenWidth / 2, SPIDER_INITIAL_Y - screenHeight, screenWidth, 10f, vbom);
 		spiderMoveSensor.setColor(Color.RED);
 		if (spiderLeftOrRight == 1) {
@@ -478,7 +502,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		} else {
 			initialX = SPIDER_INITIAL_X_RIGHT;
 		}
-		spider = new Spider(initialX, SPIDER_INITIAL_Y, vbom, camera, physicsWorld) {
+		spider = new Spider(initialX, SPIDER_INITIAL_Y, vbom, camera, physicsWorld, spider_region) {
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				super.onManagedUpdate(pSecondsElapsed);
@@ -486,12 +510,25 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					this.startMoving();
 					spiderMoveSensor.setPosition(spiderMoveSensor.getX(), spiderMoveSensor.getY() + SPIDERS_BLOCKS_TO_REAPPEAR * screenWidth);
 				}
+				if (this.isMoving()) {
+					spider_web_line.setHeight(spider_web.getY() - this.getY());
+					spider_web_line.setPosition(spider_web.getX(), spider_web.getY() - spider_web_line.getHeight() / 2);
+				}
 				if (this.getY() < (camera.getCenterY() - screenHeight / 2)) {
 					moveSpider();
 				}
+				if (spider_web.getY() < (camera.getCenterY() - screenHeight / 2)) {
+					spider_web.setPosition(this.getX(), this.getY());
+				}
 			}
 		};
+		
+		spider_web = new Sprite(spider.getX(), spider.getY(), ResourcesManager.getInstance().game_spider_web_region, vbom);
+		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 3, 1, vbom);
+		
+		GameScene.this.attachChild(spider_web_line);
 		GameScene.this.attachChild(spider);
+		GameScene.this.attachChild(spider_web);		
 	}
 	
 	private void incrementScore() {

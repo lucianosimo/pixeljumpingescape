@@ -5,22 +5,24 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 
 public class Spider extends AnimatedSprite{
 
 	private Body body;
 	private FixtureDef fixture;
-	private final static int SPIDER_SPEED = -7;
+	private boolean isMoving;
+	private final static int SPIDER_SPEED = -5;
 	
-	public Spider(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld) {
-		super(pX, pY, ResourcesManager.getInstance().game_spider_region, vbom);
+	public Spider(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld, ITiledTextureRegion spider_region) {
+		super(pX, pY, spider_region, vbom);
+		isMoving = false;
 		createPhysics(camera, physicsWorld);
 	}
 	
@@ -34,13 +36,19 @@ public class Spider extends AnimatedSprite{
 	
 	public void startMoving() {
 		body.setLinearVelocity(new Vector2(0, SPIDER_SPEED));
+		isMoving = true;
 	}
 	
 	public void stopMoving() {
 		body.setLinearVelocity(new Vector2(0, 0));
+		isMoving = false;
 	}
 	
 	public Body getBody() {
 		return body;
+	}
+	
+	public boolean isMoving() {
+		return isMoving;
 	}
 }
