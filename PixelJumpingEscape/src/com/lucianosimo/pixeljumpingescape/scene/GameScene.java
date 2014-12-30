@@ -256,6 +256,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				incrementScore();
+				if (player.isOnLeftWall()) {
+					player.setCurrentTileIndex(1);
+				}
+				if (player.isOnRightWall()) {
+					player.setCurrentTileIndex(0);
+				}
 				if (player.collidesWith(incrementSpeedSensor)) {
 					incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight / 2);
 					incrementCameraSpeed();
