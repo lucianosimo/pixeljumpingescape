@@ -24,8 +24,6 @@ import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
-import android.util.Log;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -257,10 +255,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				incrementScore();
 				if (player.isOnLeftWall()) {
-					player.setCurrentTileIndex(1);
+					player.setCurrentTileIndex(0);
 				}
 				if (player.isOnRightWall()) {
-					player.setCurrentTileIndex(0);
+					player.setCurrentTileIndex(1);
 				}
 				if (player.collidesWith(incrementSpeedSensor)) {
 					incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight / 2);
