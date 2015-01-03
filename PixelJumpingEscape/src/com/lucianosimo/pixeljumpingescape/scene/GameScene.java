@@ -11,6 +11,7 @@ import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
@@ -55,7 +56,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private PhysicsWorld physicsWorld;
 	
 	//HUD sprites
-	private Sprite fire;
+	private AnimatedSprite fire;
 	
 	//Constants	
 	private float screenWidth;
@@ -219,7 +220,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				return false;
 			}
 		};
-		fire = new Sprite(screenWidth / 2, 50, resourcesManager.game_fire_region, vbom);
+		
+		final long[] FIRE_ANIMATE = new long[] {75, 75};
+		fire = new AnimatedSprite(screenWidth / 2, 50, resourcesManager.game_fire_region, vbom);
+		fire.animate(FIRE_ANIMATE, 0, 1, true);
+		
 		leftButton.setAlpha(0);
 		rightButton.setAlpha(0);
 		gameHud.attachChild(scoreText);

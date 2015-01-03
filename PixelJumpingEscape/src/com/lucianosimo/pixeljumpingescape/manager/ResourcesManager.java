@@ -56,7 +56,7 @@ public class ResourcesManager {
 	public Font game_score_font;
 	
 	//Game HUD
-	public ITextureRegion game_fire_region;
+	public ITiledTextureRegion game_fire_region;
 	
 	//Objects
 	public ITextureRegion game_wall_region;
@@ -92,6 +92,7 @@ public class ResourcesManager {
 	private BuildableBitmapTextureAtlas gameHudTextureAtlas;
 	private BuildableBitmapTextureAtlas gameWindowsTextureAtlas;
 	private BuildableBitmapTextureAtlas gameAnimatedTextureAtlas;
+	private BuildableBitmapTextureAtlas gameFireTextureAtlas;
 	private BuildableBitmapTextureAtlas gameBackgroundTextureAtlas;
 	
 	//Splash Methods
@@ -184,10 +185,11 @@ public class ResourcesManager {
 		gameHudTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameWindowsTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameAnimatedTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		gameFireTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1440, 100, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR);
 		
 		//Game HUD
-		game_fire_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_fire.png");
+		game_fire_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameFireTextureAtlas, activity, "game_fire.png", 2, 1);
 		
 		//Game animated atlas
 		int player = rand.nextInt(2) + 1;
@@ -230,11 +232,13 @@ public class ResourcesManager {
 			this.gameWindowsTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameAnimatedTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.gameFireTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameTextureAtlas.load();
 			this.gameHudTextureAtlas.load();
 			this.gameWindowsTextureAtlas.load();
 			this.gameBackgroundTextureAtlas.load();
 			this.gameAnimatedTextureAtlas.load();
+			this.gameFireTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
@@ -263,6 +267,7 @@ public class ResourcesManager {
 		this.gameWindowsTextureAtlas.unload();
 		this.gameBackgroundTextureAtlas.unload();
 		this.gameAnimatedTextureAtlas.unload();
+		this.gameFireTextureAtlas.load();
 	}
 	
 	private void unloadGameFonts() {
