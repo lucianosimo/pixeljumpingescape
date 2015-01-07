@@ -1,6 +1,8 @@
 package com.lucianosimo.pixeljumpingescape.object;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.modifier.LoopEntityModifier;
+import org.andengine.entity.modifier.RotationModifier;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
@@ -21,6 +23,7 @@ public abstract class Player extends AnimatedSprite{
 	private boolean onRightWall = false;
 	private boolean onLeftWall = false;
 	private boolean initial = true;
+	private boolean isDead = false;
 	private final static int LEFT_SPEED = -30;
 	private final static int RIGHT_SPEED = 30;
 	
@@ -47,6 +50,14 @@ public abstract class Player extends AnimatedSprite{
 				if (getY() < (camera.getCenterY() - 640)) {
 					onDie();
 				}
+				if (isDead) {
+					isDead = false;
+					if (getX() < 360) {
+						body.setLinearVelocity(new Vector2(3, 0));
+					} else {
+						body.setLinearVelocity(new Vector2(-3, 0));
+					}					
+				}
 				if (onLeftWall) {
 					body.setLinearVelocity(new Vector2(LEFT_SPEED, body.getLinearVelocity().y));
 				} else if (onRightWall) {
@@ -57,6 +68,10 @@ public abstract class Player extends AnimatedSprite{
 				
 			}
 		});
+	}
+	
+	public boolean isDead() {
+		return isDead;
 	}
 	
 	public boolean isOnLeftWall() {
@@ -104,6 +119,14 @@ public abstract class Player extends AnimatedSprite{
 	}
 	
 	public void killPlayer() {
-		onDie();
+		//onDie();
+		onLeftWall = false;
+		onRightWall = false;
+		isDead = true;
+		if (this.getX() < 320) {
+			this.registerEntityModifier(new LoopEntityModifier(new RotationModifier(5, 0, 540)));
+		} else {
+			this.registerEntityModifier(new LoopEntityModifier(new RotationModifier(5, 0, -540)));
+		}
 	}
 }

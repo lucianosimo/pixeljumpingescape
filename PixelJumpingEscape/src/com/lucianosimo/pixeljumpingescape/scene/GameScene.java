@@ -72,11 +72,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private ArrayList<CenterSpikesWithMove> centerSpikesWithMove;
 	private Spider spider;
 	
+	//Parallax entity
+	private ParallaxEntity backgroundParallaxEntity;
+	
 	//Decoration
 	private Sprite spider_web;
 	private Rectangle spider_web_line;
 	
 	//Booleans
+	private boolean gameStarted = false;
 
 	//Integers
 	
@@ -174,11 +178,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void setCameraProperties() {
-		camera.setMaxVelocityY(CAMERA_INITIAL_SPEED);
+		camera.setMaxVelocityY(0);
 		//camera.setMaxVelocityY(0);
 		camera.setChaseEntity(this);
 		camera.setBoundsEnabled(false);
 		moveCameraToOrigin();
+	}
+	
+	private void setInitialSpeeds() {
+		camera.setMaxVelocityY(CAMERA_INITIAL_SPEED);
 	}
 	
 	private void moveCameraToOrigin() {
@@ -195,7 +203,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		leftButton = new Rectangle(BUTTON_WIDTH / 2, screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionDown() && player.isOnRightWall() && !player.isOnAir() || player.isInitial()) {
+				if (pSceneTouchEvent.isActionDown() && player.isOnRightWall() && !player.isOnAir() || player.isInitial() && !player.isDead()) {
+					if (!isGameStarted()) {
+						setInitialSpeeds();
+						gameStarted = true;
+					}
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + FLOOR_HEIGHT;
@@ -209,8 +221,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		rightButton = new Rectangle(screenWidth - (BUTTON_WIDTH / 2), screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionDown() && player.isOnLeftWall() && !player.isOnAir() || player.isInitial()) {
+				if (pSceneTouchEvent.isActionDown() && player.isOnLeftWall() && !player.isOnAir() || player.isInitial() && !player.isDead()) {
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
+					if (!isGameStarted()) {
+						setInitialSpeeds();
+						gameStarted = true;
+					}
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + FLOOR_HEIGHT;
 					}
@@ -221,7 +237,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 		};
 		
-		final long[] FIRE_ANIMATE = new long[] {75, 75};
+		final long[] FIRE_ANIMATE = new long[] {100, 100};
 		fire = new AnimatedSprite(screenWidth / 2, 50, resourcesManager.game_fire_region, vbom);
 		fire.animate(FIRE_ANIMATE, 0, 1, true);
 		
@@ -238,7 +254,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	private void createBackground() {
 		AutoParallaxBackground background = new AutoParallaxBackground(0, 0, 0, 10);
-		background.attachParallaxEntity(new ParallaxEntity(-10f, new Sprite(screenWidth/2, screenHeight/2, resourcesManager.game_background_region, vbom)));
+		backgroundParallaxEntity = new ParallaxEntity(-10f, new Sprite(screenWidth/2, screenHeight/2, resourcesManager.game_background_region, vbom));
+		background.attachParallaxEntity(backgroundParallaxEntity);
 		this.setBackground(background);
 	}
 	
@@ -248,7 +265,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createPhysics() {
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -1), false);
+		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -5), false);
 		physicsWorld.setContactListener(contactListener());
 		registerUpdateHandler(physicsWorld);
 	}
@@ -492,7 +509,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		whichSpider = rand.nextInt(2) + 1;
 		spiderLeftOrRight = rand.nextInt(2) + 1;
 		
-		switch (whichSpider) {
+		switch (2) {
 		case 1:
 			spider_region = resourcesManager.game_spider_region;
 			break;
@@ -531,6 +548,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				}
 			}
 		};
+		
+		final long[] SPIDER_ANIMATE = new long[] {150, 150};
+		spider.animate(SPIDER_ANIMATE, 0, 1, true);
 		
 		spider_web = new Sprite(spider.getX(), spider.getY(), ResourcesManager.getInstance().game_spider_web_region, vbom);
 		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 3, 1, vbom);
@@ -603,6 +623,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		spider.getBody().setTransform(x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (spider.getY() + (screenHeight * SPIDERS_BLOCKS_TO_REAPPEAR)) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, spider.getBody().getAngle());
 		spider.setPosition(x, spider.getY() + (screenHeight * SPIDERS_BLOCKS_TO_REAPPEAR));
 		spider.stopMoving();
+	}
+	
+	private boolean isGameStarted() {
+		return gameStarted;
 	}
 	
 	private ContactListener contactListener() {
