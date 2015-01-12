@@ -57,6 +57,7 @@ public class ResourcesManager {
 	
 	//Game HUD
 	public ITiledTextureRegion game_fire_region;
+	public ITextureRegion game_score_sign_region;
 	
 	//Objects
 	public ITextureRegion game_wall_region;
@@ -190,6 +191,7 @@ public class ResourcesManager {
 		
 		//Game HUD
 		game_fire_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameFireTextureAtlas, activity, "game_fire.png", 2, 1);
+		game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign.png");
 		
 		//Game animated atlas
 		int player = rand.nextInt(2) + 1;
@@ -210,14 +212,15 @@ public class ResourcesManager {
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes.png");
 			game_center_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_center_spikes.png");
 			game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background.png");
+			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor.png");
 		} else if (stage == 2) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_2.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_2.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_2.png");
 			game_center_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_center_spikes_2.png");
 			game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background_2.png");
+			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor.png");
 		}
-		game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor.png");
 		game_spider_web_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_spider_web.png");
 		
 		
@@ -257,7 +260,7 @@ public class ResourcesManager {
 		FontFactory.setAssetBasePath("fonts/game/");
 		
 		final ITexture game_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "november.ttf", 50, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
+		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "november.ttf", 50, true, Color.WHITE_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
 		game_score_font.load();
 	}
 	

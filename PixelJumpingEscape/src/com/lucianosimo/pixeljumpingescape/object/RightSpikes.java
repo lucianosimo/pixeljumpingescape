@@ -23,7 +23,7 @@ public class RightSpikes extends Sprite{
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {
 		fixture = PhysicsFactory.createFixtureDef(0, 0, 0);
-		//fixture.filter.groupIndex = -1;
+		fixture.filter.groupIndex = -1;
 		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.StaticBody, fixture);
 		body.setUserData("rightSpikes");
 		body.setFixedRotation(true);

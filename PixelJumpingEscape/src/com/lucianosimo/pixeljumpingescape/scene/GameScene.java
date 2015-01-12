@@ -57,6 +57,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//HUD sprites
 	private AnimatedSprite fire;
+	private Sprite scoreSign;
 	
 	//Constants	
 	private float screenWidth;
@@ -74,6 +75,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//Parallax entity
 	private ParallaxEntity backgroundParallaxEntity;
+	private AutoParallaxBackground background;
 	
 	//Decoration
 	private Sprite spider_web;
@@ -115,7 +117,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//CAMERA VARIABLES
 	private final static int CAMERA_INITIAL_SPEED = -200;
-	private final static int CAMERA_SPEED_INCREMENT = 10;
+	private final static int CAMERA_MAX_SPEED = -600;
+	private final static int CAMERA_SPEED_INCREMENT = 15;
 	
 	//PLAYER VARIABLES
 	private final static int PLAYER_INITIAL_X = 360;
@@ -138,8 +141,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
 	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 20;
 	private final static int SPIKES_WIDTH = 80;
-	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = -200;
-	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 200;
+	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 190;
+	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 240;
 	//private final static int SPIKES_HEIGHT = 128;
 	//private final static int CENTER_SPIKES_WIDTH = 75;
 	//private final static int CENTER_SPIKES_HEIGHT = 75;
@@ -151,7 +154,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//WALL AND FLOOR VARIABLES
 	private final static int WALL_WIDTH = 100;
 	private final static int WALL_HEIGHT = 128;
-	private final static int FLOOR_HEIGHT = 256;
+	private final static int FLOOR_HEIGHT = 36;
 	
 	//BUTTONS VARIABLES
 	private final static int BUTTON_WIDTH = 200;
@@ -168,9 +171,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createHud();
 		createBackground();
 		createPhysics();
+		createEnemies();
 		createPlayer();
 		createWalls();
-		createEnemies();
 		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
@@ -198,19 +201,21 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private void createHud() {
 		gameHud = new HUD();
 		
-		scoreText = new Text(screenWidth / 2, 1200, resourcesManager.game_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		scoreSign = new Sprite(screenWidth / 2, screenHeight - 100, resourcesManager.game_score_sign_region, vbom);
+		scoreText = new Text(screenWidth / 2, screenHeight - 145, resourcesManager.game_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		scoreText.setText("0");
 		leftButton = new Rectangle(BUTTON_WIDTH / 2, screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if (pSceneTouchEvent.isActionDown() && player.isOnRightWall() && !player.isOnAir() || player.isInitial() && !player.isDead()) {
 					if (!isGameStarted()) {
+						background.setParallaxChangePerSecond(10);
 						setInitialSpeeds();
 						gameStarted = true;
 					}
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (player.isInitial()) {
-						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + FLOOR_HEIGHT;
+						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
 					}
 					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
 					player.goToLeftWall(ySpeed);
@@ -224,11 +229,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				if (pSceneTouchEvent.isActionDown() && player.isOnLeftWall() && !player.isOnAir() || player.isInitial() && !player.isDead()) {
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (!isGameStarted()) {
+						background.setParallaxChangePerSecond(10);
 						setInitialSpeeds();
 						gameStarted = true;
 					}
 					if (player.isInitial()) {
-						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + FLOOR_HEIGHT;
+						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
 					}
 					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
 					player.goToRightWall(ySpeed);
@@ -243,6 +249,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 		leftButton.setAlpha(0);
 		rightButton.setAlpha(0);
+		gameHud.attachChild(scoreSign);
 		gameHud.attachChild(scoreText);
 		gameHud.attachChild(leftButton);
 		gameHud.attachChild(rightButton);
@@ -253,7 +260,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createBackground() {
-		AutoParallaxBackground background = new AutoParallaxBackground(0, 0, 0, 10);
+		background = new AutoParallaxBackground(0, 0, 0, 0);
 		backgroundParallaxEntity = new ParallaxEntity(-10f, new Sprite(screenWidth/2, screenHeight/2, resourcesManager.game_background_region, vbom));
 		background.attachParallaxEntity(backgroundParallaxEntity);
 		this.setBackground(background);
@@ -283,8 +290,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					player.setCurrentTileIndex(1);
 				}
 				if (player.collidesWith(incrementSpeedSensor)) {
-					incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight / 2);
-					incrementCameraSpeed();
+					if (camera.getMaxVelocityY() > CAMERA_MAX_SPEED) {
+						incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight);
+						incrementCameraSpeed();
+					}
 				}
 				if (player.collidesWith(centerBlocksSensor)) {
 					centerBlocksSensor.setPosition(centerBlocksSensor.getX(), centerBlocksSensor.getY() + screenHeight * CENTER_SPIKES_BLOCKS_TO_REAPPEAR);
@@ -371,6 +380,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		Random rand = new Random();
 		int blockOrNo;
 		int centerBlocksOffset;
+		int leftOrRight;
 		int centerBlockHorizontalMove;
 		boolean horizontalMove;
 		long seed;
@@ -413,8 +423,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 		}
 
-		Sprite floor = new Sprite(camera.getCenterX(), FLOOR_HEIGHT / 2, resourcesManager.game_floor_region, vbom);
+		Sprite floor = new Sprite(camera.getCenterX(), 220 + FLOOR_HEIGHT / 2, resourcesManager.game_floor_region, vbom);
 		FixtureDef floor_fixture = PhysicsFactory.createFixtureDef(0, 0, 0);
+		floor_fixture.filter.groupIndex = -1;
 		final Body floor_body = PhysicsFactory.createBoxBody(physicsWorld, floor, BodyType.StaticBody, floor_fixture);
 		floor_body.setUserData("floor_body");
 		GameScene.this.attachChild(floor);
@@ -431,6 +442,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		for (int i = 0; i < centerPositions.size(); i++) {
 			//n = rand.nextInt(max - min + 1) + min;
 			centerBlocksOffset = rand.nextInt(CENTER_SPIKES_MAX_OFFSET_RIGHT - CENTER_SPIKES_MAX_OFFSET_LEFT + 1) + CENTER_SPIKES_MAX_OFFSET_LEFT;
+			leftOrRight = rand.nextInt(2) + 1;
+			centerBlocksOffset = (leftOrRight == 1) ? centerBlocksOffset : -centerBlocksOffset;
 			CenterSpikes centerSpike = new CenterSpikes(screenWidth/2 + centerBlocksOffset, centerPositions.get(i), vbom, camera, physicsWorld);
 			centerSpikes.add(centerSpike);
 			GameScene.this.attachChild(centerSpike);
@@ -509,7 +522,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		whichSpider = rand.nextInt(2) + 1;
 		spiderLeftOrRight = rand.nextInt(2) + 1;
 		
-		switch (2) {
+		switch (whichSpider) {
 		case 1:
 			spider_region = resourcesManager.game_spider_region;
 			break;
@@ -553,7 +566,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		spider.animate(SPIDER_ANIMATE, 0, 1, true);
 		
 		spider_web = new Sprite(spider.getX(), spider.getY(), ResourcesManager.getInstance().game_spider_web_region, vbom);
-		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 3, 1, vbom);
+		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 1, 1, vbom);
 		
 		GameScene.this.attachChild(spider_web_line);
 		GameScene.this.attachChild(spider);
@@ -674,6 +687,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("spider")) {
+					player.killPlayer();
+				}
+				
+				if (x1.getBody().getUserData().equals("spider") && x2.getBody().getUserData().equals("player")) {
 					player.killPlayer();
 				}
 				
