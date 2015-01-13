@@ -283,12 +283,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				incrementScore();
-				if (player.isOnLeftWall()) {
+				/*if (player.isOnLeftWall()) {
 					player.setCurrentTileIndex(0);
-				}
-				if (player.isOnRightWall()) {
+				}*/
+				/*if (player.isOnRightWall()) {
 					player.setCurrentTileIndex(1);
-				}
+				}*/
 				if (player.collidesWith(incrementSpeedSensor)) {
 					if (camera.getMaxVelocityY() > CAMERA_MAX_SPEED) {
 						incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight);
@@ -566,7 +566,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		spider.animate(SPIDER_ANIMATE, 0, 1, true);
 		
 		spider_web = new Sprite(spider.getX(), spider.getY(), ResourcesManager.getInstance().game_spider_web_region, vbom);
-		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 1, 1, vbom);
+		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 2, 1, vbom);
 		
 		GameScene.this.attachChild(spider_web_line);
 		GameScene.this.attachChild(spider);
@@ -667,11 +667,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("leftWall")) {
 					player.stopPlayer();
 					player.setOnAirFalse();
+					player.setCurrentTileIndex(0);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("rightWall")) {
 					player.stopPlayer();
 					player.setOnAirFalse();
+					player.setCurrentTileIndex(1);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("leftSpikes")) {
