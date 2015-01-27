@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.modifier.AlphaModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -58,6 +59,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//HUD sprites
 	private AnimatedSprite fire;
 	private Sprite scoreSign;
+	private Sprite blood;
 	
 	//Constants	
 	private float screenWidth;
@@ -202,8 +204,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		gameHud = new HUD();
 		
 		scoreSign = new Sprite(screenWidth / 2, screenHeight - 100, resourcesManager.game_score_sign_region, vbom);
-		scoreText = new Text(screenWidth / 2, screenHeight - 145, resourcesManager.game_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		blood = new Sprite(screenWidth / 2, screenHeight / 2, resourcesManager.game_blood_region, vbom);
+		scoreText = new Text(screenWidth / 2, screenHeight - 140, resourcesManager.game_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		scoreText.setText("0");
+		scoreText.setColor(Color.BLACK_ARGB_PACKED_INT);
 		leftButton = new Rectangle(BUTTON_WIDTH / 2, screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -219,6 +223,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					}
 					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
 					player.goToLeftWall(ySpeed);
+					if (player.isAnimationRunning()) {
+						player.stopAnimation();
+					}
+					player.setCurrentTileIndex(2);
 				}
 				return false;
 			}
@@ -238,6 +246,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					}
 					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
 					player.goToRightWall(ySpeed);
+					if (player.isAnimationRunning()) {
+						player.stopAnimation();
+					}
+					player.setCurrentTileIndex(3);
 				}
 				return false;
 			}
@@ -246,6 +258,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		final long[] FIRE_ANIMATE = new long[] {100, 100};
 		fire = new AnimatedSprite(screenWidth / 2, 50, resourcesManager.game_fire_region, vbom);
 		fire.animate(FIRE_ANIMATE, 0, 1, true);
+		blood.setVisible(false);
 		
 		leftButton.setAlpha(0);
 		rightButton.setAlpha(0);
@@ -254,6 +267,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		gameHud.attachChild(leftButton);
 		gameHud.attachChild(rightButton);
 		gameHud.attachChild(fire);
+		gameHud.attachChild(blood);
 		gameHud.registerTouchArea(leftButton);
 		gameHud.registerTouchArea(rightButton);
 		camera.setHUD(gameHud);
@@ -272,7 +286,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createPhysics() {
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -5), false);
+		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -10), false);
 		physicsWorld.setContactListener(contactListener());
 		registerUpdateHandler(physicsWorld);
 	}
@@ -282,13 +296,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
+				super.onManagedUpdate(pSecondsElapsed);
 				incrementScore();
-				/*if (player.isOnLeftWall()) {
-					player.setCurrentTileIndex(0);
-				}*/
-				/*if (player.isOnRightWall()) {
-					player.setCurrentTileIndex(1);
-				}*/
+				if (player.showBlood()) {
+					blood.setVisible(true);
+					blood.registerEntityModifier(new AlphaModifier(1f, 1f, 0f));
+					player.hideBlood();
+				}
 				if (player.collidesWith(incrementSpeedSensor)) {
 					if (camera.getMaxVelocityY() > CAMERA_MAX_SPEED) {
 						incrementSpeedSensor.setPosition(incrementSpeedSensor.getX(), incrementSpeedSensor.getY() + screenHeight);
@@ -324,7 +338,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				} else if (player.collidesWith(moveBlocksSensor[9])) {
 					moveBlocks(9);
 				}
-				super.onManagedUpdate(pSecondsElapsed);
 			}
 			
 			@Override
@@ -333,6 +346,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					
 					@Override
 					public void run() {
+						//blood.setVisible(false);
 						GameScene.this.setIgnoreUpdate(true);
 				        camera.setChaseEntity(null);
 				        camera.setMaxVelocityY(0);
@@ -372,6 +386,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 		};
 		
+		final long[] PLAYER_ANIMATE = new long[] {500, 500};
+		player.animate(PLAYER_ANIMATE, 0, 1, true);
 		GameScene.this.attachChild(player);
 	}
 	
@@ -667,37 +683,49 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("leftWall")) {
 					player.stopPlayer();
 					player.setOnAirFalse();
-					player.setCurrentTileIndex(0);
+					if (player.isAnimationRunning()) {
+						player.stopAnimation();
+					}					
+					player.setCurrentTileIndex(5);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("rightWall")) {
 					player.stopPlayer();
 					player.setOnAirFalse();
-					player.setCurrentTileIndex(1);
+					if (player.isAnimationRunning()) {
+						player.stopAnimation();
+					}					
+					player.setCurrentTileIndex(4);
+				}
+				
+				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("floor_body")) {
+					if (!player.isInitial()) {
+						player.onDie();
+					}					
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("leftSpikes")) {
-					player.killPlayer();
+					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("rightSpikes")) {
-					player.killPlayer();
+					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("centerSpikes")) {
-					player.killPlayer();
+					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("spider")) {
-					player.killPlayer();
+					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("spider") && x2.getBody().getUserData().equals("player")) {
-					player.killPlayer();
+					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("fire")) {
-					player.killPlayer();
+					player.killPlayer(camera, background);
 				}
 			}
 		};

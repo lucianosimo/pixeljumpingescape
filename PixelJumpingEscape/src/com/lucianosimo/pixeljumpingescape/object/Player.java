@@ -1,12 +1,15 @@
 package com.lucianosimo.pixeljumpingescape.object;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.RotationModifier;
+import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import com.badlogic.gdx.math.Vector2;
@@ -23,6 +26,7 @@ public abstract class Player extends AnimatedSprite{
 	private boolean onRightWall = false;
 	private boolean onLeftWall = false;
 	private boolean initial = true;
+	private boolean showBlood = false;
 	private boolean isDead = false;
 	private final static int LEFT_SPEED = -30;
 	private final static int RIGHT_SPEED = 30;
@@ -36,7 +40,17 @@ public abstract class Player extends AnimatedSprite{
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld) {
 		fixture = PhysicsFactory.createFixtureDef(0, 0, 0.9f);
-		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, fixture);
+		final float width = 50 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+		final float height = 100 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+		final Vector2[] vector = {
+			new Vector2(-0.51019f*width, -0.49997f*height),
+			new Vector2(+0.36752f*width, -0.49997f*height),
+			new Vector2(+0.36752f*width, -0.08523f*height),
+			new Vector2(+0.36752f*width, +0.26681f*height),
+			new Vector2(-0.51019f*width, +0.26681f*height),
+			new Vector2(-0.51019f*width, -0.11417f*height),
+		};
+		body = PhysicsFactory.createPolygonBody(physicsWorld, this, vector, BodyType.DynamicBody, fixture);
 		
 		this.setUserData("player");
 		body.setUserData("player");
@@ -72,6 +86,14 @@ public abstract class Player extends AnimatedSprite{
 	
 	public boolean isDead() {
 		return isDead;
+	}
+	
+	public boolean showBlood() {
+		return showBlood;
+	}
+	
+	public void hideBlood() {
+		showBlood = false;
 	}
 	
 	public boolean isOnLeftWall() {
@@ -118,11 +140,13 @@ public abstract class Player extends AnimatedSprite{
 		return body;
 	}
 	
-	public void killPlayer() {
-		//onDie();
+	public void killPlayer(SmoothCamera camera, AutoParallaxBackground background) {
 		onLeftWall = false;
 		onRightWall = false;
+		showBlood = true;
 		isDead = true;
+		camera.setMaxVelocityY(0);
+		background.setParallaxChangePerSecond(0);
 		if (this.getX() < 320) {
 			this.registerEntityModifier(new LoopEntityModifier(new RotationModifier(5, 0, 540)));
 		} else {
