@@ -85,15 +85,27 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//Booleans
 	private boolean gameStarted = false;
+	private boolean availablePause = false;
+	private boolean gameOver = false;
 
 	//Integers
+	private float cameraSpeedBeforePause;
 	
 	//Windows
 	private Sprite gameOverWindow;
+	private Sprite gamePauseWindow;
 
 	//Buttons
+	private Sprite resumeButton;
+	private Sprite retryButton;
+	private Sprite quitButton;
+	
+	//Coins
+	private AnimatedSprite coin;
+	private int coinsCounter;
 	
 	//Rectangles
+	private Rectangle fade;
 	private Rectangle leftButton;
 	private Rectangle rightButton;
 	
@@ -116,6 +128,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private Rectangle spiderMoveSensor;
 
 	//Constants
+	
+	//COINS VARIABLES
+	private final static int COINS_VALUE = 1;
 	
 	//CAMERA VARIABLES
 	private final static int CAMERA_INITIAL_SPEED = -200;
@@ -176,6 +191,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createEnemies();
 		createPlayer();
 		createWalls();
+		createCoins();
 		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
@@ -216,6 +232,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						background.setParallaxChangePerSecond(10);
 						setInitialSpeeds();
 						gameStarted = true;
+						availablePause = true;
 					}
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (player.isInitial()) {
@@ -240,6 +257,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						background.setParallaxChangePerSecond(10);
 						setInitialSpeeds();
 						gameStarted = true;
+						availablePause = true;
 					}
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
@@ -283,6 +301,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private void createWindows() {
 		gameOverWindow = new Sprite(10000, 10000, resourcesManager.game_over_window_region, vbom);
 		GameScene.this.attachChild(gameOverWindow);
+		gamePauseWindow = new Sprite(0, 0, resourcesManager.game_pause_window_region, vbom);
+		fade = new Rectangle(screenWidth/2, screenHeight/2, screenWidth, screenHeight, vbom);
+		fade.setColor(Color.BLACK);
+		fade.setAlpha(0.75f);
 	}
 	
 	private void createPhysics() {
@@ -350,8 +372,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						GameScene.this.setIgnoreUpdate(true);
 				        camera.setChaseEntity(null);
 				        camera.setMaxVelocityY(0);
+				        availablePause = false;
+				        gameOver = true;
 				        gameOverWindow.setPosition(camera.getCenterX(), camera.getCenterY());
-					    final Sprite retryButton = new Sprite(125, 110, resourcesManager.game_retry_button_region, vbom){
+					    final Sprite retryButton = new Sprite(200, 25, resourcesManager.game_retry_button_region, vbom){
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					    		if (pSceneTouchEvent.isActionDown()) {
 					    			moveCameraToOrigin();
@@ -364,7 +388,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					    		return true;
 					    	};
 					    };
-					    final Sprite quitButton = new Sprite(350, 110, resourcesManager.game_quit_button_region, vbom){
+					    final Sprite quitButton = new Sprite(450, 25, resourcesManager.game_quit_button_region, vbom){
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					    		if (pSceneTouchEvent.isActionDown()) {
 					    			moveCameraToOrigin();
@@ -526,6 +550,28 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				}
 			}
 		}
+	}
+	
+	private void createCoins() {
+		for (int i = 0; i < 50; i++) {
+			coin = new AnimatedSprite(screenWidth / 2, 500 + 500 * i, resourcesManager.game_coin_region, vbom) {
+				@Override
+				protected void onManagedUpdate(float pSecondsElapsed) {
+					super.onManagedUpdate(pSecondsElapsed);
+					if (player.collidesWith(this)) {
+						this.setVisible(false);
+						addCoins();
+					}
+				};
+			};
+			final long[] COIN_ANIMATE = new long[] {100, 100, 100, 100};
+			coin.animate(COIN_ANIMATE, 0, 3, true);
+			GameScene.this.attachChild(coin);
+		}
+	}
+	
+	private void addCoins() {
+		coinsCounter = coinsCounter + COINS_VALUE;
 	}
 	
 	private void createEnemies() {
@@ -705,26 +751,32 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("leftSpikes")) {
+					availablePause = false;
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("rightSpikes")) {
+					availablePause = false;
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("centerSpikes")) {
+					availablePause = false;
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("spider")) {
+					availablePause = false;
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("spider") && x2.getBody().getUserData().equals("player")) {
+					availablePause = false;
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("fire")) {
+					availablePause = false;
 					player.killPlayer(camera, background);
 				}
 			}
@@ -769,23 +821,107 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 	}
 	
+	private void displayPauseWindow() {
+		availablePause = false;	
+		GameScene.this.setIgnoreUpdate(true);		
+		
+		gamePauseWindow.setPosition(camera.getCenterX(), camera.getCenterY());
+		fade.setPosition(camera.getCenterX(), camera.getCenterY());
+				
+	    retryButton = new Sprite(325, 25, resourcesManager.game_retry_button_region, vbom){
+	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+	    		if (pSceneTouchEvent.isActionDown()) {
+	    			gameHud.dispose();
+					gameHud.setVisible(false);
+					detachChild(gameHud);
+					myGarbageCollection();
+					SceneManager.getInstance().loadGameScene(engine, GameScene.this);
+				}
+	    		return true;
+	    	};
+	    };
+	    quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
+	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+	    		if (pSceneTouchEvent.isActionDown()) {
+	    			gameHud.dispose();
+					gameHud.setVisible(false);
+					detachChild(gameHud);
+					myGarbageCollection();
+					SceneManager.getInstance().loadMenuScene(engine, GameScene.this);
+	    		}
+	    		return true;
+	    	};
+	    };
+	    resumeButton = new Sprite(525, 25, resourcesManager.game_resume_button_region, vbom){
+	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+	    		if (pSceneTouchEvent.isActionDown()) {
+	    			availablePause = true;
+					gameHud.setVisible(true);
+					background.setParallaxChangePerSecond(10);
+					camera.setMaxVelocityY(cameraSpeedBeforePause);
+					GameScene.this.detachChild(fade);
+					GameScene.this.detachChild(gamePauseWindow);
+	    			GameScene.this.setIgnoreUpdate(false);
+	    			GameScene.this.unregisterTouchArea(this);
+	    			GameScene.this.unregisterTouchArea(resumeButton);
+	    		    GameScene.this.unregisterTouchArea(retryButton);
+	    		    GameScene.this.unregisterTouchArea(quitButton);
+	    		}
+	    		return true;
+	    	};
+	    };
+	    GameScene.this.registerTouchArea(resumeButton);
+	    GameScene.this.registerTouchArea(retryButton);
+	    GameScene.this.registerTouchArea(quitButton);
+	    
+	    gamePauseWindow.attachChild(resumeButton);
+	    gamePauseWindow.attachChild(retryButton);	    
+	    gamePauseWindow.attachChild(quitButton);
+		
+		GameScene.this.attachChild(fade);
+		GameScene.this.attachChild(gamePauseWindow);
+
+		gameHud.setVisible(false);
+	}
+	
 	@Override
 	public void onBackKeyPressed() {
-
-	}
-
-	@Override
-	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
 		engine.runOnUpdateThread(new Runnable() {
 			
 			@Override
 			public void run() {
-				/*if (pSceneTouchEvent.isActionDown()) {
-					player.changeWall();
+				if (availablePause) {
+					background.setParallaxChangePerSecond(0);
+					cameraSpeedBeforePause = camera.getMaxVelocityY();
+					camera.setMaxVelocityY(0);
+					displayPauseWindow();
+				} else if (!gameOver && gameStarted){
+					availablePause = true;
+					gameHud.setVisible(true);
+					//if (gameStarted) {
+						background.setParallaxChangePerSecond(10);
+						camera.setMaxVelocityY(cameraSpeedBeforePause);
+					//}
+					GameScene.this.detachChild(fade);
+					GameScene.this.detachChild(gamePauseWindow);
+	    			GameScene.this.setIgnoreUpdate(false);
+	    			GameScene.this.unregisterTouchArea(resumeButton);
+	    		    GameScene.this.unregisterTouchArea(retryButton);
+	    		    GameScene.this.unregisterTouchArea(quitButton);
+				} /*else {
+					gameHud.dispose();
+					gameHud.setVisible(false);
+					detachChild(gameHud);
+					myGarbageCollection();
+					SceneManager.getInstance().loadMenuScene(engine, GameScene.this);
 				}*/
 			}
 		});
-		return true;
 	}
-	
+
+	@Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

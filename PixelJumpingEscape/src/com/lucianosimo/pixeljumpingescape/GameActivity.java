@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.LimitedFPSEngine;
-import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
@@ -171,6 +170,7 @@ public class GameActivity extends BaseGameActivity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			SceneManager.getInstance().getCurrentScene().onBackKeyPressed(); 
 			/*if (Chartboost.onBackPressed()) {
 				 return false;
 			 } else {

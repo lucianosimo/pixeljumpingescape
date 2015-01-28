@@ -75,6 +75,7 @@ public class ResourcesManager {
 	
 	//Animated
 	public ITiledTextureRegion game_player_region;
+	public ITiledTextureRegion game_coin_region;
 	public ITiledTextureRegion game_spider_region;
 	public ITiledTextureRegion game_spider_2_region;
 	
@@ -82,6 +83,8 @@ public class ResourcesManager {
 	
 	//Windows
 	public ITextureRegion game_over_window_region;
+	public ITextureRegion game_pause_window_region;
+	public ITextureRegion game_resume_button_region;
 	public ITextureRegion game_retry_button_region;
 	public ITextureRegion game_quit_button_region;
 
@@ -207,6 +210,7 @@ public class ResourcesManager {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_beard.png", 2, 1);
 		}
 		
+		game_coin_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_coin.png", 4, 1);
 		game_spider_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider.png", 2, 1);
 		game_spider_2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider_2.png", 2, 1);		
 		
@@ -254,6 +258,8 @@ public class ResourcesManager {
 		
 		//Game windows atlas
 		game_over_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_over_window.png"); 
+		game_pause_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_pause_window.png");
+		game_resume_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_resume_button.png");
 		game_retry_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_retry_button.png");
 		game_quit_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_quit_button.png");
 		
