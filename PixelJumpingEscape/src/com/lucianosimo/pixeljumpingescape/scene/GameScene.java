@@ -827,7 +827,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 		gamePauseWindow.setPosition(camera.getCenterX(), camera.getCenterY());
 		fade.setPosition(camera.getCenterX(), camera.getCenterY());
-				
+		
+		leftButton.setPosition(-10000, leftButton.getY());
+		rightButton.setPosition(10000, rightButton.getY());
+
 	    retryButton = new Sprite(325, 25, resourcesManager.game_retry_button_region, vbom){
 	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 	    		if (pSceneTouchEvent.isActionDown()) {
@@ -866,6 +869,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	    			GameScene.this.unregisterTouchArea(resumeButton);
 	    		    GameScene.this.unregisterTouchArea(retryButton);
 	    		    GameScene.this.unregisterTouchArea(quitButton);
+	    		    leftButton.setPosition(BUTTON_WIDTH / 2, leftButton.getY());
+	    			rightButton.setPosition(screenWidth - (BUTTON_WIDTH / 2), rightButton.getY());
 	    		}
 	    		return true;
 	    	};

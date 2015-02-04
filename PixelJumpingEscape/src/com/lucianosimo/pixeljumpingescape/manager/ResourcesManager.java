@@ -203,11 +203,10 @@ public class ResourcesManager {
 		
 		//Game animated atlas
 		int player = rand.nextInt(2) + 1;
-		player = 1;
 		if (player == 1) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_ninja.png", 6, 1);
 		} else if (player == 2) {
-			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_beard.png", 2, 1);
+			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_beard.png", 6, 1);
 		}
 		
 		game_coin_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_coin.png", 4, 1);
