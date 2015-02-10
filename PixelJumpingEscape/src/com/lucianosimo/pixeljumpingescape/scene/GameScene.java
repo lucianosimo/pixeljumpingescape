@@ -368,7 +368,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					
 					@Override
 					public void run() {
-						//blood.setVisible(false);
 						GameScene.this.setIgnoreUpdate(true);
 				        camera.setChaseEntity(null);
 				        camera.setMaxVelocityY(0);
@@ -913,20 +912,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	    			GameScene.this.unregisterTouchArea(resumeButton);
 	    		    GameScene.this.unregisterTouchArea(retryButton);
 	    		    GameScene.this.unregisterTouchArea(quitButton);
-				} /*else {
-					gameHud.dispose();
-					gameHud.setVisible(false);
-					detachChild(gameHud);
-					myGarbageCollection();
-					SceneManager.getInstance().loadMenuScene(engine, GameScene.this);
-				}*/
+				}
 			}
 		});
 	}
 
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
