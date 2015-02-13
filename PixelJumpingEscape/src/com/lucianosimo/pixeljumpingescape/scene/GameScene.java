@@ -101,7 +101,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private Sprite quitButton;
 	
 	//Coins
-	private AnimatedSprite coin;
+	private AnimatedSprite[] coin;
 	private int coinsCounter;
 	
 	//Rectangles
@@ -133,9 +133,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int COINS_VALUE = 1;
 	
 	//CAMERA VARIABLES
-	private final static int CAMERA_INITIAL_SPEED = -200;
-	private final static int CAMERA_MAX_SPEED = -600;
-	private final static int CAMERA_SPEED_INCREMENT = 15;
+	private final static int CAMERA_INITIAL_SPEED = -250;
+	private final static int CAMERA_MAX_SPEED = -450;
+	private final static int CAMERA_SPEED_INCREMENT = 25;
 	
 	//PLAYER VARIABLES
 	private final static int PLAYER_INITIAL_X = 360;
@@ -157,7 +157,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//STATIC SPIKES VARIABLES
 	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
 	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 20;
-	private final static int SPIKES_WIDTH = 80;
+	private final static int SPIKES_WIDTH = 100;
 	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 190;
 	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 240;
 	//private final static int SPIKES_HEIGHT = 128;
@@ -191,7 +191,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createEnemies();
 		createPlayer();
 		createWalls();
-		createCoins();
+		//createCoins();		
 		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
@@ -522,6 +522,45 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				}
 			}
 			
+			ArrayList<Integer> left = leftWallPositions;
+			ArrayList<Integer> right = rightWallPositions;
+			ArrayList<Integer> coinPositions = new ArrayList<>();
+			boolean putRight = true;
+			int index = 0;
+			int indexAux = 0;
+			Collections.sort(left);
+			Collections.sort(right);
+			
+			coinPositions.add(left.get(0));
+			
+			do {
+				if (putRight) {
+					if (right.get(index) > coinPositions.get(indexAux)) {
+						coinPositions.add(right.get(index));
+						indexAux++;
+						putRight = false;
+					}
+				} else {
+					if (left.get(index) > coinPositions.get(indexAux)) {
+						coinPositions.add(left.get(index));
+						indexAux++;
+						putRight = true;
+					}
+				}
+				index++;
+			} while (index < 6);
+			
+			coin = new AnimatedSprite[coinPositions.size()];
+			createCoins();
+			
+			for (int k = 0; k < coinPositions.size(); k++) {
+				if (k == 0 || (k % 2 == 0)) {
+					coin[k].setPosition(150, coinPositions.get(k) + (screenHeight * i));
+				} else {
+					coin[k].setPosition(screenWidth - 150, coinPositions.get(k) + (screenHeight * i));
+				}
+			}
+			
 			for (int j = 0; j < leftWallPositions.size(); j++) {
 				leftWall[i][j] = new LeftWall(WALL_WIDTH / 2, leftWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(leftWall[i][j]);
@@ -552,20 +591,24 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void createCoins() {
-		for (int i = 0; i < 50; i++) {
-			coin = new AnimatedSprite(screenWidth / 2, 500 + 500 * i, resourcesManager.game_coin_region, vbom) {
+		for (int i = 0; i < coin.length; i++) {
+			coin[i] = new AnimatedSprite(0, 0, resourcesManager.game_coin_region, vbom) {
 				@Override
 				protected void onManagedUpdate(float pSecondsElapsed) {
 					super.onManagedUpdate(pSecondsElapsed);
-					if (player.collidesWith(this)) {
-						this.setVisible(false);
+					if (player.collidesWith(this) || this.getY() < (camera.getCenterY() - 640)) {
+						setPosition(this.getX(), this.getY() + (screenHeight * (MAX_BLOCKS)));
+						this.setVisible(true);
 						addCoins();
+					}
+					if (this.getY() < (220 + FLOOR_HEIGHT / 2 + WALL_HEIGHT)) {
+						this.setVisible(false);
 					}
 				};
 			};
 			final long[] COIN_ANIMATE = new long[] {100, 100, 100, 100};
-			coin.animate(COIN_ANIMATE, 0, 3, true);
-			GameScene.this.attachChild(coin);
+			coin[i].animate(COIN_ANIMATE, 0, 3, true);
+			GameScene.this.attachChild(coin[i]);
 		}
 	}
 	
