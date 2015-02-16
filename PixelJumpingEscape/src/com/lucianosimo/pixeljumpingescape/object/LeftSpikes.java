@@ -30,10 +30,10 @@ public class LeftSpikes extends Sprite{
 		final float height = 128 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		final Vector2[] vector = {
 			new Vector2(-0.50036f*width, -0.49965f*height),
-			new Vector2(+0.15963f*width, -0.49972f*height),
-			new Vector2(+0.50315f*width, -0.21870f*height),
-			new Vector2(+0.49980f*width, +0.27841f*height),
-			new Vector2(+0.15834f*width, +0.49844f*height),
+			new Vector2(+0.06034f*width, -0.50042f*height),
+			new Vector2(+0.49716f*width, -0.20602f*height),
+			new Vector2(+0.49716f*width, +0.21794f*height),
+			new Vector2(+0.07582f*width, +0.50233f*height),
 			new Vector2(-0.50266f*width, +0.50100f*height),
 		};
 		body = PhysicsFactory.createPolygonBody(physicsWorld, this, vector, BodyType.StaticBody, fixture);

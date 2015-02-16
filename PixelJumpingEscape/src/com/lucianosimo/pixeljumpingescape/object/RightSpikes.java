@@ -29,12 +29,12 @@ public class RightSpikes extends Sprite{
 		final float width = 100 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		final float height = 128 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		final Vector2[] vector = {
-			new Vector2(-0.50071f*width, -0.24246f*height),
-			new Vector2(-0.16062f*width, -0.49911f*height),
+			new Vector2(-0.50150f*width, -0.19635f*height),
+			new Vector2(-0.11293f*width, -0.49969f*height),
 			new Vector2(+0.49945f*width, -0.49926f*height),
 			new Vector2(+0.49999f*width, +0.49985f*height),
-			new Vector2(-0.16083f*width, +0.49842f*height),
-			new Vector2(-0.50350f*width, +0.25684f*height),
+			new Vector2(-0.10500f*width, +0.49960f*height),
+			new Vector2(-0.49917f*width, +0.22700f*height),
 		};
 		body = PhysicsFactory.createPolygonBody(physicsWorld, this, vector, BodyType.StaticBody, fixture);
 		body.setUserData("rightSpikes");
