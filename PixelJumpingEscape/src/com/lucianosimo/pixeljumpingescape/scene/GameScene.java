@@ -26,6 +26,11 @@ import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -51,6 +56,9 @@ import com.lucianosimo.pixeljumpingescape.object.RightWall;
 import com.lucianosimo.pixeljumpingescape.object.Spider;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener{
+	
+	//Shared Preferences
+	private SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 	
 	//Scene indicators
 	private HUD gameHud;
@@ -98,6 +106,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//Windows
 	private Sprite gameOverWindow;
 	private Sprite gamePauseWindow;
+	private Sprite gameNewRecord;
 
 	//Buttons
 	private Sprite resumeButton;
@@ -115,6 +124,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//Counters
 	private int score;
+	private int previousHighScore;
 	private int movedBlocks;
 	
 	//Pools
@@ -123,6 +133,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//Text
 	private Text scoreText;
+	private Text coinsText;
 	
 	//Sensors
 	private Rectangle[] moveBlocksSensor;
@@ -163,7 +174,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//STATIC SPIKES VARIABLES
 	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 0;
-	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 40;
+	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 30;
 	private final static int SPIKES_WIDTH = 100;
 	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 190;
 	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 240;
@@ -173,12 +184,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//CENTER MOVING SPIKES VARIABLES
 	private final static int CENTER_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
-	private final static int CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR = 40;
+	private final static int CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR = 30;
 	
 	//LATERAL MOVING SPIKES VARIABLES
 	private final static int LEFT_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 20;
 	private final static int RIGHT_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 25;
-	private final static int LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR = 40;
+	private final static int LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR = 30;
 	
 	//WALL AND FLOOR VARIABLES
 	private final static int WALL_WIDTH = 100;
@@ -234,8 +245,16 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		scoreSign = new Sprite(screenWidth / 2, screenHeight - 100, resourcesManager.game_score_sign_region, vbom);
 		blood = new Sprite(screenWidth / 2, screenHeight / 2, resourcesManager.game_blood_region, vbom);
 		scoreText = new Text(screenWidth / 2, screenHeight - 140, resourcesManager.game_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		coinsText = new Text(screenWidth / 2, screenHeight / 2, resourcesManager.game_coins_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		gameNewRecord = new Sprite(525, 1150, resourcesManager.game_new_record_region, vbom);
+		
+		gameNewRecord.setVisible(false);
 		scoreText.setText("0");
+		coinsText.setText("0");
+		
 		scoreText.setColor(Color.BLACK_ARGB_PACKED_INT);
+		coinsText.setColor(Color.BLACK_ARGB_PACKED_INT);
+		
 		leftButton = new Rectangle(BUTTON_WIDTH / 2, screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -294,6 +313,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		rightButton.setAlpha(0);
 		gameHud.attachChild(scoreSign);
 		gameHud.attachChild(scoreText);
+		gameHud.attachChild(gameNewRecord);
 		gameHud.attachChild(leftButton);
 		gameHud.attachChild(rightButton);
 		gameHud.attachChild(fire);
@@ -395,21 +415,20 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				        camera.setMaxVelocityY(0);
 				        availablePause = false;
 				        gameOver = true;
+				        
+				        
+				        //Save variables
+				        saveCoins("coins", coinsCounter);
+				        loadHighScore();
+				        saveHighScore(score);
+						
+						if (score > previousHighScore) {
+							gameNewRecord.setVisible(true);
+						}
+				        
 				        gameOverWindow.setPosition(camera.getCenterX(), camera.getCenterY());
-					    final Sprite retryButton = new Sprite(200, 25, resourcesManager.game_retry_button_region, vbom){
-					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-					    		if (pSceneTouchEvent.isActionDown()) {
-					    			moveCameraToOrigin();
-					    			gameHud.dispose();
-									gameHud.setVisible(false);
-									detachChild(gameHud);
-									myGarbageCollection();
-									SceneManager.getInstance().loadGameScene(engine, GameScene.this);
-								}
-					    		return true;
-					    	};
-					    };
-					    final Sprite quitButton = new Sprite(450, 25, resourcesManager.game_quit_button_region, vbom){
+				        
+				        final Sprite quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					    		if (pSceneTouchEvent.isActionDown()) {
 					    			moveCameraToOrigin();
@@ -422,10 +441,48 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					    		return true;
 					    	};
 					    };
+					    final Sprite twitterButton = new Sprite(325, -25, resourcesManager.game_twitter_button_region, vbom) {
+					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+					    		if (pSceneTouchEvent.isActionDown()) {
+					    			Intent shareIntent = new Intent();
+					    		    shareIntent.setAction(Intent.ACTION_SEND);
+					    		    shareIntent.setType("text/plain");
+					    		    shareIntent.setPackage("com.twitter.android");
+					    		    shareIntent.putExtra(Intent.EXTRA_TEXT, "My score in #PixelJumpingEscape is " + score + ". And yours?");
+					    		    activity.tweetScore(shareIntent);
+					    		}
+					    		return true;
+					    	}
+					    };
+					    final Sprite gpgButton = new Sprite(325, 100, resourcesManager.game_gpg_button_region, vbom) {
+					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+					    		if (pSceneTouchEvent.isActionDown()) {
+					    		}
+					    		return true;
+					    	}
+					    };
+					    final Sprite retryButton = new Sprite(525, 25, resourcesManager.game_retry_button_region, vbom){
+					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+					    		if (pSceneTouchEvent.isActionDown()) {
+					    			moveCameraToOrigin();
+					    			gameHud.dispose();
+									gameHud.setVisible(false);
+									detachChild(gameHud);
+									myGarbageCollection();
+									SceneManager.getInstance().loadGameScene(engine, GameScene.this);
+								}
+					    		return true;
+					    	};
+					    };
+					    
 					    GameScene.this.registerTouchArea(retryButton);
 					    GameScene.this.registerTouchArea(quitButton);
+					    GameScene.this.registerTouchArea(twitterButton);
+					    GameScene.this.registerTouchArea(gpgButton);
 					    gameOverWindow.attachChild(quitButton);
 					    gameOverWindow.attachChild(retryButton);
+					    gameOverWindow.attachChild(twitterButton);
+					    gameOverWindow.attachChild(gpgButton);
 					}
 				});
 			}
@@ -553,6 +610,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			ArrayList<Integer> coinPositions = new ArrayList<>();
 			Collections.sort(left);
 			Collections.sort(right);
+			coinsCounter = 0;
 			
 			coinPositions.add(left.get(0));
 			coinPositions.add(right.get(3));
@@ -630,10 +688,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				@Override
 				protected void onManagedUpdate(float pSecondsElapsed) {
 					super.onManagedUpdate(pSecondsElapsed);
-					if (player.collidesWith(this) || this.getY() < (camera.getCenterY() - 640)) {
+					if (player.collidesWith(this)) {
 						setPosition(this.getX(), this.getY() + (screenHeight * (MAX_BLOCKS)));
 						this.setVisible(true);
 						addCoins();
+					}
+					if (this.getY() < (camera.getCenterY() - 640)) {
+						setPosition(this.getX(), this.getY() + (screenHeight * (MAX_BLOCKS)));
+						this.setVisible(true);
 					}
 					if (this.getY() < (220 + FLOOR_HEIGHT / 2 + WALL_HEIGHT)) {
 						this.setVisible(false);
@@ -648,6 +710,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	private void addCoins() {
 		coinsCounter = coinsCounter + COINS_VALUE;
+		coinsText.setText("" + coinsCounter);
 	}
 	
 	private void createEnemies() {
@@ -761,6 +824,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		for (int i = 0; i < centerSpikesWithMove.size(); i++) {
 			centerSpikesWithMove.get(i).getBody().setTransform(centerSpikesWithMove.get(i).getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (centerSpikesWithMove.get(i).getY() + (screenHeight * (CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, centerSpikesWithMove.get(i).getBody().getAngle());
 			centerSpikesWithMove.get(i).setPosition(centerSpikesWithMove.get(i).getX(), centerSpikesWithMove.get(i).getY() + (screenHeight * (CENTER_MOVING_SPIKES_BLOCKS_TO_REAPPEAR)));
+			centerSpikesWithMove.get(i).setInitialY(centerSpikesWithMove.get(i).getY());
 		}	
 	}
 	
@@ -915,7 +979,20 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 		leftButton.setPosition(-10000, leftButton.getY());
 		rightButton.setPosition(10000, rightButton.getY());
+		coinsText.setPosition(450, 260);
 
+		quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
+	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+	    		if (pSceneTouchEvent.isActionDown()) {
+	    			gameHud.dispose();
+					gameHud.setVisible(false);
+					detachChild(gameHud);
+					myGarbageCollection();
+					SceneManager.getInstance().loadMenuScene(engine, GameScene.this);
+	    		}
+	    		return true;
+	    	};
+	    };
 	    retryButton = new Sprite(325, 25, resourcesManager.game_retry_button_region, vbom){
 	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 	    		if (pSceneTouchEvent.isActionDown()) {
@@ -928,18 +1005,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	    		return true;
 	    	};
 	    };
-	    quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
-	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-	    		if (pSceneTouchEvent.isActionDown()) {
-	    			gameHud.dispose();
-					gameHud.setVisible(false);
-					detachChild(gameHud);
-					myGarbageCollection();
-					SceneManager.getInstance().loadMenuScene(engine, GameScene.this);
-	    		}
-	    		return true;
-	    	};
-	    };
 	    resumeButton = new Sprite(525, 25, resourcesManager.game_resume_button_region, vbom){
 	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 	    		if (pSceneTouchEvent.isActionDown()) {
@@ -949,6 +1014,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					camera.setMaxVelocityY(cameraSpeedBeforePause);
 					GameScene.this.detachChild(fade);
 					GameScene.this.detachChild(gamePauseWindow);
+					gamePauseWindow.detachChild(coinsText);
 	    			GameScene.this.setIgnoreUpdate(false);
 	    			GameScene.this.unregisterTouchArea(this);
 	    			GameScene.this.unregisterTouchArea(resumeButton);
@@ -967,6 +1033,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	    gamePauseWindow.attachChild(resumeButton);
 	    gamePauseWindow.attachChild(retryButton);	    
 	    gamePauseWindow.attachChild(quitButton);
+	    gamePauseWindow.attachChild(coinsText);
 		
 		GameScene.this.attachChild(fade);
 		GameScene.this.attachChild(gamePauseWindow);
@@ -1006,5 +1073,27 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		return false;
+	}
+	
+	private void saveCoins(String key, int coins) {
+		Editor editor = sharedPreferences.edit();
+		int coinsCounter = sharedPreferences.getInt(key, 0);
+		coinsCounter += coins;
+		editor.putInt(key, coinsCounter);
+		editor.commit();
+	}
+	
+	private void saveHighScore(int localScore) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		Editor editor = sharedPreferences.edit();
+		if (sharedPreferences.getInt("highScore", 0) < localScore) {
+			editor.putInt("highScore", localScore);
+		}		
+		editor.commit();
+	}
+	
+	private void loadHighScore() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		previousHighScore = sharedPreferences.getInt("highScore", 0);
 	}
 }

@@ -43,11 +43,16 @@ public abstract class Player extends AnimatedSprite{
 		final float width = 50 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		final float height = 100 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		final Vector2[] vector = {
-			new Vector2(-0.36342f*width, -0.49824f*height),
+			/*new Vector2(-0.36342f*width, -0.49824f*height),
 			new Vector2(+0.48695f*width, -0.49905f*height),
 			new Vector2(+0.48856f*width, +0.30551f*height),
-			new Vector2(-0.36342f*width, +0.30551f*height),
-
+			new Vector2(-0.36342f*width, +0.30551f*height),*/
+			new Vector2(-0.29094f*width, -0.49553f*height),
+			new Vector2(+0.38421f*width, -0.49553f*height),
+			new Vector2(+0.49031f*width, -0.10491f*height),
+			new Vector2(+0.36492f*width, +0.29536f*height),
+			new Vector2(-0.28130f*width, +0.29536f*height),
+			new Vector2(-0.39704f*width, -0.09526f*height),
 		};
 		body = PhysicsFactory.createPolygonBody(physicsWorld, this, vector, BodyType.DynamicBody, fixture);
 		

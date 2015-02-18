@@ -164,7 +164,7 @@ public class GameActivity extends BaseGameActivity {
 	}
 	
 	public void tweetScore(Intent intent) {
-		startActivity(Intent.createChooser(intent, "Protect the town"));
+		startActivity(Intent.createChooser(intent, "Pixel jumping escape"));
 	}
 	
 	@Override

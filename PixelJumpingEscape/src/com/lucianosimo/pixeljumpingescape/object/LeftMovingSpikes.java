@@ -18,7 +18,7 @@ public class LeftMovingSpikes extends Sprite{
 
 	private Body body;
 	private FixtureDef fixture;
-	private static final int SPEED = 3;
+	private static final float SPEED = 3.5f;
 	
 	public LeftMovingSpikes(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld) {
 		super(pX, pY, ResourcesManager.getInstance().game_left_moving_spikes_region.deepCopy(), vbom);

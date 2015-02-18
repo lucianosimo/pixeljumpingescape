@@ -54,6 +54,7 @@ public class ResourcesManager {
 	
 	//Game fonts
 	public Font game_score_font;
+	public Font game_coins_font;
 	
 	//Game HUD
 	public ITiledTextureRegion game_fire_region;
@@ -89,6 +90,9 @@ public class ResourcesManager {
 	public ITextureRegion game_resume_button_region;
 	public ITextureRegion game_retry_button_region;
 	public ITextureRegion game_quit_button_region;
+	public ITextureRegion game_twitter_button_region;
+	public ITextureRegion game_gpg_button_region;
+	public ITextureRegion game_new_record_region;
 
 	//Buttons
 	
@@ -277,6 +281,9 @@ public class ResourcesManager {
 		game_resume_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_resume_button.png");
 		game_retry_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_retry_button.png");
 		game_quit_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_quit_button.png");
+		game_twitter_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_twitter_button.png");
+		game_gpg_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_gpg_button.png");
+		game_new_record_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameWindowsTextureAtlas, activity, "game_new_record.png");
 		
 		try {
 			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -313,8 +320,11 @@ public class ResourcesManager {
 		FontFactory.setAssetBasePath("fonts/game/");
 		
 		final ITexture game_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		final ITexture game_coins_texture = new BitmapTextureAtlas(activity.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "karmaticArcade.ttf", 50, false, Color.WHITE_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
+		game_coins_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_coins_texture, activity.getAssets(), "karmaticArcade.ttf", 75, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
 		game_score_font.load();
+		game_coins_font.load();
 	}
 	
 	private void unloadGameTextures() {
@@ -330,6 +340,7 @@ public class ResourcesManager {
 	
 	private void unloadGameFonts() {
 		game_score_font.unload();
+		game_coins_font.unload();
 	}
 	
 	

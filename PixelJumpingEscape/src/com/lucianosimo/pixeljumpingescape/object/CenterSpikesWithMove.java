@@ -23,14 +23,14 @@ public class CenterSpikesWithMove extends Sprite{
 	private boolean moveToTop = false;
 	private boolean moveToDown = false;
 	private boolean horizontal = false;
-	private final static int LEFT_BOUND = 150;
-	private final static int RIGHT_BOUND = 570;
-	private final static int TOP_BOUND = 150;
-	private final static int DOWN_BOUND = -150;
-	private final static int LEFT_SPEED = -10;
-	private final static int RIGHT_SPEED = 10;
-	private final static int TOP_SPEED = 10;
-	private final static int DOWN_SPEED = -10;
+	private final static int LEFT_BOUND = 200;
+	private final static int RIGHT_BOUND = 520;
+	private final static int TOP_BOUND = 125;
+	private final static int DOWN_BOUND = -125;
+	private final static int LEFT_SPEED = -11;
+	private final static int RIGHT_SPEED = 11;
+	private final static int TOP_SPEED = 11;
+	private final static int DOWN_SPEED = -11;
 	
 	public CenterSpikesWithMove(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld,boolean hor) {
 		super(pX, pY, ResourcesManager.getInstance().game_center_spikes_region.deepCopy(), vbom);
@@ -90,6 +90,10 @@ public class CenterSpikesWithMove extends Sprite{
 	
 	public Body getBody() {
 		return body;
+	}
+	
+	public void setInitialY(float y) {
+		initialY = y;
 	}
 	
 }

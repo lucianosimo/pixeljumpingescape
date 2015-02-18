@@ -18,7 +18,7 @@ public class Spider extends AnimatedSprite{
 	private Body body;
 	private FixtureDef fixture;
 	private boolean isMoving;
-	private final static int SPIDER_SPEED = -5;
+	private final static int SPIDER_SPEED = -4;
 	
 	public Spider(float pX, float pY, VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld, ITiledTextureRegion spider_region) {
 		super(pX, pY, spider_region, vbom);
