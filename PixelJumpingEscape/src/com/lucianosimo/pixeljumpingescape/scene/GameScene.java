@@ -133,6 +133,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//Text
 	private Text scoreText;
+	private Text scorePauseText;
 	private Text coinsText;
 	
 	//Sensors
@@ -245,14 +246,17 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		scoreSign = new Sprite(screenWidth / 2, screenHeight - 100, resourcesManager.game_score_sign_region, vbom);
 		blood = new Sprite(screenWidth / 2, screenHeight / 2, resourcesManager.game_blood_region, vbom);
 		scoreText = new Text(screenWidth / 2, screenHeight - 140, resourcesManager.game_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		scorePauseText = new Text(screenWidth / 2, screenHeight, resourcesManager.game_pause_score_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		coinsText = new Text(screenWidth / 2, screenHeight / 2, resourcesManager.game_coins_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		gameNewRecord = new Sprite(525, 1150, resourcesManager.game_new_record_region, vbom);
 		
 		gameNewRecord.setVisible(false);
 		scoreText.setText("0");
+		scorePauseText.setText("0");
 		coinsText.setText("0");
 		
 		scoreText.setColor(Color.BLACK_ARGB_PACKED_INT);
+		scorePauseText.setColor(Color.BLACK_ARGB_PACKED_INT);
 		coinsText.setColor(Color.BLACK_ARGB_PACKED_INT);
 		
 		leftButton = new Rectangle(BUTTON_WIDTH / 2, screenHeight / 2, BUTTON_WIDTH, BUTTON_HEIGHT, vbom) {
@@ -427,6 +431,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						}
 				        
 				        gameOverWindow.setPosition(camera.getCenterX(), camera.getCenterY());
+				        coinsText.setPosition(450, 270);
 				        
 				        final Sprite quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -483,6 +488,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					    gameOverWindow.attachChild(retryButton);
 					    gameOverWindow.attachChild(twitterButton);
 					    gameOverWindow.attachChild(gpgButton);
+					    gameOverWindow.attachChild(coinsText);
 					}
 				});
 			}
@@ -967,7 +973,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	@Override
 	public void handleOnPause() {
-		
+		if (availablePause) {
+			background.setParallaxChangePerSecond(0);
+			cameraSpeedBeforePause = camera.getMaxVelocityY();
+			camera.setMaxVelocityY(0);
+			displayPauseWindow();
+		}
 	}
 	
 	private void displayPauseWindow() {
@@ -979,7 +990,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 		leftButton.setPosition(-10000, leftButton.getY());
 		rightButton.setPosition(10000, rightButton.getY());
-		coinsText.setPosition(450, 260);
+		coinsText.setPosition(450, 195);
+		scorePauseText.setPosition(525, 300);
+		
+		scorePauseText.setText("" + score);
 
 		quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
 	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -1015,6 +1029,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					GameScene.this.detachChild(fade);
 					GameScene.this.detachChild(gamePauseWindow);
 					gamePauseWindow.detachChild(coinsText);
+					gamePauseWindow.detachChild(scorePauseText);
 	    			GameScene.this.setIgnoreUpdate(false);
 	    			GameScene.this.unregisterTouchArea(this);
 	    			GameScene.this.unregisterTouchArea(resumeButton);
@@ -1034,6 +1049,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	    gamePauseWindow.attachChild(retryButton);	    
 	    gamePauseWindow.attachChild(quitButton);
 	    gamePauseWindow.attachChild(coinsText);
+	    gamePauseWindow.attachChild(scorePauseText);
 		
 		GameScene.this.attachChild(fade);
 		GameScene.this.attachChild(gamePauseWindow);
