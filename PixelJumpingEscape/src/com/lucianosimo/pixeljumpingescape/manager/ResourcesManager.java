@@ -37,17 +37,33 @@ public class ResourcesManager {
 	private BitmapTextureAtlas splashTextureAtlas;
 	
 	//Menu fonts
+	public Font store_coins_font;
 	
 	//Menu audio
 	
 	//Menu items
 	public ITextureRegion loading_background_region;
+
 	public ITextureRegion menu_background_region;
+	public ITextureRegion menu_title_region;
+	public ITextureRegion menu_wall_region;
+	public ITextureRegion menu_left_spikes_region;
+	public ITextureRegion menu_right_spikes_region;
 	public ITextureRegion menu_play_button_region;
+	public ITextureRegion menu_store_button_region;
+	
+	public ITextureRegion store_background_region;
+	public ITextureRegion store_back_button_region;
+	public ITextureRegion store_unlock_player_button_region;
+	public ITextureRegion store_locked_player_bars_region;
+	public ITextureRegion store_locked_player_light_region;
+	public ITextureRegion store_unlocked_player_light_region;
 
 	private BuildableBitmapTextureAtlas loadingBackgroundTextureAtlas;
 	private BuildableBitmapTextureAtlas menuTextureAtlas;
+	private BuildableBitmapTextureAtlas storeTextureAtlas;
 	private BuildableBitmapTextureAtlas menuBackgroundTextureAtlas;
+	private BuildableBitmapTextureAtlas storeBackgroundTextureAtlas;
 	
 	
 	//Game audio
@@ -137,21 +153,64 @@ public class ResourcesManager {
 	
 	private void loadMenuGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
-		menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR);
-		menuBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		Random rand = new Random();
+		
+		menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1280, 1280, TextureOptions.BILINEAR);
+		storeTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 512, 512, TextureOptions.BILINEAR);
+		menuBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1280, 1280, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		storeBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		loadingBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR);
 		
 		loading_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(loadingBackgroundTextureAtlas, activity, "loading_background.png");
-		menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background.png");
 		menu_play_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_play_button.png");
+		menu_store_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_store_button.png");
+		menu_title_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_title.png");
+		
+		store_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeBackgroundTextureAtlas, activity, "store_background.png");
+		store_back_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_back_button.png");
+		store_unlock_player_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_unlock_player_button.png");
+		store_locked_player_bars_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_locked_player_bars.png");
+		store_locked_player_light_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_locked_player_light.png");
+		store_unlocked_player_light_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_unlocked_player_light.png");
+		
+		int background = rand.nextInt(4) + 1;
+		//Castle
+		if (background == 1) {
+			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_castle.png");
+			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_castle.png");
+			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_castle.png");
+			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_castle.png");
+		//Red bricks
+		} else if (background == 2) {
+			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_brick.png");
+			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_brick.png");
+			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_brick.png");
+			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_brick.png");
+		//Steel
+		} else if (background == 3) {
+			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_steel.png");
+			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_steel.png");
+			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_steel.png");
+			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_steel.png");
+		//Wood
+		} else if (background == 4) {
+			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_wood.png");
+			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_wood.png");
+			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_wood.png");
+			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_wood.png");
+		}
 		
 		try {
 			this.menuTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.menuBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.loadingBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.storeBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.storeTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.menuTextureAtlas.load();
 			this.loadingBackgroundTextureAtlas.load();
 			this.menuBackgroundTextureAtlas.load();
+			this.storeBackgroundTextureAtlas.load();
+			this.storeTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			org.andengine.util.debug.Debug.e(e);
 		}
@@ -159,6 +218,9 @@ public class ResourcesManager {
 	
 	private void loadMenuFonts() {
 		FontFactory.setAssetBasePath("fonts/menu/");
+		final ITexture store_coins_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		store_coins_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), store_coins_texture, activity.getAssets(), "karmaticArcade.ttf", 45, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
+		store_coins_font.load();
 	}
 	
 	private void loadMenuAudio() {
@@ -168,10 +230,12 @@ public class ResourcesManager {
 	private void unloadMenuTextures() {
 		this.menuTextureAtlas.unload();
 		this.menuBackgroundTextureAtlas.unload();
+		this.storeBackgroundTextureAtlas.unload();
+		this.storeTextureAtlas.unload();
 	}
 	
 	private void unloadMenuFonts() {
-		
+		store_coins_font.unload();		
 	}
 	
 	private void unloadMenuAudio() {
