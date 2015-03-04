@@ -44,10 +44,19 @@ public class ResourcesManager {
 	//Menu items
 	public ITextureRegion loading_background_region;
 
-	public ITextureRegion menu_background_region;
 	public ITextureRegion menu_selection_menu_background_region;
 	public ITextureRegion menu_selection_close_button_region;
 	public ITextureRegion menu_selection_open_button_region;
+	public ITextureRegion menu_selection_left_player_button_region;
+	public ITextureRegion menu_selection_right_player_button_region;
+	public ITextureRegion menu_selection_left_stage_button_region;
+	public ITextureRegion menu_selection_right_stage_button_region;
+	public ITextureRegion menu_selection_beard_player_region;
+	public ITextureRegion menu_selection_nerd_player_region;
+	public ITextureRegion menu_selection_ninja_player_region;
+	public ITextureRegion menu_selection_robot_player_region;
+	
+	public ITextureRegion menu_background_region;
 	public ITextureRegion menu_title_region;
 	public ITextureRegion menu_wall_region;
 	public ITextureRegion menu_left_spikes_region;
@@ -175,6 +184,14 @@ public class ResourcesManager {
 		
 		menu_selection_close_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_close_button.png");
 		menu_selection_open_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_open_button.png");
+		menu_selection_left_player_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_left_player_button.png");
+		menu_selection_right_player_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_right_player_button.png");
+		menu_selection_left_stage_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_left_stage_button.png");
+		menu_selection_right_stage_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_right_stage_button.png");
+		menu_selection_beard_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_beard_player.png");
+		menu_selection_nerd_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_nerd_player.png");
+		menu_selection_ninja_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_ninja_player.png");
+		menu_selection_robot_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_robot_player.png");
 		
 		store_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeBackgroundTextureAtlas, activity, "store_background.png");
 		store_back_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_back_button.png");

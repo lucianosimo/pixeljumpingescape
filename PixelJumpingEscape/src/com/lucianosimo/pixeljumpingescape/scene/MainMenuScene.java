@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
@@ -45,6 +46,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private Sprite menuSelectionMenuBackground;
 	private ScaleMenuItemDecorator menuSelectionCloseButton;
 	private ScaleMenuItemDecorator menuSelectionOpenButton;
+	private ScaleMenuItemDecorator menuLeftPlayerButton;
+	private ScaleMenuItemDecorator menuRightPlayerButton;	
+	private ArrayList<Sprite> playersToSelect = new ArrayList<>();
 	
 	private float screenWidth;
 	private float screenHeight;
@@ -95,7 +99,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private final int MENU_STORE = 1;
 	private final int MENU_OPEN_SELECTION = 2;
 	private final int MENU_CLOSE_SELECTION = 3;
-	private final int STORE_BACK = 5;
+	private final int MENU_LEFT_PLAYER = 4;
+	private final int MENU_RIGHT_PLAYER = 5;
+	private final int STORE_BACK = 8;
 
 	@Override
 	public void createScene() {
@@ -115,7 +121,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			System.exit(0);
 		} else {
 			isInMainMenu = true;
-			setMainMenuButtonsPositions();
+			//setMainMenuButtonsPositions();
 			storeScene.back();
 		}		
 	}
@@ -179,20 +185,22 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private void createMenuChildScene() {
 		
 		menuChildScene.setPosition(screenWidth/2, screenHeight/2);
+		menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 - 150, resourcesManager.menu_selection_menu_background_region, vbom);
 		
 		menuPlayItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_PLAY, resourcesManager.menu_play_button_region, vbom), 1.2f, 1);
 		menuStoreItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_STORE, resourcesManager.menu_store_button_region, vbom), 1.2f, 1);
-		//menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 + 200, resourcesManager.menu_selection_menu_background_region, vbom);
-		menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 - 150, resourcesManager.menu_selection_menu_background_region, vbom);
 		menuSelectionOpenButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_OPEN_SELECTION, resourcesManager.menu_selection_open_button_region, vbom), 1.2f, 1);
 		menuSelectionCloseButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_CLOSE_SELECTION, resourcesManager.menu_selection_close_button_region, vbom), 1.2f, 1);
+		menuLeftPlayerButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_LEFT_PLAYER, resourcesManager.menu_selection_left_player_button_region, vbom), 1.2f, 1);
+		menuRightPlayerButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_RIGHT_PLAYER, resourcesManager.menu_selection_right_player_button_region, vbom), 1.2f, 1);
 		
 		menuChildScene.attachChild(menuSelectionMenuBackground);
 		
 		menuChildScene.addMenuItem(menuPlayItem);
 		menuChildScene.addMenuItem(menuStoreItem);
 		menuChildScene.addMenuItem(menuSelectionOpenButton);
-		//menuChildScene.addMenuItem(menuSelectionCloseButton);
+		menuChildScene.addMenuItem(menuLeftPlayerButton);
+		menuChildScene.addMenuItem(menuRightPlayerButton);
 		
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
@@ -231,10 +239,32 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	private void openSelectionMenu() {
+		loadUnlockedPlayers();
+		
 		MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 			
 			@Override
 			public void run() {
+				playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));
+				if (unlockedNerd) {
+					Log.d("pixel", "unlockedNerd");
+					playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
+				}
+				if (unlockedNinja) {
+					Log.d("pixel", "unlockedNinja");
+					playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
+				}
+				if (unlockedRobot) {
+					playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
+				}
+				
+				for (int i = 0; i < playersToSelect.size(); i++) {
+					menuSelectionMenuBackground.attachChild(playersToSelect.get(i));
+					if (i > 0) {
+						playersToSelect.get(i).setVisible(false);
+					}
+				}
+				
 				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
 				menuSelectionMenuBackground.clearEntityModifiers();
 				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
@@ -258,7 +288,16 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				
 				menuStoreItem.clearEntityModifiers();
 				menuStoreItem.registerEntityModifier(new MoveModifier(1, menuStoreItem.getX(), 
-						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() + 100, easeFunction[0]));				
+						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() + 100, easeFunction[0]));
+				
+				menuLeftPlayerButton.clearEntityModifiers();
+				menuLeftPlayerButton.registerEntityModifier(new MoveModifier(1, menuLeftPlayerButton.getX(), 
+						menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() + 375, easeFunction[0]));
+				
+				menuRightPlayerButton.clearEntityModifiers();
+				menuRightPlayerButton.registerEntityModifier(new MoveModifier(1, menuRightPlayerButton.getX(), 
+						menuRightPlayerButton.getY(), menuRightPlayerButton.getX(), menuRightPlayerButton.getY() + 375, easeFunction[0]));
+				
 			}
 		});
 	}
@@ -268,6 +307,11 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			
 			@Override
 			public void run() {
+				for (int i = 0; i < playersToSelect.size(); i++) {
+					menuSelectionMenuBackground.detachChild(playersToSelect.get(i));
+					playersToSelect.remove(i);
+				}				
+				
 				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
 				menuSelectionMenuBackground.clearEntityModifiers();
 				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
@@ -293,6 +337,14 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				menuStoreItem.registerEntityModifier(new MoveModifier(1, menuStoreItem.getX(), 
 						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() - 100, easeFunction[0]));
 				
+				menuLeftPlayerButton.clearEntityModifiers();
+				menuLeftPlayerButton.registerEntityModifier(new MoveModifier(1, menuLeftPlayerButton.getX(), 
+						menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() - 375, easeFunction[0]));
+				
+				menuRightPlayerButton.clearEntityModifiers();
+				menuRightPlayerButton.registerEntityModifier(new MoveModifier(1, menuRightPlayerButton.getX(), 
+						menuRightPlayerButton.getY(), menuRightPlayerButton.getX(), menuRightPlayerButton.getY() - 375, easeFunction[0]));
+				
 			}
 		});
 	}
@@ -300,8 +352,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private void setMainMenuButtonsPositions() {
 		menuPlayItem.setPosition(0, 75);
 		menuStoreItem.setPosition(0, -125);
-		//menuSelectionCloseButton.setPosition(-195, -260);
 		menuSelectionOpenButton.setPosition(-195, -screenHeight / 2 + 35);
+		menuLeftPlayerButton.setPosition(-300, -screenHeight / 2 - 175);
+		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 175);
 	}
 
 	@Override
@@ -311,8 +364,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				SceneManager.getInstance().loadGameScene(engine, this);
 				return true;
 			case MENU_STORE:
-				menuPlayItem.setPosition(10000, 10000);
-				menuStoreItem.setPosition(10000, 10000);
+				/*menuPlayItem.setPosition(10000, 10000);
+				menuStoreItem.setPosition(10000, 10000);*/
 				isInMainMenu = false;
 				menuChildScene.setChildScene(storeScene);
 				setStoreButtonsPositions();
@@ -323,8 +376,52 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			case MENU_OPEN_SELECTION:
 				openSelectionMenu();	
 				return true;
+			case MENU_LEFT_PLAYER:
+				MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						boolean changedLeft = false;
+						for (int i = 0; i < playersToSelect.size(); i++) {
+							if (playersToSelect.get(i).isVisible() && !changedLeft) {
+								Log.d("pixel", "changedLeft");
+								changedLeft = true;
+								playersToSelect.get(i).setVisible(false);
+								if (i > 0) {
+									playersToSelect.get(i - 1).setVisible(true);
+								} else {
+									int index = playersToSelect.size() - 1;
+									playersToSelect.get(index).setVisible(true);
+								}
+							}
+						}
+					}
+				});
+				return true;
+			case MENU_RIGHT_PLAYER:
+				MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						boolean changedRight = false;
+						for (int i = 0; i < playersToSelect.size(); i++) {
+							if (playersToSelect.get(i).isVisible() && !changedRight) {
+								Log.d("pixel", "changedRight");
+								changedRight = true;
+								playersToSelect.get(i).setVisible(false);
+								if (i < playersToSelect.size() - 1) {
+									playersToSelect.get(i + 1).setVisible(true);
+								} else {
+									playersToSelect.get(0).setVisible(true);
+								}
+							}
+						}
+					}
+				});
+				return true;
 			case STORE_BACK:
-				setMainMenuButtonsPositions();
+				//setMainMenuButtonsPositions();
+				loadGameVariables();
 				isInMainMenu = true;
 				storeScene.back();
 				return true;
@@ -349,6 +446,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private void loadCoins() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		coins = sharedPreferences.getInt("coins", 0);
+		coins = 10000;
 		coinsText.setText("" + coins);
 	}
 	
@@ -496,42 +594,48 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				.setPositiveButton("Of course!!!", new DialogInterface.OnClickListener() {
 
 				    public void onClick(DialogInterface dialog, int whichButton) {
-				    	if (player.equals("nerd")) {
-				    		unlockNerd();
-				    		storeScene.detachChild(lockedBarsNerd);
-				    		storeScene.detachChild(unlockNerdButton);
-				    		storeScene.detachChild(lightNerd);
-				    		lightNerd = new Sprite(280, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
-				    		storeScene.attachChild(lightNerd);
-				    	}
-				    	if (player.equals("ninja")) {
-				    		unlockNinja();
-				    		storeScene.detachChild(lockedBarsNinja);
-				    		storeScene.detachChild(unlockNinjaButton);
-				    		storeScene.detachChild(lightNinja);
-				    		lightNinja = new Sprite(450, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
-				    		storeScene.attachChild(lightNinja);
-				    	}
-				    	if (player.equals("robot")) {
-				    		unlockRobot();
-				    		storeScene.detachChild(lockedBarsRobot);
-				    		storeScene.detachChild(unlockRobotButton);
-				    		storeScene.detachChild(lightRobot);
-				    		lightRobot = new Sprite(620, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
-				    		storeScene.attachChild(lightRobot);
-				    	}
-				    	if (player.equals("brick")) {
-				    		unlockBrick();
-				    		storeScene.detachChild(unlockBrickButton);
-				    	}
-				    	if (player.equals("wood")) {
-				    		unlockWood();
-				    		storeScene.detachChild(unlockWoodButton);
-				    	}
-				    	if (player.equals("steel")) {
-				    		unlockSteel();
-				    		storeScene.detachChild(unlockSteelButton);
-				    	}
+				    	MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								if (player.equals("nerd")) {
+						    		unlockNerd();
+						    		storeScene.detachChild(lockedBarsNerd);
+						    		storeScene.detachChild(unlockNerdButton);
+						    		storeScene.detachChild(lightNerd);
+						    		lightNerd = new Sprite(280, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
+						    		storeScene.attachChild(lightNerd);
+						    	}
+						    	if (player.equals("ninja")) {
+						    		unlockNinja();
+						    		storeScene.detachChild(lockedBarsNinja);
+						    		storeScene.detachChild(unlockNinjaButton);
+						    		storeScene.detachChild(lightNinja);
+						    		lightNinja = new Sprite(450, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
+						    		storeScene.attachChild(lightNinja);
+						    	}
+						    	if (player.equals("robot")) {
+						    		unlockRobot();
+						    		storeScene.detachChild(lockedBarsRobot);
+						    		storeScene.detachChild(unlockRobotButton);
+						    		storeScene.detachChild(lightRobot);
+						    		lightRobot = new Sprite(620, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
+						    		storeScene.attachChild(lightRobot);
+						    	}
+						    	if (player.equals("brick")) {
+						    		unlockBrick();
+						    		storeScene.detachChild(unlockBrickButton);
+						    	}
+						    	if (player.equals("wood")) {
+						    		unlockWood();
+						    		storeScene.detachChild(unlockWoodButton);
+						    	}
+						    	if (player.equals("steel")) {
+						    		unlockSteel();
+						    		storeScene.detachChild(unlockSteelButton);
+						    	}
+							}
+						});
 				        Toast.makeText(activity, player + " unlocked", Toast.LENGTH_LONG).show();
 				        loadUnlockedPlayers();
 				    }})
