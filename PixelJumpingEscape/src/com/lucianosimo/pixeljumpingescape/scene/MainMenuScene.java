@@ -18,7 +18,7 @@ import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.align.HorizontalAlign;
-import org.andengine.util.modifier.ease.EaseBounceInOut;
+import org.andengine.util.modifier.ease.EaseStrongIn;
 import org.andengine.util.modifier.ease.IEaseFunction;
 
 import android.app.AlertDialog;
@@ -86,12 +86,14 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	
 	private static final IEaseFunction[][] EASEFUNCTIONS = new IEaseFunction[][] {
 		new IEaseFunction[] { 
-				EaseBounceInOut.getInstance()},
+				//EaseQuadIn.getInstance()},
+				EaseStrongIn.getInstance()},
 	};
 	
 	private final int MENU_PLAY = 0;
 	private final int MENU_STORE = 1;
-	private final int MENU_CLOSE_SELECTION = 2;
+	private final int MENU_OPEN_SELECTION = 2;
+	private final int MENU_CLOSE_SELECTION = 3;
 	private final int STORE_BACK = 5;
 
 	@Override
@@ -179,16 +181,17 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		
 		menuPlayItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_PLAY, resourcesManager.menu_play_button_region, vbom), 1.2f, 1);
 		menuStoreItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_STORE, resourcesManager.menu_store_button_region, vbom), 1.2f, 1);
-		menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 + 200, resourcesManager.menu_selection_menu_background_region, vbom);
-		menuSelectionOpenButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_CLOSE_SELECTION, resourcesManager.menu_selection_open_button_region, vbom), 1.2f, 1);
+		//menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 + 200, resourcesManager.menu_selection_menu_background_region, vbom);
+		menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 - 150, resourcesManager.menu_selection_menu_background_region, vbom);
+		menuSelectionOpenButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_OPEN_SELECTION, resourcesManager.menu_selection_open_button_region, vbom), 1.2f, 1);
 		menuSelectionCloseButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_CLOSE_SELECTION, resourcesManager.menu_selection_close_button_region, vbom), 1.2f, 1);
 		
 		menuChildScene.attachChild(menuSelectionMenuBackground);
 		
 		menuChildScene.addMenuItem(menuPlayItem);
 		menuChildScene.addMenuItem(menuStoreItem);
-		//menuChildScene.addMenuItem(menuSelectionOpenButton);
-		menuChildScene.addMenuItem(menuSelectionCloseButton);
+		menuChildScene.addMenuItem(menuSelectionOpenButton);
+		//menuChildScene.addMenuItem(menuSelectionCloseButton);
 		
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
@@ -233,11 +236,37 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			public void run() {
 				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
 				menuSelectionMenuBackground.clearEntityModifiers();
-				menuSelectionCloseButton.clearEntityModifiers();
 				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
 						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 350, easeFunction[0]));
+				
+				menuChildScene.addMenuItem(menuSelectionOpenButton);
+				menuSelectionOpenButton.setPosition(menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY());
+				menuChildScene.detachChild(menuSelectionCloseButton);
+				menuSelectionCloseButton.clearEntityModifiers();
+				menuSelectionOpenButton.registerEntityModifier(new MoveModifier(1, menuSelectionOpenButton.getX(), 
+						menuSelectionOpenButton.getY(), menuSelectionOpenButton.getX(), menuSelectionOpenButton.getY() - 345, easeFunction[0]));
+				
+			}
+		});
+	}
+	
+	private void openSelectionMenu() {
+		MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
+				menuSelectionMenuBackground.clearEntityModifiers();
+				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
+						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() + 350, easeFunction[0]));
+				
+				menuChildScene.addMenuItem(menuSelectionCloseButton);
+				menuSelectionCloseButton.setPosition(menuSelectionOpenButton.getX(), menuSelectionOpenButton.getY());
+				menuChildScene.detachChild(menuSelectionOpenButton);
+				menuSelectionOpenButton.clearEntityModifiers();
 				menuSelectionCloseButton.registerEntityModifier(new MoveModifier(1, menuSelectionCloseButton.getX(), 
-						menuSelectionCloseButton.getY(), menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY() - 350, easeFunction[0]));
+						menuSelectionCloseButton.getY(), menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY() + 345, easeFunction[0]));
+				
 			}
 		});
 	}
@@ -245,7 +274,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private void setMainMenuButtonsPositions() {
 		menuPlayItem.setPosition(0, 75);
 		menuStoreItem.setPosition(0, -125);
-		menuSelectionCloseButton.setPosition(-195, -260);
+		//menuSelectionCloseButton.setPosition(-195, -260);
+		menuSelectionOpenButton.setPosition(-195, -screenHeight / 2 + 35);
 	}
 
 	@Override
@@ -263,6 +293,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				return true;
 			case MENU_CLOSE_SELECTION:
 				closeSelectionMenu();	
+				return true;
+			case MENU_OPEN_SELECTION:
+				openSelectionMenu();	
 				return true;
 			case STORE_BACK:
 				setMainMenuButtonsPositions();
