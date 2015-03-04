@@ -173,7 +173,6 @@ public class ResourcesManager {
 		menu_store_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_store_button.png");
 		menu_title_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_title.png");
 		
-		menu_selection_menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_menu_background.png");
 		menu_selection_close_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_close_button.png");
 		menu_selection_open_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_open_button.png");
 		
@@ -193,24 +192,28 @@ public class ResourcesManager {
 			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_castle.png");
 			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_castle.png");
 			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_castle.png");
+			menu_selection_menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_menu_castle_background.png");
 		//Red bricks
 		} else if (background == 2) {
 			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_brick.png");
 			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_brick.png");
 			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_brick.png");
 			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_brick.png");
+			menu_selection_menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_menu_brick_background.png");
 		//Steel
 		} else if (background == 3) {
 			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_steel.png");
 			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_steel.png");
 			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_steel.png");
 			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_steel.png");
+			menu_selection_menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_menu_steel_background.png");
 		//Wood
 		} else if (background == 4) {
 			menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_background_wood.png");
 			menu_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_wall_wood.png");
 			menu_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_left_spikes_wood.png");
 			menu_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuBackgroundTextureAtlas, activity, "menu_right_spikes_wood.png");
+			menu_selection_menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_menu_wood_background.png");
 		}
 		
 		try {
