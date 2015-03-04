@@ -58,6 +58,10 @@ public class ResourcesManager {
 	public ITextureRegion menu_selection_nerd_player_region;
 	public ITextureRegion menu_selection_ninja_player_region;
 	public ITextureRegion menu_selection_robot_player_region;
+	public ITextureRegion menu_selection_castle_stage_region;
+	public ITextureRegion menu_selection_brick_stage_region;
+	public ITextureRegion menu_selection_wood_stage_region;
+	public ITextureRegion menu_selection_steel_stage_region;
 	
 	public ITextureRegion menu_background_region;
 	public ITextureRegion menu_title_region;
@@ -195,6 +199,10 @@ public class ResourcesManager {
 		menu_selection_nerd_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_nerd_player.png");
 		menu_selection_ninja_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_ninja_player.png");
 		menu_selection_robot_player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_robot_player.png");
+		menu_selection_castle_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_castle_stage.png");
+		menu_selection_brick_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_brick_stage.png");
+		menu_selection_wood_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_wood_stage.png");
+		menu_selection_steel_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_steel_stage.png");
 		
 		store_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeBackgroundTextureAtlas, activity, "store_background.png");
 		store_back_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_back_button.png");
@@ -296,7 +304,7 @@ public class ResourcesManager {
 	
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-		Random rand = new Random();
+		//Random rand = new Random();
 		
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameBloodTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -333,9 +341,10 @@ public class ResourcesManager {
 		game_spider_2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider_2.png", 2, 1);		
 		
 		//Game texture atlas
-		int stage = rand.nextInt(4) + 1;
+		//int stage = rand.nextInt(4) + 1;
+		int stage = sharedPreferences.getInt("selectedStage", 0);
 		//Castle
-		if (stage == 1) {
+		if (stage == 0) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_castle.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_castle.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_castle.png");
@@ -346,7 +355,7 @@ public class ResourcesManager {
 			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_castle.png");
 			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_castle.png");
 		//Red bricks
-		} else if (stage == 2) {
+		} else if (stage == 1) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_brick.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_brick.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_brick.png");
@@ -356,6 +365,17 @@ public class ResourcesManager {
 			game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background_brick.png");
 			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_brick.png");
 			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_brick.png");
+		//Wood
+		}  else if (stage == 2) {
+			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_wood.png");
+			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_wood.png");
+			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_wood.png");
+			game_left_moving_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_moving_spikes_wood.png");
+			game_right_moving_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_moving_spikes_wood.png");
+			game_center_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_center_spikes_wood.png");
+			game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background_wood.png");
+			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_wood.png");
+			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_wood.png");
 		//Steel
 		} else if (stage == 3) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_steel.png");
@@ -367,17 +387,6 @@ public class ResourcesManager {
 			game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background_steel.png");
 			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_steel.png");
 			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_steel.png");
-		//Wood
-		} else if (stage == 4) {
-			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_wood.png");
-			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_wood.png");
-			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_wood.png");
-			game_left_moving_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_moving_spikes_wood.png");
-			game_right_moving_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_moving_spikes_wood.png");
-			game_center_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_center_spikes_wood.png");
-			game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBackgroundTextureAtlas, activity, "game_background_wood.png");
-			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_wood.png");
-			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_wood.png");
 		}
 		game_spider_web_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_spider_web.png");
 		
