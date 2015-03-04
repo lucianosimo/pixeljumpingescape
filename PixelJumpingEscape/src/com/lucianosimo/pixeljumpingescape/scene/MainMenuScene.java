@@ -27,7 +27,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
@@ -245,22 +244,22 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			
 			@Override
 			public void run() {
-				playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));
+				playersToSelect.add(0, new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));
 				if (unlockedNerd) {
-					Log.d("pixel", "unlockedNerd");
-					playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
+					playersToSelect.add(1, new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
 				}
 				if (unlockedNinja) {
-					Log.d("pixel", "unlockedNinja");
-					playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
+					playersToSelect.add(2, new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
 				}
 				if (unlockedRobot) {
-					playersToSelect.add(new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
+					playersToSelect.add(3, new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
 				}
 				
 				for (int i = 0; i < playersToSelect.size(); i++) {
 					menuSelectionMenuBackground.attachChild(playersToSelect.get(i));
-					if (i > 0) {
+					if (i == loadSelectedPlayer()) {
+						playersToSelect.get(i).setVisible(true);
+					} else {
 						playersToSelect.get(i).setVisible(false);
 					}
 				}
@@ -306,16 +305,22 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 			
 			@Override
-			public void run() {
-				for (int i = 0; i < playersToSelect.size(); i++) {
-					menuSelectionMenuBackground.detachChild(playersToSelect.get(i));
-					playersToSelect.remove(i);
-				}				
-				
+			public void run() {				
 				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
 				menuSelectionMenuBackground.clearEntityModifiers();
 				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
-						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 375, easeFunction[0]));
+						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 375, easeFunction[0]) {
+					@Override
+					protected void onModifierFinished(IEntity pItem) {
+						super.onModifierFinished(pItem);
+						for (int i = 0; i < playersToSelect.size(); i++) {
+							menuSelectionMenuBackground.detachChild(playersToSelect.get(i));					
+						}
+						for (int i = 0; i < playersToSelect.size(); i++) {
+							playersToSelect.remove(i);
+						}
+					}
+				});
 				
 				menuSelectionCloseButton.clearEntityModifiers();
 				menuSelectionCloseButton.registerEntityModifier(new MoveModifier(1, menuSelectionCloseButton.getX(), 
@@ -377,47 +382,50 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				openSelectionMenu();	
 				return true;
 			case MENU_LEFT_PLAYER:
-				MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
+				/*MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 					
 					@Override
-					public void run() {
+					public void run() {*/
 						boolean changedLeft = false;
 						for (int i = 0; i < playersToSelect.size(); i++) {
 							if (playersToSelect.get(i).isVisible() && !changedLeft) {
-								Log.d("pixel", "changedLeft");
 								changedLeft = true;
 								playersToSelect.get(i).setVisible(false);
 								if (i > 0) {
 									playersToSelect.get(i - 1).setVisible(true);
+									selectPlayer(i - 1);
 								} else {
 									int index = playersToSelect.size() - 1;
 									playersToSelect.get(index).setVisible(true);
+									selectPlayer(index);
 								}
 							}
 						}
-					}
-				});
+					/*}
+				});*/
 				return true;
 			case MENU_RIGHT_PLAYER:
-				MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
+				/*MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 					
 					@Override
-					public void run() {
+					public void run() {*/
 						boolean changedRight = false;
 						for (int i = 0; i < playersToSelect.size(); i++) {
 							if (playersToSelect.get(i).isVisible() && !changedRight) {
-								Log.d("pixel", "changedRight");
 								changedRight = true;
 								playersToSelect.get(i).setVisible(false);
+								selectPlayer(i);
 								if (i < playersToSelect.size() - 1) {
 									playersToSelect.get(i + 1).setVisible(true);
+									selectPlayer(i + 1);
 								} else {
 									playersToSelect.get(0).setVisible(true);
+									selectPlayer(0);
 								}
 							}
 						}
-					}
-				});
+					/*}
+				});*/
 				return true;
 			case STORE_BACK:
 				//setMainMenuButtonsPositions();
@@ -441,6 +449,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		loadUnlockedStages();
 		loadPlayers();
 		loadStages();
+		loadSelectedPlayer();
 	}
 	
 	private void loadCoins() {
@@ -652,6 +661,20 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				Toast.makeText(activity, "No enough coins. Collect " + coins + " more to unlock " + player, Toast.LENGTH_SHORT).show();	
 			}
 		});
+	}
+	
+	//0 = beard, 1 = nerd, 2 = ninja, 3 = robot
+	private void selectPlayer(int player) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		Editor editor = sharedPreferences.edit();
+		editor.putInt("selectedPlayer", player);
+		editor.commit();
+	}
+	
+	private int loadSelectedPlayer() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int player = sharedPreferences.getInt("selectedPlayer", 0);
+		return player;
 	}
 	
 	private void unlockNerd() {

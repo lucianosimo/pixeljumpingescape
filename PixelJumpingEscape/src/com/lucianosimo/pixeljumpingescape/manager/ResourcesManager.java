@@ -21,6 +21,9 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.lucianosimo.pixeljumpingescape.GameActivity;
 
 public class ResourcesManager {
@@ -311,15 +314,18 @@ public class ResourcesManager {
 		game_blood_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBloodTextureAtlas, activity, "game_blood.png");
 		
 		//Game animated atlas
-		int player = rand.nextInt(4) + 1;
-		if (player == 1) {
-			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_ninja.png", 6, 1);
-		} else if (player == 2) {
+		//int player = rand.nextInt(4) + 1;
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int player = sharedPreferences.getInt("selectedPlayer", 0);
+			
+		if (player == 0) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_beard.png", 6, 1);
+		} else if (player == 1) {
+			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_nerd.png", 6, 1);
+		} else if (player == 2) {
+			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_ninja.png", 6, 1);
 		} else if (player == 3) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_robot.png", 6, 1);
-		} else if (player == 4) {
-			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_nerd.png", 6, 1);
 		}
 		
 		game_coin_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_coin.png", 4, 1);
