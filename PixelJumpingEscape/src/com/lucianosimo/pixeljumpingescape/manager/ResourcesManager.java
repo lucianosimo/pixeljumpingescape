@@ -363,8 +363,6 @@ public class ResourcesManager {
 		//Blood
 		game_blood_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBloodTextureAtlas, activity, "game_blood.png");
 		
-		//Game animated atlas
-		//int player = rand.nextInt(4) + 1;
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		int player = sharedPreferences.getInt("selectedPlayer", 0);
 			
@@ -382,8 +380,6 @@ public class ResourcesManager {
 		game_spider_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider.png", 2, 1);
 		game_spider_2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider_2.png", 2, 1);		
 		
-		//Game texture atlas
-		//int stage = rand.nextInt(4) + 1;
 		int stage = sharedPreferences.getInt("selectedStage", 0);
 		//Castle
 		if (stage == 0) {

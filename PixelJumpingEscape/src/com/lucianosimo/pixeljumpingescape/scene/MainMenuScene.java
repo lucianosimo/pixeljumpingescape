@@ -40,8 +40,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private ScaleMenuItemDecorator menuRightPlayerButton;
 	private ScaleMenuItemDecorator menuLeftStageButton;
 	private ScaleMenuItemDecorator menuRightStageButton;
-	private ArrayList<Sprite> playersToSelect = new ArrayList<>();
-	private ArrayList<Sprite> stagesToSelect = new ArrayList<>();
+	private ArrayList<Sprite> playersToSelect;
+	private ArrayList<Sprite> stagesToSelect;
 	
 	private float screenWidth;
 	private float screenHeight;
@@ -178,53 +178,11 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	private void openSelectionMenu() {
-		loadUnlockedPlayers();
-		loadUnlockedStages();
 		
 		MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 			
 			@Override
 			public void run() {
-				playersToSelect.add(0, new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));
-				if (unlockedNerd) {
-					playersToSelect.add(1, new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
-				}
-				if (unlockedNinja) {
-					playersToSelect.add(2, new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
-				}
-				if (unlockedRobot) {
-					playersToSelect.add(3, new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
-				}
-				
-				stagesToSelect.add(0, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_castle_stage_region, vbom));
-				if (unlockedBrick) {
-					stagesToSelect.add(1, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_brick_stage_region, vbom));
-				}
-				if (unlockedWood) {
-					stagesToSelect.add(2, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_wood_stage_region, vbom));
-				}
-				if (unlockedSteel) {
-					stagesToSelect.add(3, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_steel_stage_region, vbom));
-				}
-				
-				for (int i = 0; i < playersToSelect.size(); i++) {
-					menuSelectionMenuBackground.attachChild(playersToSelect.get(i));
-					if (i == loadSelectedPlayer()) {
-						playersToSelect.get(i).setVisible(true);
-					} else {
-						playersToSelect.get(i).setVisible(false);
-					}
-				}
-				
-				for (int i = 0; i < stagesToSelect.size(); i++) {
-					menuSelectionMenuBackground.attachChild(stagesToSelect.get(i));
-					if (i == loadSelectedStage()) {
-						stagesToSelect.get(i).setVisible(true);
-					} else {
-						stagesToSelect.get(i).setVisible(false);
-					}
-				}
-				
 				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
 				menuSelectionMenuBackground.clearEntityModifiers();
 				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
@@ -278,25 +236,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
 				menuSelectionMenuBackground.clearEntityModifiers();
 				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
-						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 375, easeFunction[0]) {
-					@Override
-					protected void onModifierFinished(IEntity pItem) {
-						super.onModifierFinished(pItem);
-						for (int i = 0; i < playersToSelect.size(); i++) {
-							menuSelectionMenuBackground.detachChild(playersToSelect.get(i));					
-						}
-						for (int i = 0; i < playersToSelect.size(); i++) {
-							playersToSelect.remove(i);
-						}
-						
-						for (int i = 0; i < stagesToSelect.size(); i++) {
-							menuSelectionMenuBackground.detachChild(stagesToSelect.get(i));					
-						}
-						for (int i = 0; i < stagesToSelect.size(); i++) {
-							stagesToSelect.remove(i);
-						}
-					}
-				});
+						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 375, easeFunction[0]));
 				
 				menuSelectionCloseButton.clearEntityModifiers();
 				menuSelectionCloseButton.registerEntityModifier(new MoveModifier(1, menuSelectionCloseButton.getX(), 
@@ -443,6 +383,54 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		loadUnlockedPlayers();
 		loadUnlockedStages();
 		loadSelectedPlayer();
+		loadPlayersStagesOnSelectionMenu();
+	}
+	
+	private void loadPlayersStagesOnSelectionMenu() {
+		int playerIndex = 0;
+		int stageIndex = 0;
+		playersToSelect = new ArrayList<>();
+		stagesToSelect = new ArrayList<>();		
+		
+		playersToSelect.add(0, new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));
+		if (unlockedNerd) {
+			playersToSelect.add(1, new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
+		}
+		if (unlockedNinja) {
+			playersToSelect.add(2, new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
+		}
+		if (unlockedRobot) {
+			playersToSelect.add(3, new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
+		}
+		
+		stagesToSelect.add(0, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_castle_stage_region, vbom));
+		if (unlockedBrick) {
+			stagesToSelect.add(1, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_brick_stage_region, vbom));
+		}
+		if (unlockedWood) {
+			stagesToSelect.add(2, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_wood_stage_region, vbom));
+		}
+		if (unlockedSteel) {
+			stagesToSelect.add(3, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_steel_stage_region, vbom));
+		}
+		
+		for (int i = 0; i < playersToSelect.size(); i++) {
+			menuSelectionMenuBackground.attachChild(playersToSelect.get(i));
+			if (i == loadSelectedPlayer()) {
+				playersToSelect.get(i).setVisible(true);
+			} else {
+				playersToSelect.get(i).setVisible(false);
+			}
+		}
+		
+		for (int i = 0; i < stagesToSelect.size(); i++) {
+			menuSelectionMenuBackground.attachChild(stagesToSelect.get(i));
+			if (i == loadSelectedStage()) {
+				stagesToSelect.get(i).setVisible(true);
+			} else {
+				stagesToSelect.get(i).setVisible(false);
+			}
+		}
 	}
 	
 	//0 = beard, 1 = nerd, 2 = ninja, 3 = robot
