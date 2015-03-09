@@ -10,11 +10,13 @@ import com.lucianosimo.pixeljumpingescape.scene.GameScene;
 import com.lucianosimo.pixeljumpingescape.scene.LoadingScene;
 import com.lucianosimo.pixeljumpingescape.scene.MainMenuScene;
 import com.lucianosimo.pixeljumpingescape.scene.SplashScene;
+import com.lucianosimo.pixeljumpingescape.scene.StoreScene;
 
 public class SceneManager {
 
 	private BaseScene splashScene;
 	private BaseScene menuScene;
+	private BaseScene storeScene;
 	private BaseScene loadingScene;
 	private BaseScene gameScene;
 	
@@ -26,6 +28,7 @@ public class SceneManager {
 	public enum SceneType {
 		SCENE_SPLASH,
 		SCENE_MENU,
+		SCENE_STORE,
 		SCENE_LOADING,
 		SCENE_GAME,
 	}
@@ -43,6 +46,9 @@ public class SceneManager {
 				break;
 			case SCENE_MENU:
 				setScene(menuScene);
+				break;
+			case SCENE_STORE:
+				setScene(storeScene);
 				break;
 			case SCENE_GAME:
 				setScene(gameScene);
@@ -116,6 +122,9 @@ public class SceneManager {
 			case SCENE_GAME:
 				ResourcesManager.getInstance().unloadGameResources();
 				break;
+			case SCENE_STORE:
+				ResourcesManager.getInstance().unloadStoreResources();
+				break;
 			default:
 				break;
 		}
@@ -127,6 +136,28 @@ public class SceneManager {
 				ResourcesManager.getInstance().loadMenuResources();
 				menuScene = new MainMenuScene();
 				setScene(menuScene);
+			}
+		}));
+	}
+	
+	public void loadStoreScene(final Engine mEngine, final BaseScene scene) {
+		setScene(loadingScene);
+		scene.disposeScene();
+		switch (scene.getSceneType()) {
+			case SCENE_MENU:
+				ResourcesManager.getInstance().unloadMenuResources();
+				break;
+			default:
+				break;
+		}
+		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() {
+			
+			@Override
+			public void onTimePassed(final TimerHandler pTimerHandler) {
+				mEngine.unregisterUpdateHandler(pTimerHandler);
+				ResourcesManager.getInstance().loadStoreResources();
+				storeScene = new StoreScene();
+				setScene(storeScene);
 			}
 		}));
 	}
