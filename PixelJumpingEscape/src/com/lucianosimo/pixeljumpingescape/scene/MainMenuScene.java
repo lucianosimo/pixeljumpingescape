@@ -21,6 +21,7 @@ import org.andengine.util.modifier.ease.IEaseFunction;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
@@ -42,6 +43,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private ScaleMenuItemDecorator menuRightStageButton;
 	private ArrayList<Sprite> playersToSelect;
 	private ArrayList<Sprite> stagesToSelect;
+	private String[] playersMap;
+	private String[] stagesMap;
 	
 	private float screenWidth;
 	private float screenHeight;
@@ -311,11 +314,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						playersToSelect.get(i).setVisible(false);
 						if (i > 0) {
 							playersToSelect.get(i - 1).setVisible(true);
-							selectPlayer(i - 1);
+							//selectPlayer(i - 1);
+							selectPlayer(playersMap[i - 1]);
 						} else {
 							int index = playersToSelect.size() - 1;
 							playersToSelect.get(index).setVisible(true);
-							selectPlayer(index);
+							//selectPlayer(index);
+							selectPlayer(playersMap[index]);
 						}
 					}
 				}
@@ -328,10 +333,12 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						playersToSelect.get(i).setVisible(false);
 						if (i < playersToSelect.size() - 1) {
 							playersToSelect.get(i + 1).setVisible(true);
-							selectPlayer(i + 1);
+							//selectPlayer(i + 1);
+							selectPlayer(playersMap[i + 1]);
 						} else {
 							playersToSelect.get(0).setVisible(true);
-							selectPlayer(0);
+							//selectPlayer(0);
+							selectPlayer(playersMap[0]);
 						}
 					}
 				}
@@ -344,11 +351,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						stagesToSelect.get(i).setVisible(false);
 						if (i > 0) {
 							stagesToSelect.get(i - 1).setVisible(true);
-							selectStage(i - 1);
+							//selectStage(i - 1);
+							selectStage(stagesMap[i - 1]);
 						} else {
 							int index = stagesToSelect.size() - 1;
 							stagesToSelect.get(index).setVisible(true);
-							selectStage(index);
+							//selectStage(index);
+							selectStage(stagesMap[index]);
 						}
 					}
 				}
@@ -361,10 +370,12 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						stagesToSelect.get(i).setVisible(false);
 						if (i < stagesToSelect.size() - 1) {
 							stagesToSelect.get(i + 1).setVisible(true);
-							selectStage(i + 1);
+							//selectStage(i + 1);
+							selectStage(stagesMap[i + 1]);
 						} else {
 							stagesToSelect.get(0).setVisible(true);
-							selectStage(0);
+							//selectStage(0);
+							selectStage(stagesMap[0]);
 						}
 					}
 				}
@@ -390,33 +401,45 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		int playerIndex = 0;
 		int stageIndex = 0;
 		playersToSelect = new ArrayList<>();
-		stagesToSelect = new ArrayList<>();		
+		stagesToSelect = new ArrayList<>();
+		playersMap = new String[4];
+		stagesMap = new String[4];
 		
-		playersToSelect.add(0, new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));
+		playersMap[playerIndex] = "beard";
+		playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));		
 		if (unlockedNerd) {
-			playersToSelect.add(1, new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
+			playersMap[playerIndex] = "nerd";
+			playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
 		}
 		if (unlockedNinja) {
-			playersToSelect.add(2, new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
+			playersMap[playerIndex] = "ninja";
+			playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
 		}
 		if (unlockedRobot) {
-			playersToSelect.add(3, new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
+			playersMap[playerIndex] = "robot";
+			playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
 		}
 		
-		stagesToSelect.add(0, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_castle_stage_region, vbom));
+		stagesMap[stageIndex] = "castle";
+		stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_castle_stage_region, vbom));
 		if (unlockedBrick) {
-			stagesToSelect.add(1, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_brick_stage_region, vbom));
+			stagesMap[stageIndex] = "brick";
+			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_brick_stage_region, vbom));
 		}
 		if (unlockedWood) {
-			stagesToSelect.add(2, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_wood_stage_region, vbom));
+			stagesMap[stageIndex] = "wood";
+			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_wood_stage_region, vbom));
 		}
 		if (unlockedSteel) {
-			stagesToSelect.add(3, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_steel_stage_region, vbom));
+			stagesMap[stageIndex] = "steel";
+			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_steel_stage_region, vbom));
 		}
 		
 		for (int i = 0; i < playersToSelect.size(); i++) {
 			menuSelectionMenuBackground.attachChild(playersToSelect.get(i));
-			if (i == loadSelectedPlayer()) {
+			Log.d("pixel", "selectedPlayer: " + loadSelectedPlayer());
+			Log.d("pixel", "PlayersMap: " + playersMap[i]);
+			if (playersMap[i].equals(loadSelectedPlayer())) {
 				playersToSelect.get(i).setVisible(true);
 			} else {
 				playersToSelect.get(i).setVisible(false);
@@ -425,7 +448,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		
 		for (int i = 0; i < stagesToSelect.size(); i++) {
 			menuSelectionMenuBackground.attachChild(stagesToSelect.get(i));
-			if (i == loadSelectedStage()) {
+			if (stagesMap[i].equals(loadSelectedStage())) {
 				stagesToSelect.get(i).setVisible(true);
 			} else {
 				stagesToSelect.get(i).setVisible(false);
@@ -434,30 +457,30 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	//0 = beard, 1 = nerd, 2 = ninja, 3 = robot
-	private void selectPlayer(int player) {
+	private void selectPlayer(String player) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		Editor editor = sharedPreferences.edit();
-		editor.putInt("selectedPlayer", player);
+		editor.putString("selectedPlayer", player);
 		editor.commit();
 	}
 	
 	//0 = beard, 1 = nerd, 2 = ninja, 3 = robot
-	private void selectStage(int stage) {
+	private void selectStage(String stage) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		Editor editor = sharedPreferences.edit();
-		editor.putInt("selectedStage", stage);
+		editor.putString("selectedStage", stage);
 		editor.commit();
 	}
 	
-	private int loadSelectedPlayer() {
+	private String loadSelectedPlayer() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-		int player = sharedPreferences.getInt("selectedPlayer", 0);
+		String player = sharedPreferences.getString("selectedPlayer", "beard");
 		return player;
 	}
 	
-	private int loadSelectedStage() {
+	private String loadSelectedStage() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-		int stage = sharedPreferences.getInt("selectedStage", 0);
+		String stage = sharedPreferences.getString("selectedStage", "castle");
 		return stage;
 	}
 

@@ -43,7 +43,7 @@ public class ResourcesManager {
 	
 	//Menu items
 	public ITextureRegion loading_background_region;
-
+	
 	public ITextureRegion menu_selection_menu_background_region;
 	public ITextureRegion menu_selection_close_button_region;
 	public ITextureRegion menu_selection_open_button_region;
@@ -364,15 +364,15 @@ public class ResourcesManager {
 		game_blood_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBloodTextureAtlas, activity, "game_blood.png");
 		
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-		int player = sharedPreferences.getInt("selectedPlayer", 0);
+		String player = sharedPreferences.getString("selectedPlayer", "beard");
 			
-		if (player == 0) {
+		if (player.equals("beard")) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_beard.png", 6, 1);
-		} else if (player == 1) {
+		} else if (player.equals("nerd")) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_nerd.png", 6, 1);
-		} else if (player == 2) {
+		} else if (player.equals("ninja")) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_ninja.png", 6, 1);
-		} else if (player == 3) {
+		} else if (player.equals("robot")) {
 			game_player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "player_robot.png", 6, 1);
 		}
 		
@@ -380,9 +380,9 @@ public class ResourcesManager {
 		game_spider_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider.png", 2, 1);
 		game_spider_2_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameAnimatedTextureAtlas, activity, "game_spider_2.png", 2, 1);		
 		
-		int stage = sharedPreferences.getInt("selectedStage", 0);
+		String stage = sharedPreferences.getString("selectedStage", "castle");
 		//Castle
-		if (stage == 0) {
+		if (stage.equals("castle")) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_castle.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_castle.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_castle.png");
@@ -393,7 +393,7 @@ public class ResourcesManager {
 			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_castle.png");
 			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_castle.png");
 		//Red bricks
-		} else if (stage == 1) {
+		} else if (stage.equals("brick")) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_brick.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_brick.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_brick.png");
@@ -404,7 +404,7 @@ public class ResourcesManager {
 			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_brick.png");
 			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_brick.png");
 		//Wood
-		}  else if (stage == 2) {
+		}  else if (stage.equals("wood")) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_wood.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_wood.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_wood.png");
@@ -415,7 +415,7 @@ public class ResourcesManager {
 			game_score_sign_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameHudTextureAtlas, activity, "game_score_sign_wood.png");
 			game_floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_floor_wood.png");
 		//Steel
-		} else if (stage == 3) {
+		} else if (stage.equals("steel")) {
 			game_wall_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_wall_steel.png");
 			game_left_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_left_spikes_steel.png");
 			game_right_spikes_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_right_spikes_steel.png");

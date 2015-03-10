@@ -16,6 +16,7 @@ public class LoadingScene extends BaseScene{
 	public void createScene() {
 		screenWidth = resourcesManager.camera.getWidth();
 		screenHeight = resourcesManager.camera.getHeight();
+		
 		AutoParallaxBackground background = new AutoParallaxBackground(0, 0, 0, 12);
 		background.attachParallaxEntity(new ParallaxEntity(0, new Sprite(screenWidth/2, screenHeight/2, resourcesManager.loading_background_region, vbom)));
 		setBackground(background);
