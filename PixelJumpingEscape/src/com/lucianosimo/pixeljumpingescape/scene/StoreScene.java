@@ -16,8 +16,10 @@ import org.andengine.util.adt.align.HorizontalAlign;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private MenuScene storeScene;
 	
 	private IMenuItem storeMenuItem;
+	private IMenuItem playAdButton;
+	private IMenuItem rateUsButton;
 	
 	private float screenWidth;
 	private float screenHeight;
@@ -56,7 +60,6 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private Sprite unlockBrickButton;
 	private Sprite unlockWoodButton;
 	private Sprite unlockSteelButton;
-	private Sprite playAdButton;
 	
 	private int coins;
 	private Text coinsText;
@@ -69,6 +72,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private final static int STEEL_UNLOCK_VALUE = 250;
 
 	private final int STORE_BACK = 0;
+	private final int STORE_PLAY_AD = 1;
+	private final int STORE_RATEUS = 2;
 
 	@Override
 	public void createScene() {
@@ -102,21 +107,28 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	}
 
 	private void createStoreChildScene() {
-		storeMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(STORE_BACK, resourcesManager.store_back_button_region, vbom), 1.2f, 1);
+		
+		storeMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(STORE_BACK, resourcesManager.store_back_button_region, vbom), 1, 1);
+		playAdButton = new ScaleMenuItemDecorator(new SpriteMenuItem(STORE_PLAY_AD, resourcesManager.store_play_ad_button_region, vbom), 1, 1);
+		rateUsButton = new ScaleMenuItemDecorator(new SpriteMenuItem(STORE_RATEUS, resourcesManager.store_rate_us_button_region, vbom), 1, 1);
+		
 		storeScene.addMenuItem(storeMenuItem);
+		storeScene.addMenuItem(playAdButton);
+		storeScene.addMenuItem(rateUsButton);
+		
 		storeScene.buildAnimations();
 		
 		coinsText = new Text(screenWidth / 2 + 40, screenHeight - 110 , resourcesManager.store_coins_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
-		playAdButton = new Sprite(362, 200, resourcesManager.store_play_ad_button_region, vbom);
-		
+
 		storeMenuItem.setPosition(100, 100);
+		playAdButton.setPosition(275, 170);
+		rateUsButton.setPosition(440, 170);
 		
 		storeScene.setOnMenuItemClickListener(this);
 		
 		storeScene.setBackgroundEnabled(false);
 		
 		storeScene.attachChild(coinsText);
-		storeScene.attachChild(playAdButton);
 		
 		setChildScene(storeScene);
 	}
@@ -126,6 +138,9 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		switch (pMenuItem.getID()) {
 			case STORE_BACK:
 				SceneManager.getInstance().loadMenuScene(engine, this);	
+				return true;
+			case STORE_RATEUS:
+				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.lucianosimo.parachuteaction")));
 				return true;
 			default:
 				return false;

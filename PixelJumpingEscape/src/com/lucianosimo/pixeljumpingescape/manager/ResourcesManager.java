@@ -85,6 +85,7 @@ public class ResourcesManager {
 	public ITextureRegion store_unlocked_player_light_region;
 	public ITextureRegion store_unlock_stage_button_region;
 	public ITextureRegion store_play_ad_button_region;
+	public ITextureRegion store_rate_us_button_region;
 	
 	private BuildableBitmapTextureAtlas storeBackgroundTextureAtlas;
 	private BuildableBitmapTextureAtlas storeTextureAtlas;
@@ -296,6 +297,7 @@ public class ResourcesManager {
 		store_unlocked_player_light_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_unlocked_player_light.png");
 		store_unlock_stage_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_unlock_stage_button.png");
 		store_play_ad_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_play_ad_button.png");
+		store_rate_us_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_rateus_button.png");
 		
 		try {
 			this.storeBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
