@@ -70,6 +70,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private final static int BRICK_UNLOCK_VALUE = 25;
 	private final static int WOOD_UNLOCK_VALUE = 100;
 	private final static int STEEL_UNLOCK_VALUE = 250;
+	
+	private final static int RATEUS_REWARD_VALUE = 250;
 
 	private final int STORE_BACK = 0;
 	private final int STORE_PLAY_AD = 1;
@@ -141,6 +143,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				return true;
 			case STORE_RATEUS:
 				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.lucianosimo.parachuteaction")));
+				addCoins(RATEUS_REWARD_VALUE);
 				return true;
 			default:
 				return false;
@@ -163,7 +166,6 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private void loadCoins() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		coins = sharedPreferences.getInt("coins", 0);
-		coins = 10000;
 		coinsText.setText("" + coins);
 	}
 	
@@ -436,6 +438,12 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		Editor editor = sharedPreferences.edit();
 		editor.putInt("coins", coins);
 		editor.commit();
+	}
+	
+	private void addCoins(int rewardCoins) {
+		coins = coins + rewardCoins;
+		coinsText.setText("" + coins);
+		saveCoins(coins);
 	}
 	
 	private void loadUnlockedPlayers() {

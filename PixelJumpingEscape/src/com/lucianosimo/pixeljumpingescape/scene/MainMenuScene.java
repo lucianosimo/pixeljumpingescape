@@ -18,10 +18,13 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.util.modifier.ease.EaseStrongIn;
 import org.andengine.util.modifier.ease.IEaseFunction;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
@@ -49,6 +52,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private float screenWidth;
 	private float screenHeight;
 	
+	private int coins;
+	
 	final Rectangle fade = new Rectangle(360, 640, 720, 1280, vbom);
 	
 	private boolean unlockedNerd = false;
@@ -66,6 +71,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				EaseStrongIn.getInstance()},
 	};
 	
+	private final static int RATEUS_REWARD_VALUE = 250;
+	
 	private final int MENU_PLAY = 0;
 	private final int MENU_STORE = 1;
 	private final int MENU_OPEN_SELECTION = 2;
@@ -80,6 +87,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		screenWidth = resourcesManager.camera.getWidth();
 		screenHeight = resourcesManager.camera.getHeight();
 		menuChildScene = new MenuScene(camera);
+		loadCoins();
+		evaluateRateUs();
 		createBackground();
 		createMenuChildScene();
 		loadGameVariables();
@@ -87,7 +96,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	@Override
 	public void onBackKeyPressed() {
-		System.exit(0);	
+		displayQuitGameWindow();
 	}
 
 	@Override
@@ -437,8 +446,6 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		
 		for (int i = 0; i < playersToSelect.size(); i++) {
 			menuSelectionMenuBackground.attachChild(playersToSelect.get(i));
-			Log.d("pixel", "selectedPlayer: " + loadSelectedPlayer());
-			Log.d("pixel", "PlayersMap: " + playersMap[i]);
 			if (playersMap[i].equals(loadSelectedPlayer())) {
 				playersToSelect.get(i).setVisible(true);
 			} else {
@@ -496,6 +503,107 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		unlockedBrick = sharedPreferences.getBoolean("unlockedBrick", false);
 		unlockedWood = sharedPreferences.getBoolean("unlockedWood", false);
 		unlockedSteel = sharedPreferences.getBoolean("unlockedSteel", false);
+	}
+	
+	private void evaluateRateUs() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int played = sharedPreferences.getInt("played", 0);
+		//Rated: 0 = no, 1 = yes, 2 = no and don't want to rate
+		int rated = sharedPreferences.getInt("rated", 0);		
+		if (rated == 0) {
+			if (played == 5 || played == 15 || played == 30) {
+				displayRateUsWindow();
+			}
+		}
+	}
+	
+	private void displayRateUsWindow() {
+		MainMenuScene.this.activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				new AlertDialog.Builder(MainMenuScene.this.activity)
+				.setMessage("Do you want to rate us. Obtain " + RATEUS_REWARD_VALUE + " coins")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+				    public void onClick(DialogInterface dialog, int whichButton) {
+				    	activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.lucianosimo.parachuteaction")));
+				    	SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+						int rated = sharedPreferences.getInt("rated", 0);
+						Editor editor = sharedPreferences.edit();
+						rated = 1;
+						editor.putInt("rated", rated);
+						addCoins(RATEUS_REWARD_VALUE);
+						editor.commit();
+				    }})
+				.setNegativeButton("Never", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+						int rated = sharedPreferences.getInt("rated", 0);
+						Editor editor = sharedPreferences.edit();
+						rated = 2;
+						editor.putInt("rated", rated);
+						editor.commit();						
+					}
+				})
+				.setNeutralButton("Maybe later", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+						int played = sharedPreferences.getInt("played", 0);
+						Editor editor = sharedPreferences.edit();
+						played++;
+						editor.putInt("played", played);
+						editor.commit();						
+					}
+				})
+				.show();
+			}
+		});
+	}
+	
+	private void displayQuitGameWindow() {
+		MainMenuScene.this.activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				new AlertDialog.Builder(MainMenuScene.this.activity)
+				.setMessage("Do you want to quit?")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+				    public void onClick(DialogInterface dialog, int whichButton) {
+				    	System.exit(0);	
+				    }})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				})
+				.show();
+			}
+		});
+	}
+	
+	private void loadCoins() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		coins = sharedPreferences.getInt("coins", 0);
+	}
+	
+	private void saveCoins(int coins) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		Editor editor = sharedPreferences.edit();
+		editor.putInt("coins", coins);
+		editor.commit();
+	}
+	
+	private void addCoins(int rewardCoins) {
+		coins = coins + rewardCoins;
+		saveCoins(coins);
 	}
 
 }

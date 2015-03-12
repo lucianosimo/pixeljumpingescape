@@ -9,6 +9,10 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.adt.color.Color;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
+
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
 
@@ -24,6 +28,8 @@ public class SplashScene extends BaseScene{
 	public void createScene() {
 		screenWidth = resourcesManager.camera.getWidth();
 		screenHeight = resourcesManager.camera.getHeight();	
+		
+		incrementPlayedGames();
 		
 		setBackground(new Background(Color.WHITE));
 			
@@ -85,6 +91,15 @@ public class SplashScene extends BaseScene{
 	@Override
 	public void handleOnPause() {
 		
+	}
+	
+	private void incrementPlayedGames() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int played = sharedPreferences.getInt("played", 0);
+		Editor editor = sharedPreferences.edit();
+		played++;
+		editor.putInt("played", played);
+		editor.commit();
 	}
 
 }
