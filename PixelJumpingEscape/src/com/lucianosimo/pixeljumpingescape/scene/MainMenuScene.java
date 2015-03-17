@@ -6,7 +6,6 @@ import java.util.Random;
 
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.MoveModifier;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
 import org.andengine.entity.scene.menu.MenuScene;
@@ -53,8 +52,6 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private float screenHeight;
 	
 	private int coins;
-	
-	final Rectangle fade = new Rectangle(360, 640, 720, 1280, vbom);
 	
 	private boolean unlockedNerd = false;
 	private boolean unlockedNinja = false;
@@ -292,11 +289,11 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	
 	private void setMainMenuButtonsPositions() {
 		menuPlayItem.setPosition(0, 75);
-		menuStoreItem.setPosition(0, -125);
+		menuStoreItem.setPosition(100, -125);
 		menuSelectionOpenButton.setPosition(-195, -screenHeight / 2 + 35);
 		menuLeftPlayerButton.setPosition(-300, -screenHeight / 2 - 175);
 		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 175);
-		menuLeftStageButton.setPosition(75, -screenHeight / 2 - 175);
+		menuLeftStageButton.setPosition(70, -screenHeight / 2 - 175);
 		menuRightStageButton.setPosition(300, -screenHeight / 2 - 175);
 	}
 
