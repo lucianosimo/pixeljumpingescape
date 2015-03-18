@@ -67,6 +67,7 @@ public class ResourcesManager {
 	public ITextureRegion menu_right_spikes_region;
 	public ITextureRegion menu_play_button_region;
 	public ITextureRegion menu_store_button_region;
+	public ITextureRegion menu_leaderboard_button_region;
 
 	private BuildableBitmapTextureAtlas loadingBackgroundTextureAtlas;
 	private BuildableBitmapTextureAtlas menuTextureAtlas;
@@ -101,6 +102,8 @@ public class ResourcesManager {
 	public ITiledTextureRegion game_fire_region;
 	public ITextureRegion game_score_sign_region;
 	public ITextureRegion game_blood_region;
+	public ITextureRegion game_tap_text_region;
+	public ITextureRegion game_tap_block_region;
 	
 	//Objects
 	public ITextureRegion game_wall_region;
@@ -122,8 +125,6 @@ public class ResourcesManager {
 	public ITiledTextureRegion game_coin_region;
 	public ITiledTextureRegion game_spider_region;
 	public ITiledTextureRegion game_spider_2_region;
-	
-	//Countdown
 	
 	//Windows
 	public ITextureRegion game_over_window_region;
@@ -187,6 +188,7 @@ public class ResourcesManager {
 		loading_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(loadingBackgroundTextureAtlas, activity, "loading_background.png");
 		menu_play_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_play_button.png");
 		menu_store_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_store_button.png");
+		menu_leaderboard_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_leaderboard_button.png");
 		menu_title_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_title.png");
 		
 		menu_selection_close_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_close_button.png");
@@ -364,6 +366,9 @@ public class ResourcesManager {
 		
 		//Blood
 		game_blood_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameBloodTextureAtlas, activity, "game_blood.png");
+		
+		game_tap_text_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_tap_text.png");
+		game_tap_block_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_tap_block.png");
 		
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		String player = sharedPreferences.getString("selectedPlayer", "beard");

@@ -70,6 +70,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private AnimatedSprite fire;
 	private Sprite scoreSign;
 	private Sprite blood;
+	private Sprite tapText;
+	private Sprite tapBlockLeft;
+	private Sprite tapBlockRight;
 	
 	//Constants	
 	private float screenWidth;
@@ -211,11 +214,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		setCameraProperties();
 		createHud();
 		createBackground();
+		createInitialTapText();
 		createPhysics();
 		createEnemies();
 		createPlayer();
-		createWalls();
-		//createCoins();		
+		createWalls();	
 		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
@@ -224,7 +227,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	private void setCameraProperties() {
 		camera.setMaxVelocityY(0);
-		//camera.setMaxVelocityY(0);
 		camera.setChaseEntity(this);
 		camera.setBoundsEnabled(false);
 		moveCameraToOrigin();
@@ -238,6 +240,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		camera.setCenterDirect(screenWidth / 2, screenHeight / 2);
         camera.setZoomFactorDirect(1.0f);
         camera.setCenterDirect(screenWidth / 2, screenHeight / 2);
+	}
+	
+	private void createInitialTapText() {
+		tapText = new Sprite(screenWidth / 2, screenHeight / 2, resourcesManager.game_tap_text_region, vbom);
+		tapBlockLeft = new Sprite(WALL_WIDTH / 2, 0, resourcesManager.game_tap_block_region, vbom);
+		tapBlockRight = new Sprite(screenWidth - WALL_WIDTH / 2, 0, resourcesManager.game_tap_block_region, vbom);
+		
+		GameScene.this.attachChild(tapText);
 	}
 	
 	private void createHud() {
@@ -268,6 +278,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						setInitialSpeeds();
 						gameStarted = true;
 						availablePause = true;
+						tapText.setVisible(false);
+						tapBlockLeft.setVisible(false);
+						tapBlockRight.setVisible(false);
 					}
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (player.isInitial()) {
@@ -293,6 +306,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						setInitialSpeeds();
 						gameStarted = true;
 						availablePause = true;
+						tapText.setVisible(false);
+						tapBlockLeft.setVisible(false);
+						tapBlockRight.setVisible(false);
 					}
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
@@ -636,10 +652,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			for (int j = 0; j < leftWallPositions.size(); j++) {
 				leftWall[i][j] = new LeftWall(WALL_WIDTH / 2, leftWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(leftWall[i][j]);
+				if (j == 2 && i == 0) {
+					tapBlockLeft.setPosition(WALL_WIDTH / 2, leftWallPositions.get(j));
+					GameScene.this.attachChild(tapBlockLeft);
+				}
 			}
 			for (int j = 0; j < rightWallPositions.size(); j++) {
 				rightWall[i][j] = new RightWall(screenWidth - (WALL_WIDTH / 2), rightWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
 				GameScene.this.attachChild(rightWall[i][j]);
+				if (j == 2 && i == 0) {
+					tapBlockRight.setPosition(screenWidth - (WALL_WIDTH / 2), rightWallPositions.get(j));
+					GameScene.this.attachChild(tapBlockRight);
+				}
 			}
 			for (int j = 0; j < leftSpikesPositions.size(); j++) {
 				leftSpikes[i][j] = new LeftSpikes(SPIKES_WIDTH / 2, leftSpikesPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
