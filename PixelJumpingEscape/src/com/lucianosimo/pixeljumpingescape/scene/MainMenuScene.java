@@ -221,6 +221,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				menuStoreItem.registerEntityModifier(new MoveModifier(1, menuStoreItem.getX(), 
 						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() + 100, easeFunction[0]));
 				
+				menuLeaderboardItem.clearEntityModifiers();
+				menuLeaderboardItem.registerEntityModifier(new MoveModifier(1, menuLeaderboardItem.getX(), 
+						menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() + 100, easeFunction[0]));
+				
 				menuLeftPlayerButton.clearEntityModifiers();
 				menuLeftPlayerButton.registerEntityModifier(new MoveModifier(1, menuLeftPlayerButton.getX(), 
 						menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() + 375, easeFunction[0]));
@@ -270,6 +274,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				menuStoreItem.clearEntityModifiers();
 				menuStoreItem.registerEntityModifier(new MoveModifier(1, menuStoreItem.getX(), 
 						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() - 100, easeFunction[0]));
+				
+				menuLeaderboardItem.clearEntityModifiers();
+				menuLeaderboardItem.registerEntityModifier(new MoveModifier(1, menuLeaderboardItem.getX(), 
+						menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() - 100, easeFunction[0]));
 				
 				menuLeftPlayerButton.clearEntityModifiers();
 				menuLeftPlayerButton.registerEntityModifier(new MoveModifier(1, menuLeftPlayerButton.getX(), 

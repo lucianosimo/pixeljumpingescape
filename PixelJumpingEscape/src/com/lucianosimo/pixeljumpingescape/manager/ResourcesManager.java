@@ -483,9 +483,9 @@ public class ResourcesManager {
 		final ITexture game_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		final ITexture game_pause_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		final ITexture game_coins_texture = new BitmapTextureAtlas(activity.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "karmaticArcade.ttf", 50, false, Color.WHITE_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
-		game_pause_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_pause_score_texture, activity.getAssets(), "karmaticArcade.ttf", 60, false, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
-		game_coins_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_coins_texture, activity.getAssets(), "karmaticArcade.ttf", 55, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
+		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "karmaticArcade.ttf", 50, false, Color.WHITE_ARGB_PACKED_INT, 0.5f, Color.WHITE_ARGB_PACKED_INT);
+		game_pause_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_pause_score_texture, activity.getAssets(), "karmaticArcade.ttf", 60, false, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.WHITE_ARGB_PACKED_INT);
+		game_coins_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_coins_texture, activity.getAssets(), "karmaticArcade.ttf", 55, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.WHITE_ARGB_PACKED_INT);
 		game_score_font.load();
 		game_pause_score_font.load();
 		game_coins_font.load();

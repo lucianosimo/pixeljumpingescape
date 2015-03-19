@@ -7,6 +7,10 @@ import java.util.Random;
 
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.modifier.AlphaModifier;
+import org.andengine.entity.modifier.FadeInModifier;
+import org.andengine.entity.modifier.FadeOutModifier;
+import org.andengine.entity.modifier.LoopEntityModifier;
+import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -97,6 +101,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//Decoration
 	private Sprite spider_web;
 	private Rectangle spider_web_line;
+	
+	//Modifiers
+	private LoopEntityModifier fadeBlinkModifier;
 	
 	//Booleans
 	private boolean gameStarted = false;
@@ -247,6 +254,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		tapBlockLeft = new Sprite(WALL_WIDTH / 2, 0, resourcesManager.game_tap_block_region, vbom);
 		tapBlockRight = new Sprite(screenWidth - WALL_WIDTH / 2, 0, resourcesManager.game_tap_block_region, vbom);
 		
+		fadeBlinkModifier = new LoopEntityModifier(new SequenceEntityModifier(new FadeOutModifier(2f), new FadeInModifier(2f)));
+		tapBlockLeft.registerEntityModifier(fadeBlinkModifier);
+		tapBlockRight.registerEntityModifier(fadeBlinkModifier);
+		
 		GameScene.this.attachChild(tapText);
 	}
 	
@@ -281,6 +292,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						tapText.setVisible(false);
 						tapBlockLeft.setVisible(false);
 						tapBlockRight.setVisible(false);
+						tapBlockLeft.unregisterEntityModifier(fadeBlinkModifier);
+						tapBlockRight.unregisterEntityModifier(fadeBlinkModifier);
 					}
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (player.isInitial()) {
@@ -309,6 +322,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						tapText.setVisible(false);
 						tapBlockLeft.setVisible(false);
 						tapBlockRight.setVisible(false);
+						tapBlockLeft.unregisterEntityModifier(fadeBlinkModifier);
+						tapBlockRight.unregisterEntityModifier(fadeBlinkModifier);
 					}
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
