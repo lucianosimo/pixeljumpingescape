@@ -70,6 +70,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	//Physics world variable
 	private PhysicsWorld physicsWorld;
 	
+	//Floor
+	private Body floor_body;
+	
 	//HUD sprites
 	private AnimatedSprite fire;
 	private Sprite scoreSign;
@@ -163,7 +166,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	
 	//CAMERA VARIABLES
 	private final static int CAMERA_INITIAL_SPEED = -250;
-	private final static int CAMERA_MAX_SPEED = -500;
+	private final static int CAMERA_MAX_SPEED = -750;
 	private final static int CAMERA_SPEED_INCREMENT = 30;
 	
 	//PLAYER VARIABLES
@@ -187,8 +190,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 0;
 	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 30;
 	private final static int SPIKES_WIDTH = 100;
-	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 190;
-	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 240;
+	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 225;
+	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 275;
 	//private final static int SPIKES_HEIGHT = 128;
 	//private final static int CENTER_SPIKES_WIDTH = 75;
 	//private final static int CENTER_SPIKES_HEIGHT = 75;
@@ -294,6 +297,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						tapBlockRight.setVisible(false);
 						tapBlockLeft.unregisterEntityModifier(fadeBlinkModifier);
 						tapBlockRight.unregisterEntityModifier(fadeBlinkModifier);
+						floor_body.setActive(false);
 					}
 					float yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY();
 					if (player.isInitial()) {
@@ -324,6 +328,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						tapBlockRight.setVisible(false);
 						tapBlockLeft.unregisterEntityModifier(fadeBlinkModifier);
 						tapBlockRight.unregisterEntityModifier(fadeBlinkModifier);
+						floor_body.setActive(false);
 					}
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
@@ -569,7 +574,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		//Initialize center positions for static spikes
 		for (int i = 0; i < MAX_CENTER_BLOCKS; i++) {
 			//Generate random number to decide create static center spike or not
-			blockOrNo = rand.nextInt(3) + 1;
+			blockOrNo = rand.nextInt(2) + 1;
 			if (blockOrNo == 1) {
 				float position = (screenHeight * 3 / 2) + ((CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR + i) * screenHeight);
 				centerPositions.add(position);
@@ -579,14 +584,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		//Initialize center positions for moving spikes
 		for (int i = 0; i < MAX_MOVING_CENTER_BLOCKS; i++) {
 			//Generate random number to decide create moving center spike or not
-			blockOrNo = rand.nextInt(3) + 1;
+			blockOrNo = rand.nextInt(2) + 1;
 			if (blockOrNo == 1) {
 				float position = (screenHeight * 3 / 2) + ((CENTER_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR + i) * screenHeight);
 				centerMovingPositions.add(position);
 			}
 		}
 		
-		createFloor();
 		createSensors();		
 		
 		//Creation of static center spikes
@@ -700,15 +704,17 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 		}
 		
+		createFloor();
+		
 		GameScene.this.attachChild(leftMovingSpike);
 		GameScene.this.attachChild(rightMovingSpike);
 	}
 	
 	private void createFloor() {
-		Sprite floor = new Sprite(camera.getCenterX(), 220 + FLOOR_HEIGHT / 2, resourcesManager.game_floor_region, vbom);
+		Sprite floor = new Sprite(camera.getCenterX(), 128, resourcesManager.game_floor_region, vbom);
 		FixtureDef floor_fixture = PhysicsFactory.createFixtureDef(0, 0, 0);
 		floor_fixture.filter.groupIndex = -1;
-		final Body floor_body = PhysicsFactory.createBoxBody(physicsWorld, floor, BodyType.StaticBody, floor_fixture);
+		floor_body = PhysicsFactory.createBoxBody(physicsWorld, floor, BodyType.StaticBody, floor_fixture);
 		floor_body.setUserData("floor_body");
 		GameScene.this.attachChild(floor);
 	}
@@ -874,10 +880,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	}
 	
 	private void moveLateralMovingSpikes() {
-		leftMovingSpike.getBody().setTransform(leftMovingSpike.getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftMovingSpike.getBody().getAngle());
-		leftMovingSpike.setPosition(leftMovingSpike.getX(), leftMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR)));
-		rightMovingSpike.getBody().setTransform(rightMovingSpike.getX() / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightMovingSpike.getBody().getAngle());
-		rightMovingSpike.setPosition(rightMovingSpike.getX(), rightMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR)));
+		leftMovingSpike.getBody().setTransform(-360 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (leftMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, leftMovingSpike.getBody().getAngle());
+		leftMovingSpike.setPosition(-360, leftMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR)));
+		rightMovingSpike.getBody().setTransform(360 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (rightMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR))) / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, rightMovingSpike.getBody().getAngle());
+		rightMovingSpike.setPosition(360, rightMovingSpike.getY() + (screenHeight * (LATERAL_MOVING_SPIKES_BLOCKS_TO_REAPPEAR)));
 	}
 	
 	private void moveSpider() {

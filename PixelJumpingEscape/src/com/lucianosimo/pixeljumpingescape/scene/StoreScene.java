@@ -47,6 +47,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private boolean unlockedWood = false;
 	private boolean unlockedSteel = false;
 	
+	private int isRated = 0;
+	
 	private Sprite lightBeard;
 	private Sprite lockedBarsNerd;
 	private Sprite unlockNerdButton;
@@ -116,7 +118,12 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		
 		storeScene.addMenuItem(storeMenuItem);
 		storeScene.addMenuItem(playAdButton);
-		storeScene.addMenuItem(rateUsButton);
+		
+		isRated();
+		
+		if (isRated == 0) {
+			storeScene.addMenuItem(rateUsButton);			
+		}
 		
 		storeScene.buildAnimations();
 		
@@ -143,6 +150,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				return true;
 			case STORE_RATEUS:
 				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.lucianosimo.parachuteaction")));
+				saveRateState();
 				addCoins(RATEUS_REWARD_VALUE);
 				return true;
 			default:
@@ -458,6 +466,19 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		unlockedBrick = sharedPreferences.getBoolean("unlockedBrick", false);
 		unlockedWood = sharedPreferences.getBoolean("unlockedWood", false);
 		unlockedSteel = sharedPreferences.getBoolean("unlockedSteel", false);
+	}
+	
+	private void saveRateState() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		Editor editor = sharedPreferences.edit();
+		editor.putInt("rated", 1);
+		editor.commit();
+	}
+	
+	private void isRated() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		//Rated: 0 = no, 1 = yes, 2 = no and don't want to rate
+		isRated = sharedPreferences.getInt("rated", 0);
 	}
 
 }
