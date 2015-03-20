@@ -190,8 +190,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int CENTER_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 0;
 	private final static int CENTER_SPIKES_BLOCKS_TO_REAPPEAR = 30;
 	private final static int SPIKES_WIDTH = 100;
-	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 225;
-	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 275;
+	private final static int CENTER_SPIKES_MAX_OFFSET_LEFT = 165;
+	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 215;
 	//private final static int SPIKES_HEIGHT = 128;
 	//private final static int CENTER_SPIKES_WIDTH = 75;
 	//private final static int CENTER_SPIKES_HEIGHT = 75;
