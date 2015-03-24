@@ -47,6 +47,8 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.chartboost.sdk.CBLocation;
+import com.chartboost.sdk.Chartboost;
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
@@ -240,8 +242,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createWalls();	
 		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
+		Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);
 		engine.registerUpdateHandler(new IUpdateHandler() {
 			int updates = 0;
+			
 			
 			@Override
 			public void reset() {
@@ -553,6 +557,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				        camera.setMaxVelocityY(0);
 				        availablePause = false;
 				        gameOver = true;
+				        
+				        Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);
 
 				        //Save variables
 				        saveCoins("coins", coinsCounter);

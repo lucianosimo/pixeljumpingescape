@@ -21,6 +21,8 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.chartboost.sdk.CBLocation;
+import com.chartboost.sdk.Chartboost;
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
@@ -74,6 +76,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private final static int STEEL_UNLOCK_VALUE = 250;
 	
 	private final static int RATEUS_REWARD_VALUE = 250;
+	private final static int PLAY_AD_REWARD_VALUE = 500;
 
 	private final int STORE_BACK = 0;
 	private final int STORE_PLAY_AD = 1;
@@ -84,6 +87,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		screenWidth = resourcesManager.camera.getWidth();
 		screenHeight = resourcesManager.camera.getHeight();
 		storeScene = new MenuScene(camera);
+		Chartboost.cacheRewardedVideo(CBLocation.LOCATION_GAMEOVER);
 		loadGameVariables();
 		createBackground();
 		createStoreChildScene();
@@ -162,6 +166,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.lucianosimo.parachuteaction")));
 				saveRateState();
 				addCoins(RATEUS_REWARD_VALUE);
+				return true;
+			case STORE_PLAY_AD:
+				Chartboost.showRewardedVideo(CBLocation.LOCATION_DEFAULT);
+				addRewardedVideoCoins(PLAY_AD_REWARD_VALUE);
 				return true;
 			default:
 				return false;
@@ -535,6 +543,12 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	}
 	
 	private void addCoins(int rewardCoins) {
+		coins = coins + rewardCoins;
+		createStoreCoinsTiledSprites();
+		saveCoins(coins);
+	}
+	
+	public void addRewardedVideoCoins(int rewardCoins) {
 		coins = coins + rewardCoins;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);

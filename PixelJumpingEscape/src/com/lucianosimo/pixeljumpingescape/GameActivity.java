@@ -16,16 +16,17 @@ import org.andengine.ui.activity.BaseGameActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 
+import com.chartboost.sdk.Chartboost;
+import com.chartboost.sdk.ChartboostDelegate;
 import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 
 public class GameActivity extends BaseGameActivity {
 
 	private SmoothCamera camera;
-	public static float mGravityX = 0;
-	//private int score = 0;
 	
 	private final static float SPLASH_DURATION = 5f;
 	
@@ -33,15 +34,16 @@ public class GameActivity extends BaseGameActivity {
 	//private final static String SWARM_APP_KEY = "27b45b3507f2daea1c39203e523c00cf";
 	//private final static int SWARM_LEADERBOARD_ID = 17629;
 	
-	//private final static String CHARTBOOST_APP_ID = "5404aa5cc26ee42f745be480";
-	//private final static String CHARTBOOST_APP_SIGNATURE = "91043a4b46e9cbb87172ca5e675c8d0183825734";
+	private final static String CHARTBOOST_APP_ID = "5511d51804b016537b59f89a";
+	private final static String CHARTBOOST_APP_SIGNATURE = "1050fc7a898c2b6f3bd31b47fad756e3f3507448";
 	
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
 		super.onCreate(pSavedInstanceState);
-		/*Chartboost.startWithAppId(this, CHARTBOOST_APP_ID, CHARTBOOST_APP_SIGNATURE);
+		Chartboost.startWithAppId(this, CHARTBOOST_APP_ID, CHARTBOOST_APP_SIGNATURE);
 	    Chartboost.onCreate(this);
-		Swarm.setActive(this);
+		Chartboost.setDelegate(chartBoostDelegate);
+		/*Swarm.setActive(this);
 		Swarm.preload(this, SWARM_APP_ID, SWARM_APP_KEY);*/
 	}
     
@@ -84,7 +86,7 @@ public class GameActivity extends BaseGameActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		//Chartboost.onPause(this);
+		Chartboost.onPause(this);
 		SceneManager.getInstance().getCurrentScene().handleOnPause();
 		//Swarm.setInactive(this);
 		mEngine.getSoundManager().setMasterVolume(0);
@@ -94,7 +96,7 @@ public class GameActivity extends BaseGameActivity {
 	@Override
 	protected synchronized void onResume() {
 		super.onResume();
-		//Chartboost.onResume(this);
+		Chartboost.onResume(this);
 		//Swarm.setActive(this);
 		/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		int soundEnabled = sharedPreferences.getInt("soundEnabled", 0);
@@ -159,7 +161,7 @@ public class GameActivity extends BaseGameActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//Chartboost.onDestroy(this);
+		Chartboost.onDestroy(this);
 		System.exit(0);
 	}
 	
@@ -171,11 +173,11 @@ public class GameActivity extends BaseGameActivity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			SceneManager.getInstance().getCurrentScene().onBackKeyPressed(); 
-			/*if (Chartboost.onBackPressed()) {
+			if (Chartboost.onBackPressed()) {
 				 return false;
 			 } else {
 				 SceneManager.getInstance().getCurrentScene().onBackKeyPressed(); 
-			 }*/
+			}
 		}
 		return false;
 	}
@@ -183,13 +185,39 @@ public class GameActivity extends BaseGameActivity {
     @Override
 	protected void onStart() {
 		super.onStart();
-		//Chartboost.onStart(this);
-		//Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);
+		Chartboost.onStart(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//Chartboost.onStop(this);
+		Chartboost.onStop(this);
 	}	
+	
+	private ChartboostDelegate chartBoostDelegate = new ChartboostDelegate() {
+		@Override
+        public void didDismissRewardedVideo(String location) {
+            Log.i("pixel", String.format("DID DISMISS REWARDED VIDEO '%s'",  (location != null ? location : "null")));
+        }
+    
+        @Override
+        public void didCloseRewardedVideo(String location) {
+            Log.i("pixel", String.format("DID CLOSE REWARDED VIDEO '%s'",  (location != null ? location : "null")));
+        }
+    
+        @Override
+        public void didClickRewardedVideo(String location) {
+            Log.i("pixel", String.format("DID CLICK REWARDED VIDEO '%s'",  (location != null ? location : "null")));
+        }
+    
+        @Override
+        public void didCompleteRewardedVideo(String location, int reward) {
+            Log.i("pixel", String.format("DID COMPLETE REWARDED VIDEO '%s' FOR REWARD %d",  (location != null ? location : "null"), reward));
+        }
+        
+        @Override
+        public void didDisplayRewardedVideo(String location) {
+            Log.i("pixel", String.format("DID DISPLAY REWARDED VIDEO: '%s'",  (location != null ? location : "null")));
+        }
+	};
 }
