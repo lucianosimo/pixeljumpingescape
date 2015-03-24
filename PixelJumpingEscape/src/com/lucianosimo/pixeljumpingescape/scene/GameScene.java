@@ -1196,6 +1196,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		quitButton = new Sprite(125, 25, resourcesManager.game_quit_button_region, vbom){
 	    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 	    		if (pSceneTouchEvent.isActionDown()) {
+	    			saveCoins("coins", coinsCounter);
 	    			gameHud.dispose();
 					gameHud.setVisible(false);
 					detachChild(gameHud);
@@ -1288,6 +1289,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 			
 		} else if (coinsCounter == 0) {
+			gameCoins[0].setPosition(500, gameCoins[0].getY());
 			gameCoins[0].setCurrentTileIndex(0);
 		}
 		if (coinsCounter > 9) {
