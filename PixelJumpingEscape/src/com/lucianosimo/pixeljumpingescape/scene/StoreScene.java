@@ -9,10 +9,8 @@ import org.andengine.entity.scene.menu.item.IMenuItem;
 import org.andengine.entity.scene.menu.item.SpriteMenuItem;
 import org.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.entity.text.Text;
-import org.andengine.entity.text.TextOptions;
+import org.andengine.entity.sprite.TiledSprite;
 import org.andengine.input.touch.TouchEvent;
-import org.andengine.util.adt.align.HorizontalAlign;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -64,7 +62,9 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private Sprite unlockSteelButton;
 	
 	private int coins;
-	private Text coinsText;
+	//private Text coinsText;
+	
+	private TiledSprite[] storeCoins;
 	
 	private final static int NERD_UNLOCK_VALUE = 25;
 	private final static int NINJA_UNLOCK_VALUE = 100;
@@ -84,9 +84,9 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		screenWidth = resourcesManager.camera.getWidth();
 		screenHeight = resourcesManager.camera.getHeight();
 		storeScene = new MenuScene(camera);
+		loadGameVariables();
 		createBackground();
 		createStoreChildScene();
-		loadGameVariables();
 	}
 
 	@Override
@@ -127,7 +127,19 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		
 		storeScene.buildAnimations();
 		
-		coinsText = new Text(screenWidth / 2 + 40, screenHeight - 110 , resourcesManager.store_coins_font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		storeCoins = new TiledSprite[5];
+        
+		storeCoins[0] = new TiledSprite(565, screenHeight - 110, resourcesManager.store_coins_tiled_region.deepCopy(), vbom);
+		storeCoins[1] = new TiledSprite(510, screenHeight - 110, resourcesManager.store_coins_tiled_region.deepCopy(), vbom);
+		storeCoins[2] = new TiledSprite(455, screenHeight - 110, resourcesManager.store_coins_tiled_region.deepCopy(), vbom);
+		storeCoins[3] = new TiledSprite(400, screenHeight - 110, resourcesManager.store_coins_tiled_region.deepCopy(), vbom);
+		storeCoins[4] = new TiledSprite(345, screenHeight - 110, resourcesManager.store_coins_tiled_region.deepCopy(), vbom);
+		
+		for (int i = 0; i < storeCoins.length; i++) {
+			storeScene.attachChild(storeCoins[i]);
+		}
+		
+		createStoreCoinsTiledSprites();
 
 		storeMenuItem.setPosition(100, 100);
 		playAdButton.setPosition(275, 170);
@@ -136,9 +148,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		storeScene.setOnMenuItemClickListener(this);
 		
 		storeScene.setBackgroundEnabled(false);
-		
-		storeScene.attachChild(coinsText);
-		
+
 		setChildScene(storeScene);
 	}
 
@@ -171,10 +181,86 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		loadStages();
 	}
 	
+	private void createStoreCoinsTiledSprites() {
+        StoreScene.this.activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {				
+				int coinsIndex;
+				
+				if (coins == 0) {
+					storeCoins[0].setPosition(400, storeCoins[0].getY());
+				}
+				
+				if (coins > 0) {
+					coinsIndex = coins % 10;
+					storeCoins[0].setCurrentTileIndex(coinsIndex);
+					storeCoins[0].setPosition(400, storeCoins[0].getY());
+				} else if (coins == 0) {
+					storeCoins[0].setCurrentTileIndex(0);
+				}
+				
+				if (coins > 9) {
+					storeCoins[1].setVisible(true);
+					coinsIndex = (coins/10) % 10;
+					storeCoins[1].setCurrentTileIndex(coinsIndex);
+					
+					storeCoins[0].setPosition(419, storeCoins[0].getY());
+					storeCoins[1].setPosition(363, storeCoins[0].getY());
+				} else {
+					storeCoins[1].setVisible(false);
+				}
+				
+				if (coins > 99) {
+					storeCoins[2].setVisible(true);
+					coinsIndex = (coins/100) % 10;
+					storeCoins[2].setCurrentTileIndex(coinsIndex);
+					
+					storeCoins[0].setPosition(437, storeCoins[0].getY());
+					storeCoins[1].setPosition(386, storeCoins[0].getY());
+					storeCoins[2].setPosition(335, storeCoins[0].getY());
+				} else {
+					storeCoins[2].setVisible(false);
+				}
+				
+				if (coins > 999) {
+					storeCoins[3].setVisible(true);
+					coinsIndex = (coins/1000) % 10;
+					storeCoins[3].setCurrentTileIndex(coinsIndex);
+					
+					storeCoins[0].setPosition(478, storeCoins[0].getY());
+					storeCoins[1].setPosition(427, storeCoins[0].getY());
+					storeCoins[2].setPosition(376, storeCoins[0].getY());
+					storeCoins[3].setPosition(325, storeCoins[0].getY());
+				} else {
+					storeCoins[3].setVisible(false);
+				}
+				
+				if (coins > 9999) {
+					storeCoins[4].setVisible(true);
+					coinsIndex = (coins/10000) % 10;
+					storeCoins[4].setCurrentTileIndex(coinsIndex);
+					
+					storeCoins[0].setPosition(504, storeCoins[0].getY());
+					storeCoins[1].setPosition(453, storeCoins[0].getY());
+					storeCoins[2].setPosition(402, storeCoins[0].getY());
+					storeCoins[3].setPosition(351, storeCoins[0].getY());
+					storeCoins[4].setPosition(300, storeCoins[0].getY());
+				} else {
+					storeCoins[4].setVisible(false);
+				}
+				
+				for (int i = 0; i < storeCoins.length; i++) {
+					storeScene.detachChild(storeCoins[i]);
+					storeScene.attachChild(storeCoins[i]);
+				}
+			}
+		});		
+	}
+	
 	private void loadCoins() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		coins = sharedPreferences.getInt("coins", 0);
-		coinsText.setText("" + coins);
 	}
 	
 	private void loadPlayers() {
@@ -387,7 +473,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedNerd", true);
 		editor.commit();
 		coins = coins - NERD_UNLOCK_VALUE;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	
@@ -397,7 +483,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedNinja", true);
 		editor.commit();
 		coins = coins - NINJA_UNLOCK_VALUE;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	
@@ -407,7 +493,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedRobot", true);
 		editor.commit();
 		coins = coins - ROBOT_UNLOCK_VALUE;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	
@@ -417,7 +503,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedBrick", true);
 		editor.commit();
 		coins = coins - BRICK_UNLOCK_VALUE;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	
@@ -427,7 +513,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedWood", true);
 		editor.commit();
 		coins = coins - WOOD_UNLOCK_VALUE;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	
@@ -437,7 +523,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedSteel", true);
 		editor.commit();
 		coins = coins - STEEL_UNLOCK_VALUE;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	
@@ -450,7 +536,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	
 	private void addCoins(int rewardCoins) {
 		coins = coins + rewardCoins;
-		coinsText.setText("" + coins);
+		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
 	

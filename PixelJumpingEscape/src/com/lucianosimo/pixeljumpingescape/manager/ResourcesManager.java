@@ -5,9 +5,7 @@ import java.util.Random;
 import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.SmoothCamera;
-import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
-import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -18,7 +16,6 @@ import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
 import android.content.SharedPreferences;
@@ -75,7 +72,6 @@ public class ResourcesManager {
 	private BuildableBitmapTextureAtlas menuBackgroundTextureAtlas;
 	
 	//Store fonts
-	public Font store_coins_font;
 		
 	//Store items
 	public ITextureRegion store_background_region;
@@ -88,7 +84,11 @@ public class ResourcesManager {
 	public ITextureRegion store_play_ad_button_region;
 	public ITextureRegion store_rate_us_button_region;
 	
+	//Score tiles
+	public ITiledTextureRegion store_coins_tiled_region;
+	
 	private BuildableBitmapTextureAtlas storeBackgroundTextureAtlas;
+	private BuildableBitmapTextureAtlas storeCoinsTextureAtlas;
 	private BuildableBitmapTextureAtlas storeTextureAtlas;
 	
 	//Game audio
@@ -291,6 +291,7 @@ public class ResourcesManager {
 		
 		storeTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 512, 512, TextureOptions.BILINEAR);
 		storeBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		storeCoinsTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 550, 55, TextureOptions.NEAREST);
 
 		store_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeBackgroundTextureAtlas, activity, "store_background.png");
 		store_back_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_back_button.png");
@@ -302,10 +303,14 @@ public class ResourcesManager {
 		store_play_ad_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_play_ad_button.png");
 		store_rate_us_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(storeTextureAtlas, activity, "store_rateus_button.png");
 		
+		store_coins_tiled_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(storeCoinsTextureAtlas, activity, "store_score_tiles.png", 10, 1);
+		
 		try {
 			this.storeBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.storeCoinsTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.storeTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.storeBackgroundTextureAtlas.load();
+			this.storeCoinsTextureAtlas.load();
 			this.storeTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			org.andengine.util.debug.Debug.e(e);
@@ -314,9 +319,6 @@ public class ResourcesManager {
 	
 	private void loadStoreFonts() {
 		FontFactory.setAssetBasePath("fonts/store/");
-		final ITexture store_coins_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		store_coins_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), store_coins_texture, activity.getAssets(), "karmaticArcade.ttf", 45, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.BLACK_ARGB_PACKED_INT);
-		store_coins_font.load();
 	}
 	
 	private void loadStoreAudio() {
@@ -325,11 +327,12 @@ public class ResourcesManager {
 	
 	private void unloadStoreTextures() {
 		this.storeBackgroundTextureAtlas.unload();
+		this.storeCoinsTextureAtlas.unload();
 		this.storeTextureAtlas.unload();
 	}
 	
 	private void unloadStoreFonts() {
-		store_coins_font.unload();		
+		
 	}
 	
 	private void unloadStoreAudio() {
