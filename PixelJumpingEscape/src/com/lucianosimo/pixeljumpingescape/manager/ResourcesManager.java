@@ -94,9 +94,6 @@ public class ResourcesManager {
 	//Game audio
 	
 	//Game fonts
-	public Font game_score_font;
-	public Font game_pause_score_font;
-	public Font game_coins_font;
 	
 	//Game HUD
 	public ITiledTextureRegion game_fire_region;
@@ -119,6 +116,9 @@ public class ResourcesManager {
 	
 	//Backgrounds
 	public ITextureRegion game_background_region;
+	
+	//Score tiles
+	public ITiledTextureRegion game_score_tiled_region;
 	
 	//Animated
 	public ITiledTextureRegion game_player_region;
@@ -146,6 +146,7 @@ public class ResourcesManager {
 	private BuildableBitmapTextureAtlas gameHudTextureAtlas;
 	private BuildableBitmapTextureAtlas gameWindowsTextureAtlas;
 	private BuildableBitmapTextureAtlas gameAnimatedTextureAtlas;
+	private BuildableBitmapTextureAtlas gameScoreTextureAtlas;
 	private BuildableBitmapTextureAtlas gameFireTextureAtlas;
 	private BuildableBitmapTextureAtlas gameMovingSpikeTextureAtlas;
 	private BuildableBitmapTextureAtlas gameBackgroundTextureAtlas;
@@ -350,13 +351,13 @@ public class ResourcesManager {
 	
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-		//Random rand = new Random();
 		
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameBloodTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameHudTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameWindowsTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameAnimatedTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1000, 1000, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		gameScoreTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 550, 55, TextureOptions.DEFAULT);
 		gameMovingSpikeTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameFireTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1440, 100, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameBackgroundTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR);
@@ -369,6 +370,8 @@ public class ResourcesManager {
 		
 		game_tap_text_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_tap_text.png");
 		game_tap_block_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game_tap_block.png");
+		
+		game_score_tiled_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameScoreTextureAtlas, activity, "game_score_tiles.png", 10, 1);
 		
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		String player = sharedPreferences.getString("selectedPlayer", "beard");
@@ -453,6 +456,7 @@ public class ResourcesManager {
 			this.gameWindowsTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameBackgroundTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameAnimatedTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.gameScoreTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameFireTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameMovingSpikeTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			this.gameTextureAtlas.load();
@@ -461,6 +465,7 @@ public class ResourcesManager {
 			this.gameWindowsTextureAtlas.load();
 			this.gameBackgroundTextureAtlas.load();
 			this.gameAnimatedTextureAtlas.load();
+			this.gameScoreTextureAtlas.load();
 			this.gameFireTextureAtlas.load();
 			this.gameMovingSpikeTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
@@ -479,16 +484,6 @@ public class ResourcesManager {
 	
 	private void loadGameFonts() {
 		FontFactory.setAssetBasePath("fonts/game/");
-		
-		final ITexture game_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		final ITexture game_pause_score_texture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		final ITexture game_coins_texture = new BitmapTextureAtlas(activity.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		game_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_score_texture, activity.getAssets(), "karmaticArcade.ttf", 50, false, Color.WHITE_ARGB_PACKED_INT, 0.5f, Color.WHITE_ARGB_PACKED_INT);
-		game_pause_score_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_pause_score_texture, activity.getAssets(), "karmaticArcade.ttf", 60, false, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.WHITE_ARGB_PACKED_INT);
-		game_coins_font = FontFactory.createStrokeFromAsset(activity.getFontManager(), game_coins_texture, activity.getAssets(), "karmaticArcade.ttf", 55, true, Color.BLACK_ARGB_PACKED_INT, 0.5f, Color.WHITE_ARGB_PACKED_INT);
-		game_score_font.load();
-		game_pause_score_font.load();
-		game_coins_font.load();
 	}
 	
 	private void unloadGameTextures() {
@@ -498,14 +493,13 @@ public class ResourcesManager {
 		this.gameWindowsTextureAtlas.unload();
 		this.gameBackgroundTextureAtlas.unload();
 		this.gameAnimatedTextureAtlas.unload();
+		this.gameScoreTextureAtlas.unload();
 		this.gameFireTextureAtlas.unload();
 		this.gameMovingSpikeTextureAtlas.unload();
 	}
 	
 	private void unloadGameFonts() {
-		game_score_font.unload();
-		game_pause_score_font.unload();
-		game_coins_font.unload();
+		
 	}
 	
 	
