@@ -73,6 +73,10 @@ public class SceneManager {
 		return currentScene;
 	}
 	
+	public StoreScene getStoreScene() {
+		return (StoreScene)storeScene;
+	}
+	
 	public void createSplashScene(OnCreateSceneCallback pOnCreateSceneCallback) {
 		ResourcesManager.getInstance().loadSplashScreen();
 		splashScene = new SplashScene();

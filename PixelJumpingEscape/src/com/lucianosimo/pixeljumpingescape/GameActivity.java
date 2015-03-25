@@ -16,19 +16,20 @@ import org.andengine.ui.activity.BaseGameActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.chartboost.sdk.Chartboost;
 import com.chartboost.sdk.ChartboostDelegate;
 import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
+import com.lucianosimo.pixeljumpingescape.scene.StoreScene;
 
 public class GameActivity extends BaseGameActivity {
 
 	private SmoothCamera camera;
 	
 	private final static float SPLASH_DURATION = 5f;
+	private final static int PLAY_AD_REWARD_VALUE = 500;
 	
 	//private final static int SWARM_APP_ID = 12987;
 	//private final static String SWARM_APP_KEY = "27b45b3507f2daea1c39203e523c00cf";
@@ -193,30 +194,11 @@ public class GameActivity extends BaseGameActivity {
 		Chartboost.onStop(this);
 	}	
 	
-	private ChartboostDelegate chartBoostDelegate = new ChartboostDelegate() {
-		@Override
-        public void didDismissRewardedVideo(String location) {
-            Log.i("pixel", String.format("DID DISMISS REWARDED VIDEO '%s'",  (location != null ? location : "null")));
-        }
-    
-        @Override
-        public void didCloseRewardedVideo(String location) {
-            Log.i("pixel", String.format("DID CLOSE REWARDED VIDEO '%s'",  (location != null ? location : "null")));
-        }
-    
-        @Override
-        public void didClickRewardedVideo(String location) {
-            Log.i("pixel", String.format("DID CLICK REWARDED VIDEO '%s'",  (location != null ? location : "null")));
-        }
-    
+	public ChartboostDelegate chartBoostDelegate = new ChartboostDelegate() {
         @Override
         public void didCompleteRewardedVideo(String location, int reward) {
-            Log.i("pixel", String.format("DID COMPLETE REWARDED VIDEO '%s' FOR REWARD %d",  (location != null ? location : "null"), reward));
-        }
-        
-        @Override
-        public void didDisplayRewardedVideo(String location) {
-            Log.i("pixel", String.format("DID DISPLAY REWARDED VIDEO: '%s'",  (location != null ? location : "null")));
+            StoreScene store = SceneManager.getInstance().getStoreScene();
+            store.addRewardedVideoCoins(PLAY_AD_REWARD_VALUE);
         }
 	};
 }

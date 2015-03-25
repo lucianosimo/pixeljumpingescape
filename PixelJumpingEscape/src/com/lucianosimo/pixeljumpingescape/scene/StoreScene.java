@@ -64,7 +64,6 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private Sprite unlockSteelButton;
 	
 	private int coins;
-	//private Text coinsText;
 	
 	private TiledSprite[] storeCoins;
 	
@@ -76,7 +75,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private final static int STEEL_UNLOCK_VALUE = 250;
 	
 	private final static int RATEUS_REWARD_VALUE = 250;
-	private final static int PLAY_AD_REWARD_VALUE = 500;
+	//private final static int PLAY_AD_REWARD_VALUE = 500;
 
 	private final int STORE_BACK = 0;
 	private final int STORE_PLAY_AD = 1;
@@ -113,7 +112,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		background.attachParallaxEntity(backgroundParallaxEntity);
 		this.setBackground(background);
 	}
-
+	
 	private void createStoreChildScene() {
 		
 		storeMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(STORE_BACK, resourcesManager.store_back_button_region, vbom), 1, 1);
@@ -169,7 +168,6 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				return true;
 			case STORE_PLAY_AD:
 				Chartboost.showRewardedVideo(CBLocation.LOCATION_DEFAULT);
-				addRewardedVideoCoins(PLAY_AD_REWARD_VALUE);
 				return true;
 			default:
 				return false;
