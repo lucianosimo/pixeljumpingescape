@@ -56,6 +56,8 @@ public class ResourcesManager {
 	public ITextureRegion menu_selection_brick_stage_region;
 	public ITextureRegion menu_selection_wood_stage_region;
 	public ITextureRegion menu_selection_steel_stage_region;
+	public ITextureRegion menu_selection_player_label_region;
+	public ITextureRegion menu_selection_stage_label_region;
 	
 	public ITextureRegion menu_background_region;
 	public ITextureRegion menu_title_region;
@@ -206,6 +208,8 @@ public class ResourcesManager {
 		menu_selection_brick_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_brick_stage.png");
 		menu_selection_wood_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_wood_stage.png");
 		menu_selection_steel_stage_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_steel_stage.png");
+		menu_selection_player_label_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_player_label.png");
+		menu_selection_stage_label_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuSelectionTextureAtlas, activity, "menu_selection_stage_label.png");
 
 		int background = rand.nextInt(4) + 1;
 		//Castle

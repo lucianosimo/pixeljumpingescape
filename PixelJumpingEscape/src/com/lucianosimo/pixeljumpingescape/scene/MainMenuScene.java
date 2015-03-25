@@ -44,6 +44,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private ScaleMenuItemDecorator menuRightPlayerButton;
 	private ScaleMenuItemDecorator menuLeftStageButton;
 	private ScaleMenuItemDecorator menuRightStageButton;
+	private Sprite menuSelectionPlayerLabel;
+	private Sprite menuSelectionStageLabel;
 	private ArrayList<Sprite> playersToSelect;
 	private ArrayList<Sprite> stagesToSelect;
 	private String[] playersMap;
@@ -169,6 +171,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuLeftStageButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_LEFT_STAGE, resourcesManager.menu_selection_left_stage_button_region, vbom), 1.2f, 1);
 		menuRightStageButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_RIGHT_STAGE, resourcesManager.menu_selection_right_stage_button_region, vbom), 1.2f, 1);
 		
+		menuSelectionPlayerLabel = new Sprite(0, 0, resourcesManager.menu_selection_player_label_region, vbom);
+		menuSelectionStageLabel = new Sprite(0, 0, resourcesManager.menu_selection_stage_label_region, vbom);
+		
 		menuChildScene.attachChild(menuSelectionMenuBackground);
 		
 		menuChildScene.addMenuItem(menuPlayItem);
@@ -179,6 +184,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuChildScene.addMenuItem(menuRightPlayerButton);
 		menuChildScene.addMenuItem(menuLeftStageButton);
 		menuChildScene.addMenuItem(menuRightStageButton);
+		
+		menuSelectionMenuBackground.attachChild(menuSelectionPlayerLabel);
+		menuSelectionMenuBackground.attachChild(menuSelectionStageLabel);
 		
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
@@ -241,6 +249,14 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				menuRightStageButton.registerEntityModifier(new MoveModifier(1, menuRightStageButton.getX(), 
 						menuRightStageButton.getY(), menuRightStageButton.getX(), menuRightStageButton.getY() + 375, easeFunction[0]));
 				
+				menuSelectionPlayerLabel.clearEntityModifiers();
+				menuSelectionPlayerLabel.registerEntityModifier(new MoveModifier(1, menuSelectionPlayerLabel.getX(), 
+						menuSelectionPlayerLabel.getY(), menuSelectionPlayerLabel.getX(), menuSelectionPlayerLabel.getY() + 375, easeFunction[0]));
+				
+				menuSelectionStageLabel.clearEntityModifiers();
+				menuSelectionStageLabel.registerEntityModifier(new MoveModifier(1, menuSelectionStageLabel.getX(), 
+						menuSelectionStageLabel.getY(), menuSelectionStageLabel.getX(), menuSelectionStageLabel.getY() + 375, easeFunction[0]));
+				
 			}
 		});
 	}
@@ -295,6 +311,14 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				menuRightStageButton.registerEntityModifier(new MoveModifier(1, menuRightStageButton.getX(), 
 						menuRightStageButton.getY(), menuRightStageButton.getX(), menuRightStageButton.getY() - 375, easeFunction[0]));
 				
+				menuSelectionPlayerLabel.clearEntityModifiers();
+				menuSelectionPlayerLabel.registerEntityModifier(new MoveModifier(1, menuSelectionPlayerLabel.getX(), 
+						menuSelectionPlayerLabel.getY(), menuSelectionPlayerLabel.getX(), menuSelectionPlayerLabel.getY() - 375, easeFunction[0]));
+				
+				menuSelectionStageLabel.clearEntityModifiers();
+				menuSelectionStageLabel.registerEntityModifier(new MoveModifier(1, menuSelectionStageLabel.getX(), 
+						menuSelectionStageLabel.getY(), menuSelectionStageLabel.getX(), menuSelectionStageLabel.getY() - 375, easeFunction[0]));
+				
 			}
 		});
 	}
@@ -304,10 +328,12 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuStoreItem.setPosition(100, -125);
 		menuLeaderboardItem.setPosition(-100, -125);
 		menuSelectionOpenButton.setPosition(-195, -screenHeight / 2 + 35);
-		menuLeftPlayerButton.setPosition(-300, -screenHeight / 2 - 175);
-		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 175);
-		menuLeftStageButton.setPosition(70, -screenHeight / 2 - 175);
-		menuRightStageButton.setPosition(300, -screenHeight / 2 - 175);
+		menuLeftPlayerButton.setPosition(-300, -screenHeight / 2 - 250);
+		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 250);
+		menuLeftStageButton.setPosition(70, -screenHeight / 2 - 250);
+		menuRightStageButton.setPosition(300, -screenHeight / 2 - 250);
+		menuSelectionPlayerLabel.setPosition(175, -75);
+		menuSelectionStageLabel.setPosition(screenWidth - 175, -75);
 	}
 
 	@Override
@@ -333,12 +359,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						playersToSelect.get(i).setVisible(false);
 						if (i > 0) {
 							playersToSelect.get(i - 1).setVisible(true);
-							//selectPlayer(i - 1);
 							selectPlayer(playersMap[i - 1]);
 						} else {
 							int index = playersToSelect.size() - 1;
 							playersToSelect.get(index).setVisible(true);
-							//selectPlayer(index);
 							selectPlayer(playersMap[index]);
 						}
 					}
@@ -352,11 +376,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						playersToSelect.get(i).setVisible(false);
 						if (i < playersToSelect.size() - 1) {
 							playersToSelect.get(i + 1).setVisible(true);
-							//selectPlayer(i + 1);
 							selectPlayer(playersMap[i + 1]);
 						} else {
 							playersToSelect.get(0).setVisible(true);
-							//selectPlayer(0);
 							selectPlayer(playersMap[0]);
 						}
 					}
@@ -370,12 +392,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						stagesToSelect.get(i).setVisible(false);
 						if (i > 0) {
 							stagesToSelect.get(i - 1).setVisible(true);
-							//selectStage(i - 1);
 							selectStage(stagesMap[i - 1]);
 						} else {
 							int index = stagesToSelect.size() - 1;
 							stagesToSelect.get(index).setVisible(true);
-							//selectStage(index);
 							selectStage(stagesMap[index]);
 						}
 					}
@@ -389,11 +409,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 						stagesToSelect.get(i).setVisible(false);
 						if (i < stagesToSelect.size() - 1) {
 							stagesToSelect.get(i + 1).setVisible(true);
-							//selectStage(i + 1);
 							selectStage(stagesMap[i + 1]);
 						} else {
 							stagesToSelect.get(0).setVisible(true);
-							//selectStage(0);
 							selectStage(stagesMap[0]);
 						}
 					}
@@ -425,33 +443,33 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		stagesMap = new String[4];
 		
 		playersMap[playerIndex] = "beard";
-		playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_beard_player_region, vbom));		
+		playersToSelect.add(playerIndex++, new Sprite(175, 125, resourcesManager.menu_selection_beard_player_region, vbom));		
 		if (unlockedNerd) {
 			playersMap[playerIndex] = "nerd";
-			playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_nerd_player_region, vbom));
+			playersToSelect.add(playerIndex++, new Sprite(175, 125, resourcesManager.menu_selection_nerd_player_region, vbom));
 		}
 		if (unlockedNinja) {
 			playersMap[playerIndex] = "ninja";
-			playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_ninja_player_region, vbom));
+			playersToSelect.add(playerIndex++, new Sprite(175, 125, resourcesManager.menu_selection_ninja_player_region, vbom));
 		}
 		if (unlockedRobot) {
 			playersMap[playerIndex] = "robot";
-			playersToSelect.add(playerIndex++, new Sprite(175, 200, resourcesManager.menu_selection_robot_player_region, vbom));
+			playersToSelect.add(playerIndex++, new Sprite(175, 125, resourcesManager.menu_selection_robot_player_region, vbom));
 		}
 		
 		stagesMap[stageIndex] = "castle";
-		stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_castle_stage_region, vbom));
+		stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 125, resourcesManager.menu_selection_castle_stage_region, vbom));
 		if (unlockedBrick) {
 			stagesMap[stageIndex] = "brick";
-			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_brick_stage_region, vbom));
+			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 125, resourcesManager.menu_selection_brick_stage_region, vbom));
 		}
 		if (unlockedWood) {
 			stagesMap[stageIndex] = "wood";
-			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_wood_stage_region, vbom));
+			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 125, resourcesManager.menu_selection_wood_stage_region, vbom));
 		}
 		if (unlockedSteel) {
 			stagesMap[stageIndex] = "steel";
-			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 200, resourcesManager.menu_selection_steel_stage_region, vbom));
+			stagesToSelect.add(stageIndex++, new Sprite(screenWidth - 175, 125, resourcesManager.menu_selection_steel_stage_region, vbom));
 		}
 		
 		for (int i = 0; i < playersToSelect.size(); i++) {
