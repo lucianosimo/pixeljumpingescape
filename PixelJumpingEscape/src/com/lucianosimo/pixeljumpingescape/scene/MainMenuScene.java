@@ -63,6 +63,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private boolean unlockedWood = false;
 	private boolean unlockedSteel = false;
 	
+	private boolean availableOpenSelectionMenu = true;
+	private boolean availableCloseSelectionMenu = false;
+	
 	private final static int WALL_HEIGHT = 128;
 	
 	private static final IEaseFunction[][] EASEFUNCTIONS = new IEaseFunction[][] {
@@ -82,6 +85,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private final int MENU_RIGHT_PLAYER = 6;
 	private final int MENU_LEFT_STAGE = 7;
 	private final int MENU_RIGHT_STAGE = 8;
+	
+	private final float SELECTION_BACKGROUND_MOVE_DURATION = 1.25f;
 
 	@Override
 	public void createScene() {
@@ -199,128 +204,137 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	private void openSelectionMenu() {
-		
-		MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
-				menuSelectionMenuBackground.clearEntityModifiers();
-				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
-						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() + 375, easeFunction[0]));
+		if (availableOpenSelectionMenu) {
+			resourcesManager.menu_selection_background_move_sound.play();
+			availableOpenSelectionMenu = false;
+			availableCloseSelectionMenu = true;
+			MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 				
-				menuSelectionOpenButton.clearEntityModifiers();
-				menuSelectionOpenButton.registerEntityModifier(new MoveModifier(1, menuSelectionOpenButton.getX(), 
-						menuSelectionOpenButton.getY(), menuSelectionOpenButton.getX(), menuSelectionOpenButton.getY() + 370, easeFunction[0]) {
-					@Override
-					protected void onModifierFinished(IEntity pItem) {
-						super.onModifierFinished(pItem);
-						menuChildScene.addMenuItem(menuSelectionCloseButton);
-						menuSelectionCloseButton.setPosition(menuSelectionOpenButton.getX(), menuSelectionOpenButton.getY());
-						menuChildScene.detachChild(menuSelectionOpenButton);						
-					}
-				});
-				
-				menuPlayItem.clearEntityModifiers();
-				menuPlayItem.registerEntityModifier(new MoveModifier(1, menuPlayItem.getX(), 
-						menuPlayItem.getY(), menuPlayItem.getX(), menuPlayItem.getY() + 100, easeFunction[0]));
-				
-				menuStoreItem.clearEntityModifiers();
-				menuStoreItem.registerEntityModifier(new MoveModifier(1, menuStoreItem.getX(), 
-						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() + 100, easeFunction[0]));
-				
-				menuLeaderboardItem.clearEntityModifiers();
-				menuLeaderboardItem.registerEntityModifier(new MoveModifier(1, menuLeaderboardItem.getX(), 
-						menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() + 100, easeFunction[0]));
-				
-				menuLeftPlayerButton.clearEntityModifiers();
-				menuLeftPlayerButton.registerEntityModifier(new MoveModifier(1, menuLeftPlayerButton.getX(), 
-						menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() + 375, easeFunction[0]));
-				
-				menuRightPlayerButton.clearEntityModifiers();
-				menuRightPlayerButton.registerEntityModifier(new MoveModifier(1, menuRightPlayerButton.getX(), 
-						menuRightPlayerButton.getY(), menuRightPlayerButton.getX(), menuRightPlayerButton.getY() + 375, easeFunction[0]));
-				
-				menuLeftStageButton.clearEntityModifiers();
-				menuLeftStageButton.registerEntityModifier(new MoveModifier(1, menuLeftStageButton.getX(), 
-						menuLeftStageButton.getY(), menuLeftStageButton.getX(), menuLeftStageButton.getY() + 375, easeFunction[0]));
-				
-				menuRightStageButton.clearEntityModifiers();
-				menuRightStageButton.registerEntityModifier(new MoveModifier(1, menuRightStageButton.getX(), 
-						menuRightStageButton.getY(), menuRightStageButton.getX(), menuRightStageButton.getY() + 375, easeFunction[0]));
-				
-				menuSelectionPlayerLabel.clearEntityModifiers();
-				menuSelectionPlayerLabel.registerEntityModifier(new MoveModifier(1, menuSelectionPlayerLabel.getX(), 
-						menuSelectionPlayerLabel.getY(), menuSelectionPlayerLabel.getX(), menuSelectionPlayerLabel.getY() + 375, easeFunction[0]));
-				
-				menuSelectionStageLabel.clearEntityModifiers();
-				menuSelectionStageLabel.registerEntityModifier(new MoveModifier(1, menuSelectionStageLabel.getX(), 
-						menuSelectionStageLabel.getY(), menuSelectionStageLabel.getX(), menuSelectionStageLabel.getY() + 375, easeFunction[0]));
-				
-			}
-		});
+				@Override
+				public void run() {
+					final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
+					menuSelectionMenuBackground.clearEntityModifiers();
+					menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionMenuBackground.getX(), 
+							menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() + 375, easeFunction[0]));
+					
+					menuSelectionOpenButton.clearEntityModifiers();
+					menuSelectionOpenButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionOpenButton.getX(), 
+							menuSelectionOpenButton.getY(), menuSelectionOpenButton.getX(), menuSelectionOpenButton.getY() + 370, easeFunction[0]) {
+						@Override
+						protected void onModifierFinished(IEntity pItem) {
+							super.onModifierFinished(pItem);
+							menuChildScene.addMenuItem(menuSelectionCloseButton);
+							menuSelectionCloseButton.setPosition(menuSelectionOpenButton.getX(), menuSelectionOpenButton.getY());
+							menuChildScene.detachChild(menuSelectionOpenButton);						
+						}
+					});
+					
+					menuPlayItem.clearEntityModifiers();
+					menuPlayItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuPlayItem.getX(), 
+							menuPlayItem.getY(), menuPlayItem.getX(), menuPlayItem.getY() + 100, easeFunction[0]));
+					
+					menuStoreItem.clearEntityModifiers();
+					menuStoreItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuStoreItem.getX(), 
+							menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() + 100, easeFunction[0]));
+					
+					menuLeaderboardItem.clearEntityModifiers();
+					menuLeaderboardItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeaderboardItem.getX(), 
+							menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() + 100, easeFunction[0]));
+					
+					menuLeftPlayerButton.clearEntityModifiers();
+					menuLeftPlayerButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeftPlayerButton.getX(), 
+							menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() + 375, easeFunction[0]));
+					
+					menuRightPlayerButton.clearEntityModifiers();
+					menuRightPlayerButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuRightPlayerButton.getX(), 
+							menuRightPlayerButton.getY(), menuRightPlayerButton.getX(), menuRightPlayerButton.getY() + 375, easeFunction[0]));
+					
+					menuLeftStageButton.clearEntityModifiers();
+					menuLeftStageButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeftStageButton.getX(), 
+							menuLeftStageButton.getY(), menuLeftStageButton.getX(), menuLeftStageButton.getY() + 375, easeFunction[0]));
+					
+					menuRightStageButton.clearEntityModifiers();
+					menuRightStageButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuRightStageButton.getX(), 
+							menuRightStageButton.getY(), menuRightStageButton.getX(), menuRightStageButton.getY() + 375, easeFunction[0]));
+					
+					menuSelectionPlayerLabel.clearEntityModifiers();
+					menuSelectionPlayerLabel.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionPlayerLabel.getX(), 
+							menuSelectionPlayerLabel.getY(), menuSelectionPlayerLabel.getX(), menuSelectionPlayerLabel.getY() + 375, easeFunction[0]));
+					
+					menuSelectionStageLabel.clearEntityModifiers();
+					menuSelectionStageLabel.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionStageLabel.getX(), 
+							menuSelectionStageLabel.getY(), menuSelectionStageLabel.getX(), menuSelectionStageLabel.getY() + 375, easeFunction[0]));
+					
+				}
+			});
+		}
 	}
 	
 	private void closeSelectionMenu() {
-		MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
-			
-			@Override
-			public void run() {				
-				final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
-				menuSelectionMenuBackground.clearEntityModifiers();
-				menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(1, menuSelectionMenuBackground.getX(), 
-						menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 375, easeFunction[0]));
+		if (availableCloseSelectionMenu) {
+			resourcesManager.menu_selection_background_move_sound.play();
+			availableCloseSelectionMenu = false;
+			availableOpenSelectionMenu = true;
+			MainMenuScene.this.activity.runOnUpdateThread(new Runnable() {
 				
-				menuSelectionCloseButton.clearEntityModifiers();
-				menuSelectionCloseButton.registerEntityModifier(new MoveModifier(1, menuSelectionCloseButton.getX(), 
-						menuSelectionCloseButton.getY(), menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY() - 370, easeFunction[0]) {
-					@Override
-					protected void onModifierFinished(IEntity pItem) {
-						super.onModifierFinished(pItem);
-						menuChildScene.addMenuItem(menuSelectionOpenButton);
-						menuSelectionOpenButton.setPosition(menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY());
-						menuChildScene.detachChild(menuSelectionCloseButton);
-					}
-				});
-				
-				menuPlayItem.clearEntityModifiers();
-				menuPlayItem.registerEntityModifier(new MoveModifier(1, menuPlayItem.getX(), 
-						menuPlayItem.getY(), menuPlayItem.getX(), menuPlayItem.getY() - 100, easeFunction[0]));
-				
-				menuStoreItem.clearEntityModifiers();
-				menuStoreItem.registerEntityModifier(new MoveModifier(1, menuStoreItem.getX(), 
-						menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() - 100, easeFunction[0]));
-				
-				menuLeaderboardItem.clearEntityModifiers();
-				menuLeaderboardItem.registerEntityModifier(new MoveModifier(1, menuLeaderboardItem.getX(), 
-						menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() - 100, easeFunction[0]));
-				
-				menuLeftPlayerButton.clearEntityModifiers();
-				menuLeftPlayerButton.registerEntityModifier(new MoveModifier(1, menuLeftPlayerButton.getX(), 
-						menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() - 375, easeFunction[0]));
-				
-				menuRightPlayerButton.clearEntityModifiers();
-				menuRightPlayerButton.registerEntityModifier(new MoveModifier(1, menuRightPlayerButton.getX(), 
-						menuRightPlayerButton.getY(), menuRightPlayerButton.getX(), menuRightPlayerButton.getY() - 375, easeFunction[0]));
-				
-				menuLeftStageButton.clearEntityModifiers();
-				menuLeftStageButton.registerEntityModifier(new MoveModifier(1, menuLeftStageButton.getX(), 
-						menuLeftStageButton.getY(), menuLeftStageButton.getX(), menuLeftStageButton.getY() - 375, easeFunction[0]));
-				
-				menuRightStageButton.clearEntityModifiers();
-				menuRightStageButton.registerEntityModifier(new MoveModifier(1, menuRightStageButton.getX(), 
-						menuRightStageButton.getY(), menuRightStageButton.getX(), menuRightStageButton.getY() - 375, easeFunction[0]));
-				
-				menuSelectionPlayerLabel.clearEntityModifiers();
-				menuSelectionPlayerLabel.registerEntityModifier(new MoveModifier(1, menuSelectionPlayerLabel.getX(), 
-						menuSelectionPlayerLabel.getY(), menuSelectionPlayerLabel.getX(), menuSelectionPlayerLabel.getY() - 375, easeFunction[0]));
-				
-				menuSelectionStageLabel.clearEntityModifiers();
-				menuSelectionStageLabel.registerEntityModifier(new MoveModifier(1, menuSelectionStageLabel.getX(), 
-						menuSelectionStageLabel.getY(), menuSelectionStageLabel.getX(), menuSelectionStageLabel.getY() - 375, easeFunction[0]));
-				
-			}
-		});
+				@Override
+				public void run() {				
+					final IEaseFunction[] easeFunction = EASEFUNCTIONS[0];
+					menuSelectionMenuBackground.clearEntityModifiers();
+					menuSelectionMenuBackground.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionMenuBackground.getX(), 
+							menuSelectionMenuBackground.getY(), menuSelectionMenuBackground.getX(), menuSelectionMenuBackground.getY() - 375, easeFunction[0]));
+					
+					menuSelectionCloseButton.clearEntityModifiers();
+					menuSelectionCloseButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionCloseButton.getX(), 
+							menuSelectionCloseButton.getY(), menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY() - 370, easeFunction[0]) {
+						@Override
+						protected void onModifierFinished(IEntity pItem) {
+							super.onModifierFinished(pItem);
+							menuChildScene.addMenuItem(menuSelectionOpenButton);
+							menuSelectionOpenButton.setPosition(menuSelectionCloseButton.getX(), menuSelectionCloseButton.getY());
+							menuChildScene.detachChild(menuSelectionCloseButton);
+						}
+					});
+					
+					menuPlayItem.clearEntityModifiers();
+					menuPlayItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuPlayItem.getX(), 
+							menuPlayItem.getY(), menuPlayItem.getX(), menuPlayItem.getY() - 100, easeFunction[0]));
+					
+					menuStoreItem.clearEntityModifiers();
+					menuStoreItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuStoreItem.getX(), 
+							menuStoreItem.getY(), menuStoreItem.getX(), menuStoreItem.getY() - 100, easeFunction[0]));
+					
+					menuLeaderboardItem.clearEntityModifiers();
+					menuLeaderboardItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeaderboardItem.getX(), 
+							menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() - 100, easeFunction[0]));
+					
+					menuLeftPlayerButton.clearEntityModifiers();
+					menuLeftPlayerButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeftPlayerButton.getX(), 
+							menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() - 375, easeFunction[0]));
+					
+					menuRightPlayerButton.clearEntityModifiers();
+					menuRightPlayerButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuRightPlayerButton.getX(), 
+							menuRightPlayerButton.getY(), menuRightPlayerButton.getX(), menuRightPlayerButton.getY() - 375, easeFunction[0]));
+					
+					menuLeftStageButton.clearEntityModifiers();
+					menuLeftStageButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeftStageButton.getX(), 
+							menuLeftStageButton.getY(), menuLeftStageButton.getX(), menuLeftStageButton.getY() - 375, easeFunction[0]));
+					
+					menuRightStageButton.clearEntityModifiers();
+					menuRightStageButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuRightStageButton.getX(), 
+							menuRightStageButton.getY(), menuRightStageButton.getX(), menuRightStageButton.getY() - 375, easeFunction[0]));
+					
+					menuSelectionPlayerLabel.clearEntityModifiers();
+					menuSelectionPlayerLabel.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionPlayerLabel.getX(), 
+							menuSelectionPlayerLabel.getY(), menuSelectionPlayerLabel.getX(), menuSelectionPlayerLabel.getY() - 375, easeFunction[0]));
+					
+					menuSelectionStageLabel.clearEntityModifiers();
+					menuSelectionStageLabel.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuSelectionStageLabel.getX(), 
+							menuSelectionStageLabel.getY(), menuSelectionStageLabel.getX(), menuSelectionStageLabel.getY() - 375, easeFunction[0]));
+					
+				}
+			});
+		}
 	}
 	
 	private void setMainMenuButtonsPositions() {
@@ -332,17 +346,22 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 250);
 		menuLeftStageButton.setPosition(70, -screenHeight / 2 - 250);
 		menuRightStageButton.setPosition(300, -screenHeight / 2 - 250);
-		menuSelectionPlayerLabel.setPosition(175, -75);
-		menuSelectionStageLabel.setPosition(screenWidth - 175, -75);
+		menuSelectionPlayerLabel.setPosition(175, -90);
+		menuSelectionStageLabel.setPosition(screenWidth - 175, -90);
 	}
 
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,	float pMenuItemLocalX, float pMenuItemLocalY) {
 		switch (pMenuItem.getID()) {
 			case MENU_PLAY:
+				resourcesManager.menu_button_sound.play();
 				SceneManager.getInstance().loadGameScene(engine, this);
 				return true;
+			case MENU_LEADERBOARD:
+				resourcesManager.menu_button_sound.play();
+				return true;
 			case MENU_STORE:
+				resourcesManager.menu_button_sound.play();
 				SceneManager.getInstance().loadStoreScene(engine, this);
 				return true;
 			case MENU_CLOSE_SELECTION:
@@ -352,6 +371,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				openSelectionMenu();	
 				return true;
 			case MENU_LEFT_PLAYER:
+				resourcesManager.menu_button_sound.play();
 				boolean changedLeft = false;
 				for (int i = 0; i < playersToSelect.size(); i++) {
 					if (playersToSelect.get(i).isVisible() && !changedLeft) {
@@ -369,6 +389,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				}
 				return true;
 			case MENU_RIGHT_PLAYER:
+				resourcesManager.menu_button_sound.play();
 				boolean changedRight = false;
 				for (int i = 0; i < playersToSelect.size(); i++) {
 					if (playersToSelect.get(i).isVisible() && !changedRight) {
@@ -385,6 +406,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				}
 				return true;
 			case MENU_LEFT_STAGE:
+				resourcesManager.menu_button_sound.play();
 				boolean changedLeftStage = false;
 				for (int i = 0; i < stagesToSelect.size(); i++) {
 					if (stagesToSelect.get(i).isVisible() && !changedLeftStage) {
@@ -402,6 +424,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				}
 				return true;
 			case MENU_RIGHT_STAGE:
+				resourcesManager.menu_button_sound.play();
 				boolean changedRightStage = false;
 				for (int i = 0; i < stagesToSelect.size(); i++) {
 					if (stagesToSelect.get(i).isVisible() && !changedRightStage) {
@@ -546,6 +569,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	private void displayRateUsWindow() {
+		resourcesManager.menu_popup_window_sound.play();
 		MainMenuScene.this.activity.runOnUiThread(new Runnable() {
 			
 			@Override
@@ -594,6 +618,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	private void displayQuitGameWindow() {
+		resourcesManager.menu_popup_window_sound.play();
 		MainMenuScene.this.activity.runOnUiThread(new Runnable() {
 			
 			@Override

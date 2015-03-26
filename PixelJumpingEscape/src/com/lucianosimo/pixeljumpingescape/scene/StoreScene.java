@@ -167,6 +167,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				addCoins(RATEUS_REWARD_VALUE);
 				return true;
 			case STORE_PLAY_AD:
+				resourcesManager.store_popup_window_sound.play();
 				Chartboost.showRewardedVideo(CBLocation.LOCATION_DEFAULT);
 				return true;
 			default:
@@ -278,6 +279,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (pSceneTouchEvent.isActionDown()) {
+						resourcesManager.store_popup_window_sound.play();
 						if (coins >= NERD_UNLOCK_VALUE) {
 							confirmMessage("nerd", NERD_UNLOCK_VALUE);						
 						} else {
@@ -301,6 +303,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (pSceneTouchEvent.isActionDown()) {
+						resourcesManager.store_popup_window_sound.play();
 						if (coins >= NINJA_UNLOCK_VALUE) {
 							confirmMessage("ninja", NINJA_UNLOCK_VALUE);						
 						} else {
@@ -324,6 +327,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (pSceneTouchEvent.isActionDown()) {
+						resourcesManager.store_popup_window_sound.play();
 						if (coins >= ROBOT_UNLOCK_VALUE) {
 							confirmMessage("robot", ROBOT_UNLOCK_VALUE);						
 						} else {
@@ -352,6 +356,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (pSceneTouchEvent.isActionDown()) {
+						resourcesManager.store_popup_window_sound.play();
 						if (coins >= BRICK_UNLOCK_VALUE) {
 							confirmMessage("brick", BRICK_UNLOCK_VALUE);						
 						} else {
@@ -370,6 +375,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (pSceneTouchEvent.isActionDown()) {
+						resourcesManager.store_popup_window_sound.play();
 						if (coins >= WOOD_UNLOCK_VALUE) {
 							confirmMessage("wood", WOOD_UNLOCK_VALUE);						
 						} else {
@@ -388,6 +394,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (pSceneTouchEvent.isActionDown()) {
+						resourcesManager.store_popup_window_sound.play();
 						if (coins >= STEEL_UNLOCK_VALUE) {
 							confirmMessage("steel", STEEL_UNLOCK_VALUE);						
 						} else {
@@ -413,6 +420,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 				.setPositiveButton("Of course!!!", new DialogInterface.OnClickListener() {
 
 				    public void onClick(DialogInterface dialog, int whichButton) {
+				    	resourcesManager.store_unlock_sound.play();
 				    	StoreScene.this.activity.runOnUpdateThread(new Runnable() {
 							
 							@Override
@@ -464,6 +472,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	}
 	
 	private void noEnoughCoins(final String player, final int coins) {
+		resourcesManager.store_unlock_sound.play();
 		StoreScene.this.activity.runOnUiThread(new Runnable() {
 			
 			@Override
@@ -550,6 +559,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		coins = coins + rewardCoins;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
+		resourcesManager.store_coins_reward_sound.play();
 	}
 	
 	private void loadUnlockedPlayers() {

@@ -1,8 +1,11 @@
 package com.lucianosimo.pixeljumpingescape.manager;
 
+import java.io.IOException;
 import java.util.Random;
 
 import org.andengine.audio.music.MusicFactory;
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.opengl.font.FontFactory;
@@ -37,6 +40,9 @@ public class ResourcesManager {
 	private BitmapTextureAtlas splashTextureAtlas;
 	
 	//Menu audio
+	public Sound menu_button_sound;
+	public Sound menu_popup_window_sound;
+	public Sound menu_selection_background_move_sound;
 	
 	//Menu items
 	public ITextureRegion loading_background_region;
@@ -74,6 +80,12 @@ public class ResourcesManager {
 	private BuildableBitmapTextureAtlas menuBackgroundTextureAtlas;
 	
 	//Store fonts
+	
+	//Store audio
+	public Sound store_coins_reward_sound;
+	public Sound store_popup_window_sound;
+	public Sound store_unlock_sound;
+	public Sound store_error_sound;
 		
 	//Store items
 	public ITextureRegion store_background_region;
@@ -261,7 +273,14 @@ public class ResourcesManager {
 	}
 	
 	private void loadMenuAudio() {
-		MusicFactory.setAssetBasePath("music/menu/");
+		SoundFactory.setAssetBasePath("sound/menu/");
+		try {
+			menu_button_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "menu_button_sound.mp3");
+			menu_popup_window_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "menu_popup_window_sound.mp3");
+			menu_selection_background_move_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "menu_selection_background_move_sound.mp3");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void unloadMenuTextures() {
@@ -274,6 +293,12 @@ public class ResourcesManager {
 	}
 	
 	private void unloadMenuAudio() {
+		menu_button_sound.stop();
+		menu_popup_window_sound.stop();
+		menu_selection_background_move_sound.stop();
+		activity.getSoundManager().remove(menu_button_sound);
+		activity.getSoundManager().remove(menu_popup_window_sound);
+		activity.getSoundManager().remove(menu_selection_background_move_sound);
 		System.gc();
 	}
 	
@@ -326,7 +351,15 @@ public class ResourcesManager {
 	}
 	
 	private void loadStoreAudio() {
-		MusicFactory.setAssetBasePath("music/store/");
+		SoundFactory.setAssetBasePath("sound/store/");
+		try {
+			store_coins_reward_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "store_coins_reward_sound.mp3");
+			store_popup_window_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "store_popup_window_sound.mp3");
+			store_unlock_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "store_unlock_sound.mp3");
+			store_error_sound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "store_error_sound.mp3");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void unloadStoreTextures() {
@@ -340,6 +373,14 @@ public class ResourcesManager {
 	}
 	
 	private void unloadStoreAudio() {
+		store_coins_reward_sound.stop();
+		store_popup_window_sound.stop();
+		store_unlock_sound.stop();
+		store_error_sound.stop();
+		activity.getSoundManager().remove(store_coins_reward_sound);
+		activity.getSoundManager().remove(store_popup_window_sound);
+		activity.getSoundManager().remove(store_unlock_sound);
+		activity.getSoundManager().remove(store_error_sound);
 		System.gc();
 	}
 	
