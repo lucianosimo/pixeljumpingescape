@@ -49,6 +49,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.chartboost.sdk.CBLocation;
 import com.chartboost.sdk.Chartboost;
+import com.google.android.gms.games.Games;
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
@@ -602,6 +603,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					    final Sprite gpgButton = new Sprite(325, 100, resourcesManager.game_gpg_button_region, vbom) {
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					    		if (pSceneTouchEvent.isActionDown()) {
+					    			Games.Leaderboards.submitScore(activity.getGoogleApiClient(), activity.getHighestScoreLeaderboardID() , score);
 					    		}
 					    		return true;
 					    	}

@@ -359,6 +359,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				return true;
 			case MENU_LEADERBOARD:
 				resourcesManager.menu_button_sound.play();
+				activity.displayLeaderboard();
 				return true;
 			case MENU_STORE:
 				resourcesManager.menu_button_sound.play();

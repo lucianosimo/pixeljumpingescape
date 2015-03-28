@@ -12,7 +12,6 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.ui.activity.BaseGameActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,58 +19,39 @@ import android.view.KeyEvent;
 
 import com.chartboost.sdk.Chartboost;
 import com.chartboost.sdk.ChartboostDelegate;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.GoogleBaseGameActivity;
 import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.scene.StoreScene;
 
-public class GameActivity extends BaseGameActivity {
+public class GameActivity extends GoogleBaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 	private SmoothCamera camera;
+	private  GoogleApiClient mGoogleApiClient;
 	
 	private final static float SPLASH_DURATION = 5f;
 	private final static int PLAY_AD_REWARD_VALUE = 500;
 	
-	//private final static int SWARM_APP_ID = 12987;
-	//private final static String SWARM_APP_KEY = "27b45b3507f2daea1c39203e523c00cf";
-	//private final static int SWARM_LEADERBOARD_ID = 17629;
-	
 	private final static String CHARTBOOST_APP_ID = "5511d51804b016537b59f89a";
 	private final static String CHARTBOOST_APP_SIGNATURE = "1050fc7a898c2b6f3bd31b47fad756e3f3507448";
+	
+	private final static String HIGHEST_SCORE_LEADERBOARD_ID = "CgkIhKPT0boOEAIQAQ";
 	
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
 		super.onCreate(pSavedInstanceState);
+	    mGoogleApiClient = new GoogleApiClient.Builder(this)
+	            .addConnectionCallbacks(this)
+	            .addOnConnectionFailedListener(this)
+	            .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+	            .build();
 		Chartboost.startWithAppId(this, CHARTBOOST_APP_ID, CHARTBOOST_APP_SIGNATURE);
 	    Chartboost.onCreate(this);
 		Chartboost.setDelegate(chartBoostDelegate);
-		/*Swarm.setActive(this);
-		Swarm.preload(this, SWARM_APP_ID, SWARM_APP_KEY);*/
 	}
-    
-	/*public void showLeaderboard() {
-		Swarm.setAllowGuests(true);
-		if (!Swarm.isInitialized() ) {
-    		Swarm.init(this, SWARM_APP_ID, SWARM_APP_KEY);
-        }
-		this.runOnUiThread(new Runnable() {
-    		@Override
-    		public void run() {
-    			SwarmLeaderboard.showLeaderboard(SWARM_LEADERBOARD_ID);
-    		}
-    	});
-	}
-	
-    public void submitScore(int submitScore) {
-    	score = submitScore;
-    	Swarm.setAllowGuests(true);
-    	Swarm.init(this, SWARM_APP_ID, SWARM_APP_KEY);
-    	this.runOnUiThread(new Runnable() {
-    		@Override
-    		public void run() {
-    			SwarmLeaderboard.submitScore(SWARM_LEADERBOARD_ID, score);
-    		}
-    	});
-    }*/
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -98,7 +78,6 @@ public class GameActivity extends BaseGameActivity {
 	protected synchronized void onResume() {
 		super.onResume();
 		Chartboost.onResume(this);
-		//Swarm.setActive(this);
 		/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		int soundEnabled = sharedPreferences.getInt("soundEnabled", 0);
 		int musicEnabled = sharedPreferences.getInt("musicEnabled", 0);
@@ -185,12 +164,14 @@ public class GameActivity extends BaseGameActivity {
     @Override
 	protected void onStart() {
 		super.onStart();
+		mGoogleApiClient.connect();
 		Chartboost.onStart(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		mGoogleApiClient.disconnect();
 		Chartboost.onStop(this);
 	}	
 	
@@ -201,4 +182,47 @@ public class GameActivity extends BaseGameActivity {
             store.addRewardedVideoCoins(PLAY_AD_REWARD_VALUE);
         }
 	};
+	
+	public String getHighestScoreLeaderboardID() {
+		return HIGHEST_SCORE_LEADERBOARD_ID;
+	}
+	
+	public GoogleApiClient getGoogleApiClient() {
+		return mGoogleApiClient;
+	}
+	
+	public void displayLeaderboard() {
+		startActivityForResult(Games.Leaderboards.getLeaderboardIntent(this.getGoogleApiClient(),
+		        this.getHighestScoreLeaderboardID()), 200);
+	}
+
+	@Override
+	public void onSignInFailed() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSignInSucceeded() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
