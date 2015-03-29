@@ -37,6 +37,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -569,7 +570,31 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						if (score > previousHighScore) {
 							gameNewRecord.setVisible(true);
 						}
-				        
+						
+						incrementGamesCounter();
+						
+						//Achievements
+						if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+							if (isFirstGame()) {
+								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getWelcomeAchievementID());
+							} else if (isGameNumber10()) {
+								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getIKnowYourFaceAchievementID());
+							} else if (isGameNumber50()) {
+								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getYouAreAddictedAchievementID());
+							}
+						} else {
+							activity.getGoogleApiClient().connect();
+							if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+								if (isFirstGame()) {
+									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getWelcomeAchievementID());
+								} else if (isGameNumber10()) {
+									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getIKnowYourFaceAchievementID());
+								} else if (isGameNumber50()) {
+									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getYouAreAddictedAchievementID());
+								}
+							}
+						}
+						
 				        gameOverWindow.setPosition(camera.getCenterX(), camera.getCenterY());
 				        
 				        createGameCoinsTiledSprites(true, 267);
@@ -603,7 +628,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					    final Sprite gpgButton = new Sprite(325, 100, resourcesManager.game_gpg_button_region, vbom) {
 					    	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					    		if (pSceneTouchEvent.isActionDown()) {
-					    			Games.Leaderboards.submitScore(activity.getGoogleApiClient(), activity.getHighestScoreLeaderboardID() , score);
+					    			if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+					    				Games.Leaderboards.submitScore(activity.getGoogleApiClient(), activity.getHighestScoreLeaderboardID() , score);
+						    			scoreSubmittedToast();
+									} else {
+										activity.getGoogleApiClient().connect();
+									}							    			
 					    		}
 					    		return true;
 					    	}
@@ -641,6 +671,16 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		final long[] PLAYER_ANIMATE = new long[] {500, 500};
 		player.animate(PLAYER_ANIMATE, 0, 1, true);
 		GameScene.this.attachChild(player);
+	}
+	
+	private void scoreSubmittedToast() {
+		GameScene.this.activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				Toast.makeText(activity, "Score submitted", Toast.LENGTH_SHORT).show();	
+			}
+		});
 	}
 	
 	private void createWalls() {
@@ -1389,5 +1429,48 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private void loadHighScore() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		previousHighScore = sharedPreferences.getInt("highScore", 0);
+	}
+	
+	private void incrementGamesCounter() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int numberOfGames = sharedPreferences.getInt("numberOfGames", 0);
+		
+		numberOfGames++;
+		Editor editor = sharedPreferences.edit();
+		editor.putInt("numberOfGames", numberOfGames);
+		editor.commit();
+	}
+	
+	private boolean isFirstGame() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int numberOfGames = sharedPreferences.getInt("numberOfGames", 0);
+		
+		if (numberOfGames == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isGameNumber10() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int numberOfGames = sharedPreferences.getInt("numberOfGames", 0);
+		
+		if (numberOfGames == 10) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isGameNumber50() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int numberOfGames = sharedPreferences.getInt("numberOfGames", 0);
+		
+		if (numberOfGames == 50) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

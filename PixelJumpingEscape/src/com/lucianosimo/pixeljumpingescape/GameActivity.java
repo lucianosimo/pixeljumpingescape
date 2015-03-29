@@ -22,6 +22,7 @@ import com.chartboost.sdk.ChartboostDelegate;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.BaseGameUtils;
 import com.google.example.games.basegameutils.GoogleBaseGameActivity;
 import com.lucianosimo.pixeljumpingescape.manager.ResourcesManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
@@ -33,13 +34,32 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 	private  GoogleApiClient mGoogleApiClient;
 	
 	private final static float SPLASH_DURATION = 5f;
-	private final static int PLAY_AD_REWARD_VALUE = 500;
+	private final static int PLAY_AD_REWARD_VALUE = 1000;
 	
 	private final static String CHARTBOOST_APP_ID = "5511d51804b016537b59f89a";
 	private final static String CHARTBOOST_APP_SIGNATURE = "1050fc7a898c2b6f3bd31b47fad756e3f3507448";
 	
 	private final static String HIGHEST_SCORE_LEADERBOARD_ID = "CgkIhKPT0boOEAIQAQ";
+	//First game
+	private final static String ACHIEVEMENT_WELCOME_ID = "CgkIhKPT0boOEAIQAg";
+	//Play 10 games
+	private final static String ACHIEVEMENT_I_KNOW_YOUR_FACE_ID = "CgkIhKPT0boOEAIQAw";
+	//Play 50 games 
+	private final static String ACHIEVEMENT_YOU_ARE_ADDICTED_ID = "CgkIhKPT0boOEAIQBA";
+	//Unlock all four players
+	private final static String ACHIEVEMENT_THANKS_FOR_LIBERATING_US_ID = "CgkIhKPT0boOEAIQBQ";
+	//Unlock all four stages
+	private final static String ACHIEVEMENT_TRIP_WHEREVER_YOU_WANT_ID = "CgkIhKPT0boOEAIQBg";
 	
+	private final static String SIGN_IN_OTHER_ERROR = "There was an issue with sign in. Please try again later.";
+	
+	private static int RC_SIGN_IN = 9001;
+	private static int RC_LEADERBOARD = 9002;
+	private static int RC_ACHIEVEMENTS = 9003;
+
+	private boolean mResolvingConnectionFailure = false;
+	private boolean mAutoStartSignInFlow = true;
+
 	@Override
 	protected void onCreate(Bundle pSavedInstanceState) {
 		super.onCreate(pSavedInstanceState);
@@ -69,7 +89,6 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 		super.onPause();
 		Chartboost.onPause(this);
 		SceneManager.getInstance().getCurrentScene().handleOnPause();
-		//Swarm.setInactive(this);
 		mEngine.getSoundManager().setMasterVolume(0);
 		mEngine.getMusicManager().setMasterVolume(0);
 	}
@@ -142,6 +161,7 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 	protected void onDestroy() {
 		super.onDestroy();
 		Chartboost.onDestroy(this);
+		mGoogleApiClient.disconnect();
 		System.exit(0);
 	}
 	
@@ -187,42 +207,84 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 		return HIGHEST_SCORE_LEADERBOARD_ID;
 	}
 	
+	//First game
+	public String getWelcomeAchievementID() {
+		return ACHIEVEMENT_WELCOME_ID;
+	}
+	
+	//Play 10 games
+	public String getIKnowYourFaceAchievementID() {
+		return ACHIEVEMENT_I_KNOW_YOUR_FACE_ID;
+	}
+	
+	//Play 50 games
+	public String getYouAreAddictedAchievementID() {
+		return ACHIEVEMENT_YOU_ARE_ADDICTED_ID;
+	}
+	
+	//Unlock all four players
+	public String getThanksForLiberatingUsAchievementID() {
+		return ACHIEVEMENT_THANKS_FOR_LIBERATING_US_ID;
+	}
+	
+	//Unlock all four stages
+	public String getTripWhereverYouWantAchievementID() {
+		return ACHIEVEMENT_TRIP_WHEREVER_YOU_WANT_ID;
+	}
 	public GoogleApiClient getGoogleApiClient() {
 		return mGoogleApiClient;
 	}
 	
 	public void displayLeaderboard() {
 		startActivityForResult(Games.Leaderboards.getLeaderboardIntent(this.getGoogleApiClient(),
-		        this.getHighestScoreLeaderboardID()), 200);
+		        this.getHighestScoreLeaderboardID()), RC_LEADERBOARD);
+	}
+	
+	public void displayAchievements() {
+		startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), RC_ACHIEVEMENTS);
 	}
 
 	@Override
 	public void onSignInFailed() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onSignInSucceeded() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
-		// TODO Auto-generated method stub
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		if (mResolvingConnectionFailure) {
+	        // Already resolving
+	        return;
+	    }
 		
+		if (mAutoStartSignInFlow) {
+	        mAutoStartSignInFlow = false;
+	        mResolvingConnectionFailure = true;
+
+	        // Attempt to resolve the connection failure using BaseGameUtils.
+	        // The R.string.signin_other_error value should reference a generic
+	        // error string in your strings.xml file, such as "There was
+	        // an issue with sign in, please try again later."
+	        if (!BaseGameUtils.resolveConnectionFailure(this,
+	                mGoogleApiClient, connectionResult,
+	                RC_SIGN_IN, SIGN_IN_OTHER_ERROR)) {
+	            mResolvingConnectionFailure = false;
+	        }
+	    }
+
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onConnectionSuspended(int arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 }

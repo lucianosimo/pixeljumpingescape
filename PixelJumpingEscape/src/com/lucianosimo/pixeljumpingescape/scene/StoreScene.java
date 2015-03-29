@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.chartboost.sdk.CBLocation;
 import com.chartboost.sdk.Chartboost;
+import com.google.android.gms.games.Games;
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager.SceneType;
@@ -465,6 +466,26 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						});
 				        Toast.makeText(activity, player + " unlocked", Toast.LENGTH_LONG).show();
 				        loadUnlockedPlayers();
+				        loadUnlockedStages();
+				        //Achievements
+						if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+							if (unlockedNerd && unlockedNinja && unlockedRobot) {
+								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
+							}
+							if (unlockedBrick && unlockedWood && unlockedSteel) {
+								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
+							}
+						} else {
+							activity.getGoogleApiClient().connect();
+							if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+								if (unlockedNerd && unlockedNinja && unlockedRobot) {
+									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
+								}
+								if (unlockedBrick && unlockedWood && unlockedSteel) {
+									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
+								}
+							}
+						}
 				    }})
 				 .setNegativeButton("Mmmm, not really", null).show();	
 			}

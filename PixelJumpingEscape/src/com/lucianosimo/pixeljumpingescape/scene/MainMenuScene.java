@@ -36,6 +36,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private IMenuItem menuPlayItem;
 	private IMenuItem menuStoreItem;
 	private IMenuItem menuLeaderboardItem;
+	private IMenuItem menuAchievementsItem;
 	
 	private Sprite menuSelectionMenuBackground;
 	private ScaleMenuItemDecorator menuSelectionCloseButton;
@@ -79,12 +80,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private final int MENU_PLAY = 0;
 	private final int MENU_STORE = 1;
 	private final int MENU_LEADERBOARD = 2;
-	private final int MENU_OPEN_SELECTION = 3;
-	private final int MENU_CLOSE_SELECTION = 4;
-	private final int MENU_LEFT_PLAYER = 5;
-	private final int MENU_RIGHT_PLAYER = 6;
-	private final int MENU_LEFT_STAGE = 7;
-	private final int MENU_RIGHT_STAGE = 8;
+	private final int MENU_ACHIEVEMENTS = 3;
+	private final int MENU_OPEN_SELECTION = 4;
+	private final int MENU_CLOSE_SELECTION = 5;
+	private final int MENU_LEFT_PLAYER = 6;
+	private final int MENU_RIGHT_PLAYER = 7;
+	private final int MENU_LEFT_STAGE = 8;
+	private final int MENU_RIGHT_STAGE = 9;
 	
 	private final float SELECTION_BACKGROUND_MOVE_DURATION = 1.25f;
 
@@ -169,6 +171,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuPlayItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_PLAY, resourcesManager.menu_play_button_region, vbom), 1.2f, 1);
 		menuStoreItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_STORE, resourcesManager.menu_store_button_region, vbom), 1.2f, 1);
 		menuLeaderboardItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_LEADERBOARD, resourcesManager.menu_leaderboard_button_region, vbom), 1.2f, 1);
+		menuAchievementsItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_ACHIEVEMENTS, resourcesManager.menu_achievements_button_region, vbom), 1.2f, 1);
 		menuSelectionOpenButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_OPEN_SELECTION, resourcesManager.menu_selection_open_button_region, vbom), 1.2f, 1);
 		menuSelectionCloseButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_CLOSE_SELECTION, resourcesManager.menu_selection_close_button_region, vbom), 1.2f, 1);
 		menuLeftPlayerButton = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_LEFT_PLAYER, resourcesManager.menu_selection_left_player_button_region, vbom), 1.2f, 1);
@@ -184,6 +187,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuChildScene.addMenuItem(menuPlayItem);
 		menuChildScene.addMenuItem(menuStoreItem);
 		menuChildScene.addMenuItem(menuLeaderboardItem);
+		menuChildScene.addMenuItem(menuAchievementsItem);
 		menuChildScene.addMenuItem(menuSelectionOpenButton);
 		menuChildScene.addMenuItem(menuLeftPlayerButton);
 		menuChildScene.addMenuItem(menuRightPlayerButton);
@@ -240,6 +244,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 					menuLeaderboardItem.clearEntityModifiers();
 					menuLeaderboardItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeaderboardItem.getX(), 
 							menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() + 100, easeFunction[0]));
+					
+					menuAchievementsItem.clearEntityModifiers();
+					menuAchievementsItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuAchievementsItem.getX(), 
+							menuAchievementsItem.getY(), menuAchievementsItem.getX(), menuAchievementsItem.getY() + 100, easeFunction[0]));
 					
 					menuLeftPlayerButton.clearEntityModifiers();
 					menuLeftPlayerButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeftPlayerButton.getX(), 
@@ -308,6 +316,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 					menuLeaderboardItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeaderboardItem.getX(), 
 							menuLeaderboardItem.getY(), menuLeaderboardItem.getX(), menuLeaderboardItem.getY() - 100, easeFunction[0]));
 					
+					menuAchievementsItem.clearEntityModifiers();
+					menuAchievementsItem.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuAchievementsItem.getX(), 
+							menuAchievementsItem.getY(), menuAchievementsItem.getX(), menuAchievementsItem.getY() - 100, easeFunction[0]));
+					
 					menuLeftPlayerButton.clearEntityModifiers();
 					menuLeftPlayerButton.registerEntityModifier(new MoveModifier(SELECTION_BACKGROUND_MOVE_DURATION, menuLeftPlayerButton.getX(), 
 							menuLeftPlayerButton.getY(), menuLeftPlayerButton.getX(), menuLeftPlayerButton.getY() - 375, easeFunction[0]));
@@ -339,8 +351,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	
 	private void setMainMenuButtonsPositions() {
 		menuPlayItem.setPosition(0, 75);
-		menuStoreItem.setPosition(100, -125);
-		menuLeaderboardItem.setPosition(-100, -125);
+		menuStoreItem.setPosition(200, -125);
+		menuLeaderboardItem.setPosition(0, -125);
+		menuAchievementsItem.setPosition(-200, -125);
 		menuSelectionOpenButton.setPosition(-195, -screenHeight / 2 + 35);
 		menuLeftPlayerButton.setPosition(-300, -screenHeight / 2 - 250);
 		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 250);
@@ -359,7 +372,19 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				return true;
 			case MENU_LEADERBOARD:
 				resourcesManager.menu_button_sound.play();
-				activity.displayLeaderboard();
+				if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+					activity.displayLeaderboard();
+				} else {
+					activity.getGoogleApiClient().connect();
+				}				
+				return true;
+			case MENU_ACHIEVEMENTS:
+				resourcesManager.menu_button_sound.play();
+				if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+					activity.displayAchievements();
+				} else {
+					activity.getGoogleApiClient().connect();
+				}				
 				return true;
 			case MENU_STORE:
 				resourcesManager.menu_button_sound.play();
