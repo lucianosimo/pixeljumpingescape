@@ -282,7 +282,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= NERD_UNLOCK_VALUE) {
-							confirmMessage("nerd", NERD_UNLOCK_VALUE);						
+							confirmMessage("nerd", NERD_UNLOCK_VALUE);
+							verifyAchievements();
 						} else {
 							int coinsToUnlock = NERD_UNLOCK_VALUE - coins;
 							noEnoughCoins("nerd", coinsToUnlock);
@@ -306,7 +307,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= NINJA_UNLOCK_VALUE) {
-							confirmMessage("ninja", NINJA_UNLOCK_VALUE);						
+							confirmMessage("ninja", NINJA_UNLOCK_VALUE);	
+							verifyAchievements();
 						} else {
 							int coinsToUnlock = NINJA_UNLOCK_VALUE - coins;
 							noEnoughCoins("ninja", coinsToUnlock);
@@ -330,7 +332,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= ROBOT_UNLOCK_VALUE) {
-							confirmMessage("robot", ROBOT_UNLOCK_VALUE);						
+							confirmMessage("robot", ROBOT_UNLOCK_VALUE);		
+							verifyAchievements();
 						} else {
 							int coinsToUnlock = ROBOT_UNLOCK_VALUE - coins;
 							noEnoughCoins("robot", coinsToUnlock);
@@ -359,7 +362,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= BRICK_UNLOCK_VALUE) {
-							confirmMessage("brick", BRICK_UNLOCK_VALUE);						
+							confirmMessage("brick", BRICK_UNLOCK_VALUE);
+							verifyAchievements();
 						} else {
 							int coinsToUnlock = BRICK_UNLOCK_VALUE - coins;
 							noEnoughCoins("brick", coinsToUnlock);
@@ -378,7 +382,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= WOOD_UNLOCK_VALUE) {
-							confirmMessage("wood", WOOD_UNLOCK_VALUE);						
+							confirmMessage("wood", WOOD_UNLOCK_VALUE);	
+							verifyAchievements();
 						} else {
 							int coinsToUnlock = WOOD_UNLOCK_VALUE - coins;
 							noEnoughCoins("wood", coinsToUnlock);
@@ -397,7 +402,8 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= STEEL_UNLOCK_VALUE) {
-							confirmMessage("steel", STEEL_UNLOCK_VALUE);						
+							confirmMessage("steel", STEEL_UNLOCK_VALUE);
+							verifyAchievements();
 						} else {
 							int coinsToUnlock = STEEL_UNLOCK_VALUE - coins;
 							noEnoughCoins("steel", coinsToUnlock);
@@ -430,6 +436,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    		unlockNerd();
 						    		storeScene.detachChild(lockedBarsNerd);
 						    		storeScene.detachChild(unlockNerdButton);
+						    		storeScene.unregisterTouchArea(unlockNerdButton);
 						    		storeScene.detachChild(lightNerd);
 						    		lightNerd = new Sprite(280, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
 						    		storeScene.attachChild(lightNerd);
@@ -438,6 +445,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    		unlockNinja();
 						    		storeScene.detachChild(lockedBarsNinja);
 						    		storeScene.detachChild(unlockNinjaButton);
+						    		storeScene.unregisterTouchArea(unlockNinjaButton);
 						    		storeScene.detachChild(lightNinja);
 						    		lightNinja = new Sprite(450, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
 						    		storeScene.attachChild(lightNinja);
@@ -446,6 +454,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    		unlockRobot();
 						    		storeScene.detachChild(lockedBarsRobot);
 						    		storeScene.detachChild(unlockRobotButton);
+						    		storeScene.unregisterTouchArea(unlockRobotButton);
 						    		storeScene.detachChild(lightRobot);
 						    		lightRobot = new Sprite(620, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
 						    		storeScene.attachChild(lightRobot);
@@ -453,43 +462,49 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    	if (player.equals("brick")) {
 						    		unlockBrick();
 						    		storeScene.detachChild(unlockBrickButton);
+						    		storeScene.unregisterTouchArea(unlockBrickButton);
 						    	}
 						    	if (player.equals("wood")) {
 						    		unlockWood();
 						    		storeScene.detachChild(unlockWoodButton);
+						    		storeScene.unregisterTouchArea(unlockWoodButton);
 						    	}
 						    	if (player.equals("steel")) {
 						    		unlockSteel();
 						    		storeScene.detachChild(unlockSteelButton);
+						    		storeScene.unregisterTouchArea(unlockSteelButton);
 						    	}
 							}
 						});
 				        Toast.makeText(activity, player + " unlocked", Toast.LENGTH_LONG).show();
 				        loadUnlockedPlayers();
 				        loadUnlockedStages();
-				        //Achievements
-						if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
-							if (unlockedNerd && unlockedNinja && unlockedRobot) {
-								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
-							}
-							if (unlockedBrick && unlockedWood && unlockedSteel) {
-								Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
-							}
-						} else {
-							activity.getGoogleApiClient().connect();
-							if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
-								if (unlockedNerd && unlockedNinja && unlockedRobot) {
-									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
-								}
-								if (unlockedBrick && unlockedWood && unlockedSteel) {
-									Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
-								}
-							}
-						}
 				    }})
 				 .setNegativeButton("Mmmm, not really", null).show();	
 			}
 		});
+	}
+	
+	private void verifyAchievements() {
+		//Achievements
+		if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+			if (unlockedNerd && unlockedNinja && unlockedRobot) {
+				Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
+			}
+			if (unlockedBrick && unlockedWood && unlockedSteel) {
+				Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
+			}
+		} else {
+			activity.getGoogleApiClient().connect();
+			if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
+				if (unlockedNerd && unlockedNinja && unlockedRobot) {
+					Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
+				}
+				if (unlockedBrick && unlockedWood && unlockedSteel) {
+					Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
+				}
+			}
+		}
 	}
 	
 	private void noEnoughCoins(final String player, final int coins) {
@@ -509,6 +524,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedNerd", true);
 		editor.commit();
 		coins = coins - NERD_UNLOCK_VALUE;
+		unlockedNerd = true;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
@@ -519,6 +535,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedNinja", true);
 		editor.commit();
 		coins = coins - NINJA_UNLOCK_VALUE;
+		unlockedNinja = true;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
@@ -529,6 +546,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedRobot", true);
 		editor.commit();
 		coins = coins - ROBOT_UNLOCK_VALUE;
+		unlockedRobot = true;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
@@ -539,6 +557,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedBrick", true);
 		editor.commit();
 		coins = coins - BRICK_UNLOCK_VALUE;
+		unlockedNerd = true;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
@@ -549,6 +568,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedWood", true);
 		editor.commit();
 		coins = coins - WOOD_UNLOCK_VALUE;
+		unlockedWood = true;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
@@ -559,6 +579,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		editor.putBoolean("unlockedSteel", true);
 		editor.commit();
 		coins = coins - STEEL_UNLOCK_VALUE;
+		unlockedSteel = true;
 		createStoreCoinsTiledSprites();
 		saveCoins(coins);
 	}
