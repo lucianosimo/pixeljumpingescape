@@ -151,15 +151,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private int previousHighScore;
 	private int movedBlocks;
 	
-	//Pools
-	
-	//Explosions
-	
-	//Text
-	/*private Text scoreText;
-	private Text scorePauseText;
-	private Text coinsText;*/
-	
 	//Sensors
 	private Rectangle[] moveBlocksSensor;
 	private Rectangle centerBlocksSensor;
@@ -205,9 +196,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private final static int CENTER_SPIKES_MAX_OFFSET_RIGHT = 215;
 	private final static int CENTER_MOVING_SPIKES_MAX_OFFSET_LEFT = 145;
 	private final static int CENTER_MOVING_SPIKES_MAX_OFFSET_RIGHT = 175;
-	//private final static int SPIKES_HEIGHT = 128;
-	//private final static int CENTER_SPIKES_WIDTH = 75;
-	//private final static int CENTER_SPIKES_HEIGHT = 75;
 	
 	//CENTER MOVING SPIKES VARIABLES
 	private final static int CENTER_MOVING_SPIKES_INITIAL_BLOCKS_TO_APPEAR = 10;
@@ -245,6 +233,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		createWindows();
 		GameScene.this.setOnSceneTouchListener(this);
 		Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);
+		resourcesManager.game_fire_sound.play();
+		checkSoundEnabledOrNo();
 		engine.registerUpdateHandler(new IUpdateHandler() {
 			int updates = 0;
 			
@@ -266,6 +256,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		});
 		//DebugRenderer debug = new DebugRenderer(physicsWorld, vbom);
         //GameScene.this.attachChild(debug);
+	}
+	
+	private void checkSoundEnabledOrNo() {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
+		int soundEnabled = sp.getInt("soundEnabled", 0);
+		if (soundEnabled == 1) {
+			activity.enableSound(false);
+			activity.enableMusic(false);
+		} else if (soundEnabled == 0) {
+			activity.enableSound(true);
+			activity.enableMusic(true);
+		}
 	}
 	
 	private void setCameraProperties() {
@@ -404,6 +406,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
 					}
+					resourcesManager.game_player_jump_sound.play();
 					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
 					player.goToLeftWall(ySpeed);
 					if (player.isAnimationRunning()) {
@@ -434,6 +437,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					if (player.isInitial()) {
 						yJumpPx = (camera.getCenterY() - screenHeight / 2) + pSceneTouchEvent.getY() - player.getY() + 256;
 					}
+					resourcesManager.game_player_jump_sound.play();
 					float ySpeed = yJumpPx * Y_JUMP_SPEED_MULTIPLIER;
 					player.goToRightWall(ySpeed);
 					if (player.isAnimationRunning()) {
@@ -520,9 +524,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					moveLateralMovingSpikes();
 				}
 				if (player.collidesWith(lateralLeftMoveSensor)) {
+					resourcesManager.game_lateral_moving_spike_sound.play();
 					leftMovingSpike.startMoving();
 				}
 				if (player.collidesWith(lateralRightMoveSensor)) {
+					resourcesManager.game_lateral_moving_spike_sound.play();
 					rightMovingSpike.startMoving();
 				}				
 				if (player.collidesWith(moveBlocksSensor[0]) && movedBlocks > 0) {
@@ -550,6 +556,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			
 			@Override
 			public void onDie() {
+				resourcesManager.game_fire_sound.pause();
 				engine.runOnUpdateThread(new Runnable() {
 					
 					@Override
@@ -894,6 +901,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					if (player.collidesWith(this)) {
 						setPosition(this.getX(), this.getY() + (screenHeight * (MAX_BLOCKS)));
 						this.setVisible(true);
+						resourcesManager.game_coin_sound.play();
 						addCoins();
 					}
 					if (this.getY() < (camera.getCenterY() - 640)) {
@@ -1121,31 +1129,37 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("leftSpikes")) {
 					availablePause = false;
+					resourcesManager.game_player_die_sound.play();
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("rightSpikes")) {
 					availablePause = false;
+					resourcesManager.game_player_die_sound.play();
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("centerSpikes")) {
 					availablePause = false;
+					resourcesManager.game_player_die_sound.play();
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("spider")) {
 					availablePause = false;
+					resourcesManager.game_player_die_sound.play();
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("spider") && x2.getBody().getUserData().equals("player")) {
 					availablePause = false;
+					resourcesManager.game_player_die_sound.play();
 					player.killPlayer(camera, background);
 				}
 				
 				if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("fire")) {
 					availablePause = false;
+					resourcesManager.game_player_die_sound.play();
 					player.killPlayer(camera, background);
 				}
 			}

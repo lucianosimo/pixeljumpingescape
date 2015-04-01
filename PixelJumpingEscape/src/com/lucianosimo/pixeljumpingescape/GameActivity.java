@@ -14,7 +14,9 @@ import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 
 import com.chartboost.sdk.Chartboost;
@@ -97,22 +99,19 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 	protected synchronized void onResume() {
 		super.onResume();
 		Chartboost.onResume(this);
-		/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		int soundEnabled = sharedPreferences.getInt("soundEnabled", 0);
-		int musicEnabled = sharedPreferences.getInt("musicEnabled", 0);
 		if (soundEnabled == 1) {
 			enableSound(false);
+			enableMusic(false);
 		} else if (soundEnabled == 0) {
 			enableSound(true);
-		}
-		if (musicEnabled == 1) {
-			enableMusic(false);
-		} else if (musicEnabled == 0) {
 			enableMusic(true);
-		}*/
+		}
 	}
 	
-	/*public void enableSound(boolean enable) {
+	public void enableSound(boolean enable) {
 		if (enable) {
 			mEngine.getSoundManager().setMasterVolume(1);
 		} else {
@@ -126,7 +125,7 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 		} else {
 			mEngine.getMusicManager().setMasterVolume(0);
 		}
-	}*/
+	}
 
 	@Override
 	public void onCreateResources(OnCreateResourcesCallback pOnCreateResourcesCallback)	throws IOException {

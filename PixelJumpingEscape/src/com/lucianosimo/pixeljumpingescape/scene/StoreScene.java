@@ -19,7 +19,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.chartboost.sdk.CBLocation;
@@ -146,7 +145,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		
 		createStoreCoinsTiledSprites();
 
-		storeMenuItem.setPosition(100, 100);
+		storeMenuItem.setPosition(100, 165);
 		playAdButton.setPosition(275, 170);
 		rateUsButton.setPosition(440, 170);
 		
@@ -490,32 +489,21 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	}
 	
 	private void verifyAchievements() {
-		Log.d("pixel", "*****************************");
-		Log.d("pixel", "nerd: " + unlockedNerd);
-		Log.d("pixel", "ninja: " + unlockedNinja);
-		Log.d("pixel", "robot: " + unlockedRobot);
-		Log.d("pixel", "brick: " + unlockedBrick);
-		Log.d("pixel", "wood: " + unlockedWood);
-		Log.d("pixel", "steel: " + unlockedSteel);
 		//Achievements
 		if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
 			if (unlockedNerd && unlockedNinja && unlockedRobot) {
-				Log.d("pixel", "players achievements 1");
 				Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
 			}
 			if (unlockedBrick && unlockedWood && unlockedSteel) {
-				Log.d("pixel", "stage achievements 1");
 				Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
 			}
 		} else {
 			activity.getGoogleApiClient().connect();
 			if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
 				if (unlockedNerd && unlockedNinja && unlockedRobot) {
-					Log.d("pixel", "players achievements 2");
 					Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getThanksForLiberatingUsAchievementID());
 				}
 				if (unlockedBrick && unlockedWood && unlockedSteel) {
-					Log.d("pixel", "stage achievements 2");
 					Games.Achievements.unlock(activity.getGoogleApiClient(), activity.getTripWhereverYouWantAchievementID());
 				}
 			}

@@ -14,6 +14,7 @@ import org.andengine.entity.scene.menu.item.IMenuItem;
 import org.andengine.entity.scene.menu.item.SpriteMenuItem;
 import org.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.modifier.ease.EaseStrongIn;
 import org.andengine.util.modifier.ease.IEaseFunction;
 
@@ -55,6 +56,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private float screenWidth;
 	private float screenHeight;
 	
+	private Sprite menuSoundEnabledButton;
+	private Sprite menuSoundDisabledButton;
+	private Sprite menuExitButton;
+	
 	private int coins;
 	
 	private boolean unlockedNerd = false;
@@ -66,6 +71,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	
 	private boolean availableOpenSelectionMenu = true;
 	private boolean availableCloseSelectionMenu = false;
+	private boolean availableDisplayExitWindow = true;
 	
 	private final static int WALL_HEIGHT = 128;
 	
@@ -104,7 +110,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	@Override
 	public void onBackKeyPressed() {
-		displayQuitGameWindow();
+		if (availableDisplayExitWindow) {
+			displayQuitGameWindow();
+		}
+		
 	}
 
 	@Override
@@ -163,7 +172,18 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuChildScene.attachChild(title);
 	}
 	
-	private void createMenuChildScene() {
+	private void createMenuChildScene() {		
+		createSoundButtons();
+		
+		menuExitButton = new Sprite(0, 0, resourcesManager.menu_exit_button_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (availableDisplayExitWindow) {
+					displayQuitGameWindow();
+				}
+				return true;
+			}
+		};
 		
 		menuChildScene.setPosition(screenWidth/2, screenHeight/2);
 		menuSelectionMenuBackground = new Sprite(0, -screenHeight/2 - 150, resourcesManager.menu_selection_menu_background_region, vbom);
@@ -183,6 +203,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuSelectionStageLabel = new Sprite(0, 0, resourcesManager.menu_selection_stage_label_region, vbom);
 		
 		menuChildScene.attachChild(menuSelectionMenuBackground);
+		
+		menuChildScene.attachChild(menuExitButton);
+		menuChildScene.registerTouchArea(menuExitButton);
 		
 		menuChildScene.addMenuItem(menuPlayItem);
 		menuChildScene.addMenuItem(menuStoreItem);
@@ -205,6 +228,52 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuChildScene.setOnMenuItemClickListener(this);
 		
 		setChildScene(menuChildScene);
+	}
+	
+	private void createSoundButtons() {
+		menuSoundDisabledButton = new Sprite(51, 51, resourcesManager.menu_sound_disabled_button_region, vbom);
+		
+		//If soundEnabled = 0, enabled..if 1 disabled
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int soundEnabled = sharedPreferences.getInt("soundEnabled", 0);
+		if (soundEnabled == 1) {
+			activity.enableSound(false);
+			menuSoundDisabledButton.setPosition(55f, 52.5f);
+		} else if (soundEnabled == 0) {
+			activity.enableSound(true);
+			menuSoundDisabledButton.setPosition(1500, 1500);
+		}
+		
+		menuSoundEnabledButton = new Sprite(0, 0, resourcesManager.menu_sound_enabled_button_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionDown()) {
+					//If soundEnabled = 0, enabled..if 1 disabled
+					SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+					int soundEnabled = sharedPreferences.getInt("soundEnabled", 0);
+					Editor editor = sharedPreferences.edit();
+					if (soundEnabled == 1) {
+						soundEnabled = 0;
+						menuSoundDisabledButton.setPosition(1500, 1500);
+						activity.enableSound(true);
+						activity.enableMusic(true);
+					} else if (soundEnabled == 0) {
+						soundEnabled = 1;
+						menuSoundDisabledButton.setPosition(55f, 52.5f);
+						activity.enableSound(false);
+						activity.enableMusic(false);
+					}
+					editor.putInt("soundEnabled", soundEnabled);
+					editor.commit();	
+				}
+				return true;
+			}
+		};
+		
+		menuChildScene.attachChild(menuSoundEnabledButton);
+		menuSoundEnabledButton.attachChild(menuSoundDisabledButton);
+		
+		menuChildScene.registerTouchArea(menuSoundEnabledButton);
 	}
 	
 	private void openSelectionMenu() {
@@ -354,6 +423,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuStoreItem.setPosition(200, -125);
 		menuLeaderboardItem.setPosition(0, -125);
 		menuAchievementsItem.setPosition(-200, -125);
+		menuSoundEnabledButton.setPosition(-315, screenHeight / 2 - 60);
+		menuExitButton.setPosition(315, screenHeight / 2 - 60);
 		menuSelectionOpenButton.setPosition(-195, -screenHeight / 2 + 35);
 		menuLeftPlayerButton.setPosition(-300, -screenHeight / 2 - 250);
 		menuRightPlayerButton.setPosition(-75, -screenHeight / 2 - 250);
@@ -644,6 +715,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	}
 	
 	private void displayQuitGameWindow() {
+		availableDisplayExitWindow = false;
 		resourcesManager.menu_popup_window_sound.play();
 		MainMenuScene.this.activity.runOnUiThread(new Runnable() {
 			
@@ -660,9 +732,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						
+						availableDisplayExitWindow = true;
 					}
 				})
+				.setCancelable(false)
 				.show();
 			}
 		});
