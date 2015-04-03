@@ -18,9 +18,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.chartboost.sdk.Chartboost;
 import com.chartboost.sdk.ChartboostDelegate;
+import com.chartboost.sdk.Model.CBError.CBImpressionError;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
@@ -200,6 +202,16 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
             StoreScene store = SceneManager.getInstance().getStoreScene();
             store.addRewardedVideoCoins(PLAY_AD_REWARD_VALUE);
         }
+        @Override
+        public void didFailToLoadRewardedVideo(String location,	CBImpressionError error) {
+        	super.didFailToLoadRewardedVideo(location, error);
+        	GameActivity.this.runOnUiThread(new Runnable() {
+    			@Override
+    			public void run() {
+    				Toast.makeText(GameActivity.this, "The video could not be loaded. Please try again later", Toast.LENGTH_SHORT).show();
+    			}
+    		});
+        }
 	};
 	
 	public String getHighestScoreLeaderboardID() {
@@ -245,7 +257,12 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 
 	@Override
 	public void onSignInFailed() {
-		
+		this.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(GameActivity.this, "There was an error. Please try to sign to Google Play Games again", Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 
 	@Override

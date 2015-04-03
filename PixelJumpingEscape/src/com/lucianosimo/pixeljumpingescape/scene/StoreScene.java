@@ -68,6 +68,14 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	
 	private TiledSprite[] storeCoins;
 	
+	private static final String NERD_LABEL= "Nerd player";
+	private static final String NINJA_LABEL = "Ninja player";
+	private static final String ROBOT_LABEL = "Robot player";
+	
+	private static final String BRICK_LABEL = "Brick stage";
+	private static final String WOOD_LABEL = "Wood stage";
+	private static final String STEEL_LABEL = "Steel stage";
+	
 	private final static int NERD_UNLOCK_VALUE = 25;
 	private final static int NINJA_UNLOCK_VALUE = 100;
 	private final static int ROBOT_UNLOCK_VALUE = 250;
@@ -270,7 +278,6 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private void loadCoins() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		coins = sharedPreferences.getInt("coins", 0);
-		coins = 10000;
 	}
 	
 	private void loadPlayers() {
@@ -284,10 +291,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= NERD_UNLOCK_VALUE) {
-							confirmMessage("nerd", NERD_UNLOCK_VALUE);
+							confirmMessage(NERD_LABEL, NERD_UNLOCK_VALUE);
 						} else {
 							int coinsToUnlock = NERD_UNLOCK_VALUE - coins;
-							noEnoughCoins("nerd", coinsToUnlock);
+							noEnoughCoins(NERD_LABEL, coinsToUnlock);
 						}
 					}
 					return true;
@@ -308,10 +315,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= NINJA_UNLOCK_VALUE) {
-							confirmMessage("ninja", NINJA_UNLOCK_VALUE);	
+							confirmMessage(NINJA_LABEL, NINJA_UNLOCK_VALUE);	
 						} else {
 							int coinsToUnlock = NINJA_UNLOCK_VALUE - coins;
-							noEnoughCoins("ninja", coinsToUnlock);
+							noEnoughCoins(NINJA_LABEL, coinsToUnlock);
 						}
 					}
 					return true;
@@ -332,10 +339,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= ROBOT_UNLOCK_VALUE) {
-							confirmMessage("robot", ROBOT_UNLOCK_VALUE);		
+							confirmMessage(ROBOT_LABEL, ROBOT_UNLOCK_VALUE);		
 						} else {
 							int coinsToUnlock = ROBOT_UNLOCK_VALUE - coins;
-							noEnoughCoins("robot", coinsToUnlock);
+							noEnoughCoins(ROBOT_LABEL, coinsToUnlock);
 						}
 					}
 					return true;
@@ -361,10 +368,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= BRICK_UNLOCK_VALUE) {
-							confirmMessage("brick", BRICK_UNLOCK_VALUE);
+							confirmMessage(BRICK_LABEL, BRICK_UNLOCK_VALUE);
 						} else {
 							int coinsToUnlock = BRICK_UNLOCK_VALUE - coins;
-							noEnoughCoins("brick", coinsToUnlock);
+							noEnoughCoins(BRICK_LABEL, coinsToUnlock);
 						}
 					}
 					return true;
@@ -380,10 +387,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= WOOD_UNLOCK_VALUE) {
-							confirmMessage("wood", WOOD_UNLOCK_VALUE);	
+							confirmMessage(WOOD_LABEL, WOOD_UNLOCK_VALUE);	
 						} else {
 							int coinsToUnlock = WOOD_UNLOCK_VALUE - coins;
-							noEnoughCoins("wood", coinsToUnlock);
+							noEnoughCoins(WOOD_LABEL, coinsToUnlock);
 						}
 					}
 					return true;
@@ -399,10 +406,10 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 					if (pSceneTouchEvent.isActionDown()) {
 						resourcesManager.store_popup_window_sound.play();
 						if (coins >= STEEL_UNLOCK_VALUE) {
-							confirmMessage("steel", STEEL_UNLOCK_VALUE);
+							confirmMessage(STEEL_LABEL, STEEL_UNLOCK_VALUE);
 						} else {
 							int coinsToUnlock = STEEL_UNLOCK_VALUE - coins;
-							noEnoughCoins("steel", coinsToUnlock);
+							noEnoughCoins(STEEL_LABEL, coinsToUnlock);
 						}
 					}
 					return true;
@@ -428,7 +435,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 							
 							@Override
 							public void run() {
-								if (player.equals("nerd")) {
+								if (player.equals(NERD_LABEL)) {
 									unlockedNerd = true;
 						    		unlockNerd();
 						    		storeScene.detachChild(lockedBarsNerd);
@@ -438,7 +445,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    		lightNerd = new Sprite(280, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
 						    		storeScene.attachChild(lightNerd);
 						    	}
-						    	if (player.equals("ninja")) {
+						    	if (player.equals(NINJA_LABEL)) {
 						    		unlockedNinja = true;
 						    		unlockNinja();
 						    		storeScene.detachChild(lockedBarsNinja);
@@ -448,7 +455,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    		lightNinja = new Sprite(450, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
 						    		storeScene.attachChild(lightNinja);
 						    	}
-						    	if (player.equals("robot")) {
+						    	if (player.equals(ROBOT_LABEL)) {
 						    		unlockedRobot = true;
 						    		unlockRobot();
 						    		storeScene.detachChild(lockedBarsRobot);
@@ -458,19 +465,19 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 						    		lightRobot = new Sprite(620, 1075, resourcesManager.store_unlocked_player_light_region, vbom);
 						    		storeScene.attachChild(lightRobot);
 						    	}
-						    	if (player.equals("brick")) {
+						    	if (player.equals(BRICK_LABEL)) {
 						    		unlockedBrick = true;
 						    		unlockBrick();
 						    		storeScene.detachChild(unlockBrickButton);
 						    		storeScene.unregisterTouchArea(unlockBrickButton);
 						    	}
-						    	if (player.equals("wood")) {
+						    	if (player.equals(WOOD_LABEL)) {
 						    		unlockedWood = true;
 						    		unlockWood();
 						    		storeScene.detachChild(unlockWoodButton);
 						    		storeScene.unregisterTouchArea(unlockWoodButton);
 						    	}
-						    	if (player.equals("steel")) {
+						    	if (player.equals(STEEL_LABEL)) {
 						    		unlockedSteel = true;
 						    		unlockSteel();
 						    		storeScene.detachChild(unlockSteelButton);
@@ -511,9 +518,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	}
 	
 	private void noEnoughCoins(final String player, final int coins) {
-		resourcesManager.store_unlock_sound.play();
 		StoreScene.this.activity.runOnUiThread(new Runnable() {
-			
 			@Override
 			public void run() {
 				Toast.makeText(activity, "No enough coins. Collect " + coins + " more to unlock " + player, Toast.LENGTH_SHORT).show();	

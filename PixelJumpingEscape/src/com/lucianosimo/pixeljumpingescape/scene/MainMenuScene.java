@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.lucianosimo.pixeljumpingescape.base.BaseScene;
 import com.lucianosimo.pixeljumpingescape.manager.SceneManager;
@@ -255,11 +256,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 					if (soundEnabled == 1) {
 						soundEnabled = 0;
 						menuSoundDisabledButton.setPosition(1500, 1500);
+						soundEnabledMessage(true);
 						activity.enableSound(true);
 						activity.enableMusic(true);
 					} else if (soundEnabled == 0) {
 						soundEnabled = 1;
 						menuSoundDisabledButton.setPosition(55f, 52.5f);
+						soundEnabledMessage(false);
 						activity.enableSound(false);
 						activity.enableMusic(false);
 					}
@@ -274,6 +277,19 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuSoundEnabledButton.attachChild(menuSoundDisabledButton);
 		
 		menuChildScene.registerTouchArea(menuSoundEnabledButton);
+	}
+	
+	private void soundEnabledMessage(final boolean enabled) {
+		MainMenuScene.this.activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (enabled) {
+					Toast.makeText(activity, "Sound enabled", Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(activity, "Sound disabled", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
 	}
 	
 	private void openSelectionMenu() {

@@ -123,6 +123,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private boolean availablePause = false;
 	private boolean gameOver = false;
 	private boolean scoreChanged = false;
+	//private boolean isPlayingCenterSpikeSound = false;
+	//private boolean[] isPlayingCenterSpikeSound;
 
 	//Integers
 	private float cameraSpeedBeforePause;
@@ -160,7 +162,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private Rectangle spiderMoveSensor;
 	private Rectangle lateralLeftMoveSensor;
 	private Rectangle lateralRightMoveSensor;
-
+	
 	//Constants
 	
 	//COINS VARIABLES
@@ -566,8 +568,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 				        camera.setMaxVelocityY(0);
 				        availablePause = false;
 				        gameOver = true;
-				        
-				        Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);
 
 				        //Save variables
 				        saveCoins("coins", coinsCounter);
@@ -579,6 +579,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 						}
 						
 						incrementGamesCounter();
+						
+						if (getNumberOfGames() % 5 == 0) {
+							Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);							
+						}
 						
 						//Achievements
 						if (activity.getGoogleApiClient() != null && activity.getGoogleApiClient().isConnected()) {
@@ -756,6 +760,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			centerBlocksOffset = (leftOrRight == 1) ? centerBlocksOffset : -centerBlocksOffset;
 			CenterSpikes centerSpike = new CenterSpikes(screenWidth/2 + centerBlocksOffset, centerPositions.get(i), vbom, camera, physicsWorld);
 			centerSpikes.add(centerSpike);
+			centerSpike.setCullingEnabled(true);
 			GameScene.this.attachChild(centerSpike);
 		}
 		
@@ -774,8 +779,43 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					centerBlocksOffset = -centerBlocksOffset;
 				}
 			}
-			CenterSpikesWithMove centerSpike = new CenterSpikesWithMove(screenWidth / 2 + centerBlocksOffset, centerMovingPositions.get(i), vbom, camera, physicsWorld, horizontalMove);
+			
+			/*isPlayingCenterSpikeSound = new boolean[centerMovingPositions.size()];
+			
+			for (int j = 0; j < isPlayingCenterSpikeSound.length; j++) {
+				isPlayingCenterSpikeSound[j] = false;
+			}*/
+			
+			//final int index = i;
+			
+			CenterSpikesWithMove centerSpike = new CenterSpikesWithMove(screenWidth / 2 + centerBlocksOffset, centerMovingPositions.get(i), vbom, camera, physicsWorld, horizontalMove) /*{
+				@Override
+				protected void onManagedUpdate(float pSecondsElapsed) {
+					super.onManagedUpdate(pSecondsElapsed);
+					float distance = (this.getY() - player.getY());
+					if (distance < 0) {
+						distance = -distance;
+					}
+					if (distance < screenHeight) {
+						this.setVisible(true);
+					} 
+					if (distance > screenHeight) {
+						this.setVisible(false);
+					}
+					if (this.isVisible() && !isPlayingCenterSpikeSound[index]) {
+						resourcesManager.game_center_moving_spike_sound.play();
+						resourcesManager.game_center_moving_spike_sound.setLooping(true);
+						isPlayingCenterSpikeSound[index] = true;
+					}
+					if (!this.isVisible() && isPlayingCenterSpikeSound[index]) {
+						resourcesManager.game_center_moving_spike_sound.stop();
+						isPlayingCenterSpikeSound[index] = false;
+					}
+				}
+			}*/;
+			centerSpike.setVisible(false);
 			centerSpikesWithMove.add(centerSpike);
+			centerSpike.setCullingEnabled(true);
 			GameScene.this.attachChild(centerSpike);
 		}
 		
@@ -829,6 +869,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			//Creation of walls and spikes
 			for (int j = 0; j < leftWallPositions.size(); j++) {
 				leftWall[i][j] = new LeftWall(WALL_WIDTH / 2, leftWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
+				leftWall[i][j].setCullingEnabled(true);
 				GameScene.this.attachChild(leftWall[i][j]);
 				if (j == 2 && i == 0) {
 					tapBlockLeft.setPosition(WALL_WIDTH / 2, leftWallPositions.get(j));
@@ -837,6 +878,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 			for (int j = 0; j < rightWallPositions.size(); j++) {
 				rightWall[i][j] = new RightWall(screenWidth - (WALL_WIDTH / 2), rightWallPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
+				rightWall[i][j].setCullingEnabled(true);
 				GameScene.this.attachChild(rightWall[i][j]);
 				if (j == 2 && i == 0) {
 					tapBlockRight.setPosition(screenWidth - (WALL_WIDTH / 2), rightWallPositions.get(j));
@@ -845,10 +887,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			}
 			for (int j = 0; j < leftSpikesPositions.size(); j++) {
 				leftSpikes[i][j] = new LeftSpikes(SPIKES_WIDTH / 2, leftSpikesPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
+				leftSpikes[i][j].setCullingEnabled(true);
 				GameScene.this.attachChild(leftSpikes[i][j]);
 			}
 			for (int j = 0; j < rightSpikesPositions.size(); j++) {
 				rightSpikes[i][j] = new RightSpikes(screenWidth - (SPIKES_WIDTH / 2), rightSpikesPositions.get(j) + (screenHeight * i), vbom, camera, physicsWorld);
+				rightSpikes[i][j].setCullingEnabled(true);
 				GameScene.this.attachChild(rightSpikes[i][j]);
 			}
 
@@ -864,6 +908,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		}
 		
 		createFloor();
+		
+		leftMovingSpike.setCullingEnabled(true);
+		rightMovingSpike.setCullingEnabled(true);
 		
 		GameScene.this.attachChild(leftMovingSpike);
 		GameScene.this.attachChild(rightMovingSpike);
@@ -915,6 +962,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 			};
 			final long[] COIN_ANIMATE = new long[] {100, 100, 100, 100};
 			coin[i].animate(COIN_ANIMATE, 0, 3, true);
+			coin[i].setCullingEnabled(true);
 			GameScene.this.attachChild(coin[i]);
 		}
 	}
@@ -980,6 +1028,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		
 		spider_web = new Sprite(spider.getX(), spider.getY(), ResourcesManager.getInstance().game_spider_web_region, vbom);
 		spider_web_line = new Rectangle(spider.getX(), spider.getY(), 2, 1, vbom);
+		
+		spider.setCullingEnabled(true);
+		spider_web_line.setCullingEnabled(true);
 		
 		GameScene.this.attachChild(spider_web_line);
 		GameScene.this.attachChild(spider);
@@ -1453,6 +1504,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		Editor editor = sharedPreferences.edit();
 		editor.putInt("numberOfGames", numberOfGames);
 		editor.commit();
+	}
+	
+	private int getNumberOfGames() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+		int numberOfGames = sharedPreferences.getInt("numberOfGames", 0);
+		return numberOfGames;
 	}
 	
 	private boolean isFirstGame() {
