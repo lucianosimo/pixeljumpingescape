@@ -688,7 +688,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			@Override
 			public void run() {
 				new AlertDialog.Builder(MainMenuScene.this.activity)
-				.setMessage("Do you want to rate us. Obtain " + RATEUS_REWARD_VALUE + " coins")
+				.setMessage("Do you want to rate us and obtain " + RATEUS_REWARD_VALUE + " coins")
 				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
 				    public void onClick(DialogInterface dialog, int whichButton) {

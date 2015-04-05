@@ -418,7 +418,7 @@ public class ResourcesManager {
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		
-		gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 768, 768, TextureOptions.BILINEAR);
+		gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 768, 768, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		gameBloodTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 720, 1280, TextureOptions.BILINEAR);
 		gameHudTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 512, 512, TextureOptions.BILINEAR);
 		gameWindowsTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);

@@ -813,7 +813,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 					}
 				}
 			}*/;
-			centerSpike.setVisible(false);
+			//centerSpike.setVisible(false);
 			centerSpikesWithMove.add(centerSpike);
 			centerSpike.setCullingEnabled(true);
 			GameScene.this.attachChild(centerSpike);

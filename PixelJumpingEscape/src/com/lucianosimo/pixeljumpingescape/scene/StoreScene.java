@@ -76,12 +76,12 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 	private static final String WOOD_LABEL = "Wood stage";
 	private static final String STEEL_LABEL = "Steel stage";
 	
-	private final static int NERD_UNLOCK_VALUE = 25;
-	private final static int NINJA_UNLOCK_VALUE = 100;
-	private final static int ROBOT_UNLOCK_VALUE = 250;
-	private final static int BRICK_UNLOCK_VALUE = 25;
-	private final static int WOOD_UNLOCK_VALUE = 100;
-	private final static int STEEL_UNLOCK_VALUE = 250;
+	private final static int NERD_UNLOCK_VALUE = 250;
+	private final static int NINJA_UNLOCK_VALUE = 1000;
+	private final static int ROBOT_UNLOCK_VALUE = 2500;
+	private final static int BRICK_UNLOCK_VALUE = 250;
+	private final static int WOOD_UNLOCK_VALUE = 1000;
+	private final static int STEEL_UNLOCK_VALUE = 2500;
 	
 	private final static int RATEUS_REWARD_VALUE = 250;
 	//private final static int PLAY_AD_REWARD_VALUE = 500;

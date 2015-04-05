@@ -38,7 +38,7 @@ public class GameActivity extends GoogleBaseGameActivity implements GoogleApiCli
 	private  GoogleApiClient mGoogleApiClient;
 	
 	private final static float SPLASH_DURATION = 5f;
-	private final static int PLAY_AD_REWARD_VALUE = 1000;
+	private final static int PLAY_AD_REWARD_VALUE = 500;
 	
 	private final static String CHARTBOOST_APP_ID = "5511d51804b016537b59f89a";
 	private final static String CHARTBOOST_APP_SIGNATURE = "1050fc7a898c2b6f3bd31b47fad756e3f3507448";
