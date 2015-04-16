@@ -95,7 +95,7 @@ public class StoreScene extends BaseScene implements IOnMenuItemClickListener{
 		screenWidth = resourcesManager.camera.getWidth();
 		screenHeight = resourcesManager.camera.getHeight();
 		storeScene = new MenuScene(camera);
-		Chartboost.cacheRewardedVideo(CBLocation.LOCATION_GAMEOVER);
+		Chartboost.cacheRewardedVideo(CBLocation.LOCATION_DEFAULT);
 		loadGameVariables();
 		createBackground();
 		createStoreChildScene();
